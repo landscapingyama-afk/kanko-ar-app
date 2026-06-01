@@ -1,14 +1,15 @@
 # ============================================================
-# kanko_app.py  観光AR案内アプリ フェーズ6
-# 播磨エリア + Folium地図 + GPS/コンパス + API連携 + SQLiteキャッシュ
-# + 夜モード + 関西エリア拡張 + 問題報告フォーム
+# kanko_app.py  観光AR案内アプリ フェーズ7
+# 播磨・関西エリア + Folium地図 + GPS/コンパス + API連携
+# + 夜モード + 関西拡張 + 簡易ARビュー（方位レーダー）
 # 開発指示書 v18 準拠
 # ============================================================
-# フェーズ6 追加機能:
-#   - 夜モード（Noto Sans JP / rgba(10,10,40,0.75) 深夜紺）
-#   - 関西エリアスポット追加（奈良・京都・大阪）
-#   - 問題報告フォーム（GitHub Issues連携）
-#   - Claude API 自動生成の準備コメント（収益化時に追加予定）
+# フェーズ7 追加機能:
+#   - 簡易ARビュー（コンパス連動・方位レーダー・スポット重畳）
+#   - 水平方位バー（向いている方向にスポット名を表示）
+#   - レーダー風スポットマップ（現在地中心・8方位表示）
+#   - AR距離リング（近い順に色分け表示）
+#   - フォールバック：GPS未取得時はシミュレータ値で動作
 # ============================================================
 # フェーズ4 継承機能:
 #   - Wikipedia API で説明文を自動取得（CC BY-SA 表記必須）
@@ -915,12 +916,32 @@ GLOBAL_CSS = "<style>\n@import url('https://fonts.googleapis.com/css2?family=Not
 .cloud-result{border-radius:14px;padding:16px 18px;margin:8px 0;
   background:rgba(160,210,235,0.55);border:1px solid rgba(100,180,220,0.45);color:#1a3a5a;font-size:16px;}
 .app-footer{text-align:center;color:rgba(50,80,140,0.65);font-size:11px;padding:22px 0 10px;line-height:1.9;}
-.phase6-badge{display:inline-block;background:rgba(80,200,120,0.20);border:1px solid rgba(80,200,120,0.45);
-  border-radius:8px;padding:2px 10px;font-size:12px;color:#1a6a3a;}
+.phase7-badge{display:inline-block;background:rgba(100,160,255,0.22);border:1px solid rgba(100,160,255,0.50);
+  border-radius:8px;padding:2px 10px;font-size:12px;color:#2a4a9a;}
 /* ★ フェーズ6：夜モード */
 .night-bg{background:linear-gradient(160deg,#050510 0%,#0a0a28 40%,#080818 100%)!important;}
 .report-form{background:rgba(255,255,255,0.42);border-radius:14px;padding:16px 18px;
   margin:8px 0;border:1px solid rgba(120,160,220,0.30);color:#2a4a7a;font-size:15px;}
+/* ★ フェーズ7：簡易ARビュー */
+.ar-view-container{
+    background:rgba(10,15,40,0.90);border-radius:18px;padding:16px;margin:8px 0;
+    border:1px solid rgba(100,150,255,0.35);
+    box-shadow:0 4px 24px rgba(0,20,80,0.4);}
+.ar-horizon-bar{
+    background:rgba(0,0,0,0.55);border-radius:10px;padding:10px 14px;margin-bottom:12px;
+    border:1px solid rgba(80,120,200,0.4);overflow:hidden;
+    font-family:'Noto Sans JP',sans-serif;font-size:14px;color:#AAD4FF;
+    text-align:center;letter-spacing:0.05em;line-height:1.8;}
+.ar-radar-wrap{
+    position:relative;width:260px;height:260px;margin:0 auto 10px;}
+.ar-radar-bg{
+    width:260px;height:260px;border-radius:50%;
+    background:radial-gradient(circle,rgba(20,40,100,0.85) 0%,rgba(5,10,40,0.95) 100%);
+    border:2px solid rgba(100,160,255,0.5);
+    box-shadow:0 0 20px rgba(60,100,255,0.2);}
+.ar-compass-rose{
+    text-align:center;font-size:13px;color:#88AAFF;margin-top:4px;
+    font-family:'Noto Sans JP',sans-serif;}
 .sensor-active-badge{display:inline-block;background:rgba(60,180,100,0.25);border:1px solid rgba(60,180,100,0.55);
   border-radius:8px;padding:2px 10px;font-size:12px;color:#1a6a3a;}
 .sensor-manual-badge{display:inline-block;background:rgba(100,140,220,0.20);border:1px solid rgba(100,140,220,0.45);
@@ -1029,6 +1050,173 @@ def render_lookaround_nav(visible_spots, heading):
                 + "<br>".join(lines) + "</div>", unsafe_allow_html=True)
 
 # ============================================================
+# ■ フェーズ7：簡易ARビュー
+#   コンパス連動・水平方位バー・レーダー風スポットマップ
+#   フェーズ8本格AR移行時はこの関数をA-Frame/AR.jsに置換
+# ============================================================
+def render_ar_view(visible_spots, heading, user_lat, user_lon):
+    """
+    簡易ARビューを描画する。
+    ① 水平方位バー：向いている方向にスポット名をスクロール表示
+    ② レーダー風マップ：現在地中心に360度スポットを配置
+    フォールバック：スポットなしでも方位バーは表示
+    """
+    # ── 方位バーの文字列を生成 ─────────────────────────
+    # 360度を72文字幅にマッピングし、現在の向きを中心に表示
+    BAR_WIDTH = 60   # 表示する方位の範囲（度）
+    COMPASS_CHARS = {0:"北",45:"北東",90:"東",135:"南東",
+                     180:"南",225:"南西",270:"西",315:"北西"}
+
+    # スポットの方位をバーに配置
+    spot_positions = {}
+    for sp, dist_km, brg in visible_spots[:6]:
+        icon = CATEGORY_STYLE.get(sp.get("category","default"), CATEGORY_STYLE["default"])["icon"]
+        spot_positions[brg] = f"{icon}{sp['name'][:4]}"
+
+    # 方位バー（中心 = heading）
+    def make_horizon_line():
+        segments = []
+        for offset in range(-30, 31, 3):
+            angle = (heading + offset + 360) % 360
+            # 方位ラベル
+            label = ""
+            for deg, name in COMPASS_CHARS.items():
+                if abs((angle - deg + 360) % 360) < 2:
+                    label = f"【{name}】"
+                    break
+            # スポット
+            for sp_brg, sp_label in spot_positions.items():
+                if abs((angle - sp_brg + 360) % 360) < 3:
+                    label = f"▼{sp_label}"
+                    break
+            if not label:
+                label = "·" if offset % 15 == 0 else " "
+            segments.append(label)
+        return "  ".join(segments)
+
+    horizon = make_horizon_line()
+
+    # ── レーダー描画（SVG） ──────────────────────────────
+    cx, cy, r = 130, 130, 110  # 中心・半径
+
+    # リング（距離ゾーン）
+    rings_svg = ""
+    for ring_r, ring_color, ring_label in [
+        (35, "rgba(255,80,120,0.4)",  "0.5km"),
+        (65, "rgba(80,140,255,0.3)",  "2km"),
+        (100,"rgba(80,200,255,0.2)",  "5km"),
+    ]:
+        rings_svg += (
+            f'<circle cx="{cx}" cy="{cy}" r="{ring_r}" '
+            f'fill="none" stroke="{ring_color}" stroke-width="1" stroke-dasharray="4,4"/>'
+            f'<text x="{cx+ring_r+2}" y="{cy-3}" font-size="9" fill="{ring_color}" '
+            f'font-family="sans-serif">{ring_label}</text>'
+        )
+
+    # 方位線（8方位）
+    compass_lines = ""
+    for angle_deg, label in [(0,"N"),(45,"NE"),(90,"E"),(135,"SE"),
+                               (180,"S"),(225,"SW"),(270,"W"),(315,"NW")]:
+        rad = math.radians(angle_deg - 90)
+        x1 = cx + int(r * 0.85 * math.cos(rad))
+        y1 = cy + int(r * 0.85 * math.sin(rad))
+        x2 = cx + int(r * 0.95 * math.cos(rad))
+        y2 = cy + int(r * 0.95 * math.sin(rad))
+        lx = cx + int((r + 14) * math.cos(rad))
+        ly = cy + int((r + 14) * math.sin(rad))
+        compass_lines += (
+            f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" '
+            f'stroke="rgba(100,160,255,0.6)" stroke-width="1"/>'
+            f'<text x="{lx}" y="{ly+4}" font-size="10" fill="#88AAFF" '
+            f'text-anchor="middle" font-family="sans-serif" font-weight="bold">{label}</text>'
+        )
+
+    # 向き矢印
+    arrow_rad = math.radians(heading - 90)
+    arrow_len = 70
+    ax = cx + int(arrow_len * math.cos(arrow_rad))
+    ay = cy + int(arrow_len * math.sin(arrow_rad))
+    arrow_svg = (
+        f'<line x1="{cx}" y1="{cy}" x2="{ax}" y2="{ay}" '
+        f'stroke="#FF88AA" stroke-width="2.5" stroke-linecap="round"/>'
+        f'<circle cx="{ax}" cy="{ay}" r="4" fill="#FF88AA" opacity="0.9"/>'
+    )
+
+    # スポットマーカー
+    max_dist = 5.0  # km（レーダー端 = 5km）
+    spots_svg = ""
+    for sp, dist_km, brg in visible_spots[:6]:
+        cat = sp.get("category","default")
+        style = CATEGORY_STYLE.get(cat, CATEGORY_STYLE["default"])
+        # レーダー上の位置（最大5km → r=100pxに正規化）
+        plot_r = min(dist_km / max_dist, 1.0) * 95
+        sp_rad = math.radians(brg - 90)
+        sx = cx + int(plot_r * math.cos(sp_rad))
+        sy = cy + int(plot_r * math.sin(sp_rad))
+        # カテゴリ別色
+        dot_color = {"shrine":"#FFD700","mountain":"#88FF88",
+                     "castle":"#CC88FF","temple":"#FF88AA"}.get(cat,"#88CCFF")
+        name_short = sp["name"][:4]
+        spots_svg += (
+            f'<circle cx="{sx}" cy="{sy}" r="6" fill="{dot_color}" opacity="0.9" '
+            f'stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>'
+            f'<text x="{sx}" y="{sy-10}" font-size="10" fill="{dot_color}" '
+            f'text-anchor="middle" font-family="sans-serif" font-weight="bold">'
+            f'{name_short}</text>'
+            f'<text x="{sx}" y="{sy+20}" font-size="9" fill="rgba(200,220,255,0.8)" '
+            f'text-anchor="middle" font-family="sans-serif">'
+            f'{dist_label(dist_km)}</text>'
+        )
+
+    # 現在地マーカー
+    center_svg = (
+        f'<circle cx="{cx}" cy="{cy}" r="7" fill="#FF88AA" '
+        f'stroke="white" stroke-width="2" opacity="0.95"/>'
+        f'<text x="{cx}" y="{cy+20}" font-size="10" fill="#FF88AA" '
+        f'text-anchor="middle" font-family="sans-serif">現在地</text>'
+    )
+
+    # SVGをまとめる
+    svg = (
+        f'<svg width="260" height="260" xmlns="http://www.w3.org/2000/svg">'
+        f'<circle cx="{cx}" cy="{cy}" r="{r}" '
+        f'fill="url(#radar_grad)" stroke="rgba(100,160,255,0.5)" stroke-width="2"/>'
+        f'<defs><radialGradient id="radar_grad">'
+        f'<stop offset="0%" stop-color="rgba(20,40,100,0.85)"/>'
+        f'<stop offset="100%" stop-color="rgba(5,10,40,0.95)"/>'
+        f'</radialGradient></defs>'
+        + rings_svg + compass_lines + spots_svg + arrow_svg + center_svg
+        + f'</svg>'
+    )
+
+    # ── 描画 ──────────────────────────────────────────────
+    st.markdown(
+        f'<div class="ar-view-container">'
+        f'<div style="color:#88AAFF;font-size:14px;font-weight:700;margin-bottom:8px;">'
+        f'🎯 簡易ARビュー　🧭 {heading:.0f}°（{deg_to_dir(heading)}）</div>'
+        f'<div class="ar-horizon-bar">{horizon}</div>'
+        f'<div class="ar-radar-wrap" style="text-align:center;">'
+        + svg +
+        f'</div>'
+        f'<div class="ar-compass-rose">'
+        f'● 現在地　'
+        + "　".join([
+            '<span style="color:' +
+            {"shrine":"#FFD700","mountain":"#88FF88","castle":"#CC88FF","temple":"#FF88AA"}.get(
+                sp.get("category","default"),"#88CCFF") +
+            ';">' +
+            CATEGORY_STYLE.get(sp.get("category","default"),CATEGORY_STYLE["default"])["icon"] +
+            sp["name"][:4] + '</span>'
+            for sp, _, _ in visible_spots[:4]
+        ])
+        + f'</div>'
+        f'<div style="font-size:11px;color:rgba(100,140,200,0.7);margin-top:6px;text-align:center;">'
+        f'フェーズ8で実カメラARに移行予定</div>'
+        f'</div>',
+        unsafe_allow_html=True
+    )
+
+# ============================================================
 # ■ メインアプリ
 # ============================================================
 def main():
@@ -1040,7 +1228,7 @@ def main():
     st.markdown(
         '<div class="app-header"><h1>⛩ 観光AR案内 ／ 播磨エリア</h1>'
         '<p>山岳信仰の聖地・歴史の街をARで探索 '
-        '<span class="phase6-badge">フェーズ6</span></p></div>',
+        '<span class="phase7-badge">フェーズ7</span></p></div>',
         unsafe_allow_html=True)
 
     # 安全警告（初回のみ）
@@ -1205,7 +1393,16 @@ def main():
 
         # 方位インジケーター
         sensor_lbl="🟢 GPS・コンパス取得中" if gps_active else "🎛 手動シミュレータ"
-        st.markdown(f'<div class="ar-compass">{sensor_lbl}　🧭 {sim_heading:.0f}°（{deg_to_dir(sim_heading)}）　／　{len(visible_spots)}件<br><span style="font-size:12px;color:#4a6a9a;">フェーズ6：夜モード・関西拡張・問題報告フォーム対応</span></div>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="ar-compass">'
+            f'{sensor_lbl}　🧭 {sim_heading:.0f}°（{deg_to_dir(sim_heading)}）'
+            f'　／　{len(visible_spots)}件<br>'
+            f'<span style="font-size:12px;color:#4a6a9a;">'
+            f'フェーズ7：簡易ARビュー・方位レーダー対応</span>'
+            f'</div>', unsafe_allow_html=True)
+
+        # ★ フェーズ7：簡易ARビュー（レーダー + 方位バー）
+        render_ar_view(visible_spots, sim_heading, sim_lat, sim_lon)
 
         # 見下ろしナビ
         render_lookaround_nav(visible_spots, sim_heading)
@@ -1328,7 +1525,7 @@ def main():
         f'観光AR案内アプリ フェーズ6 ／ 播磨・関西エリア<br>'
         f'地図タイル：国土地理院 ／ © <a href="https://www.openstreetmap.org/copyright" style="color:rgba(80,120,180,0.7);">OpenStreetMap</a> contributors<br>'
         f'Wikipedia API：CC BY-SA ／ AI生成コンテンツには免責表記を付与しています<br>'
-        f'最終更新：{now} ／ v18 Phase6'
+        f'最終更新：{now} ／ v18 Phase7'
         f'</div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
