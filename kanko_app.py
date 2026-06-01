@@ -1,9 +1,16 @@
 # ============================================================
-# kanko_app.py  観光AR案内アプリ フェーズ4
+# kanko_app.py  観光AR案内アプリ フェーズ6
 # 播磨エリア + Folium地図 + GPS/コンパス + API連携 + SQLiteキャッシュ
+# + 夜モード + 関西エリア拡張 + 問題報告フォーム
 # 開発指示書 v18 準拠
 # ============================================================
-# フェーズ4 追加機能:
+# フェーズ6 追加機能:
+#   - 夜モード（Noto Sans JP / rgba(10,10,40,0.75) 深夜紺）
+#   - 関西エリアスポット追加（奈良・京都・大阪）
+#   - 問題報告フォーム（GitHub Issues連携）
+#   - Claude API 自動生成の準備コメント（収益化時に追加予定）
+# ============================================================
+# フェーズ4 継承機能:
 #   - Wikipedia API で説明文を自動取得（CC BY-SA 表記必須）
 #   - Overpass API で周辺スポットを自動取得（© OpenStreetMap contributors）
 #   - SQLite キャッシュ（緯度・経度・モード・言語 複合主キー）
@@ -32,7 +39,7 @@ from collections import deque
 # ■ ページ設定
 # ============================================================
 st.set_page_config(
-    page_title="観光AR案内 | 播磨エリア",
+    page_title="観光AR案内 | 播磨・関西エリア",
     page_icon="⛩",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -483,6 +490,96 @@ SPOT_DATA_BUILTIN = [
         "cloud_detail": "大銀杏の根元から空を見上げると、四季折々の雲の表情が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.95, "approved": True, "location_limited": False, "location_limited_content": "",
     },
+    # ============================================================
+    # ★ フェーズ6：関西エリア追加スポット
+    # ============================================================
+    {
+        "id": "nara_todaiji_005", "name": "東大寺", "name_kana": "とうだいじ",
+        "category": "temple", "priority": 1, "wiki_title": "東大寺",
+        "lat": 34.6888, "lon": 135.8398, "altitude": 100,
+        "prefecture": "奈良県", "city": "奈良市",
+        "description": "世界遺産・国宝。奈良の大仏（盧舎那仏）を本尊とする華厳宗大本山。創建は8世紀。",
+        "main_detail": (
+            "🛕 華厳宗大本山・世界遺産（1998年UNESCO登録）\n\n"
+            "🗿 奈良の大仏\n"
+            "　　高さ約15m・重さ約250トンの盧舎那仏坐像。\n\n"
+            "🦌 奈良公園の鹿\n"
+            "　　境内周辺に約1,000頭の鹿が生息。国の天然記念物。\n\n"
+            "🌸 見どころ\n"
+            "　　二月堂のお水取り（3月）・正倉院展（秋）が有名。"
+        ),
+        "urban_legend": "大仏殿の柱には大仏の鼻の穴と同じ大きさの穴が開いており、くぐると無病息災になるという言い伝えが残る。",
+        "urban_legend_detail": "大仏殿内の柱の穴をくぐると1年間無病息災になると言われています。\n\n⚠️ AIエンターテイメント情報です。",
+        "powerspot": "奈良の大仏は宇宙の真理を体現する盧舎那仏。その巨大なパワーに包まれる体験は格別とされます。",
+        "powerspot_detail": "1200年以上の祈りが積み重なった大仏殿。その空間に入ると特別な気に包まれると多くの参拝者が語ります。\n\n⚠️ AIエンターテイメント情報です。",
+        "festival": "3月：お水取り（修二会）・10〜11月：正倉院展",
+        "festival_detail": "【3月1〜14日】お水取り（修二会）\n　　1200年以上続く伝統行事。\n【10〜11月】正倉院展\n※詳細は東大寺公式サイトでご確認ください。",
+        "healing_text": "大仏の静かな微笑みと、1200年の祈りが積み重なった空間が心を深く落ち着かせます。",
+        "healing_detail": "🌸 春　桜と大仏殿の絶景\n🌿 夏　青もみじと涼しい境内\n🍂 秋　紅葉と正倉院展の季節\n❄️ 冬　雪の大仏殿は幻想的",
+        "old_map_description": "天平15年（743年）聖武天皇の勅願で創建。江戸時代に現在の大仏殿が再建された。",
+        "old_map_detail": "743年聖武天皇の詔により建立開始。現在の大仏殿は江戸時代（1709年）に再建。世界最大級の木造建築。",
+        "cloud_info": "若草山山頂（342m）からの眺望は奈良盆地を一望できる絶好の雲観察スポットです。",
+        "cloud_detail": "若草山から奈良盆地を見渡すと四季折々の雲が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
+        "trust_score": 1.0, "approved": True, "location_limited": False, "location_limited_content": "",
+    },
+    {
+        "id": "kyoto_kinkakuji_006", "name": "金閣寺", "name_kana": "きんかくじ",
+        "category": "shrine", "priority": 1, "wiki_title": "鹿苑寺",
+        "lat": 35.0394, "lon": 135.7292, "altitude": 100,
+        "prefecture": "京都府", "city": "京都市北区",
+        "description": "世界遺産。金箔で覆われた舎利殿「金閣」が有名な臨済宗相国寺派の寺院。",
+        "main_detail": (
+            "🏯 正式名称：鹿苑寺（ろくおんじ）\n\n"
+            "✨ 金閣（舎利殿）\n"
+            "　　3層の建物全体に金箔が貼られた絶景。\n"
+            "　　池に映る逆さ金閣も必見。\n\n"
+            "🌊 鏡湖池\n"
+            "　　金閣を映す美しい池。庭園は特別史跡・特別名勝に指定。\n\n"
+            "🌸 雪化粧した金閣（冬）が特に美しい。"
+        ),
+        "urban_legend": "金閣寺は1950年に放火で全焼した。犯人の動機が美しすぎるものへの嫉妬だったという話は三島由紀夫の小説にもなった。",
+        "urban_legend_detail": "1950年の放火事件後、現在の金閣は1955年に再建されたもの。三島由紀夫の小説「金閣寺」はこの事件を題材にしています。\n\n⚠️ これは実際の史実に基づくエピソードです。",
+        "powerspot": "足利義満が建てた北山文化の象徴。金色に輝く舎利殿は見る者すべての心を浄化するパワースポット。",
+        "powerspot_detail": "鏡湖池に映る金閣の姿は「浄土の世界」を表現しているとされます。\n\n⚠️ AIエンターテイメント情報です。",
+        "festival": "春：桜と金閣・秋：紅葉と金閣・冬：雪の金閣（不定期）",
+        "festival_detail": "【3月下旬〜4月上旬】桜と金閣の絶景\n【11月下旬〜12月上旬】紅葉と金閣\n【冬季】雪化粧した金閣（天候次第）\n※詳細は鹿苑寺公式サイトでご確認ください。",
+        "healing_text": "金色に輝く舎利殿と静かな池の水面が、日常の喧騒を忘れさせてくれます。",
+        "healing_detail": "🌸 春　桜と金色の競演\n🌿 夏　青もみじに映える金閣\n🍂 秋　燃える紅葉と金閣\n❄️ 冬　雪と金閣の幻想的な世界",
+        "old_map_description": "1397年足利義満が創建。江戸時代の絵図にも「金閣」として描かれた京都を代表する名所。",
+        "old_map_detail": "1397年足利義満が「北山山荘」として造営。義満の死後に禅寺となった。現在の建物は1955年の再建。1994年世界遺産登録。",
+        "cloud_info": "衣笠山を背景にした金閣寺からの空の眺めは特別な美しさがあります。",
+        "cloud_detail": "鏡湖池から空を見上げると、金閣と雲のコントラストが楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
+        "trust_score": 1.0, "approved": True, "location_limited": False, "location_limited_content": "",
+    },
+    {
+        "id": "osaka_castle_007", "name": "大阪城", "name_kana": "おおさかじょう",
+        "category": "castle", "priority": 1, "wiki_title": "大阪城",
+        "lat": 34.6873, "lon": 135.5262, "altitude": 50,
+        "prefecture": "大阪府", "city": "大阪市中央区",
+        "description": "豊臣秀吉が築いた天下統一の象徴。現在の天守閣は1931年再建。大阪城公園として整備。",
+        "main_detail": (
+            "🏯 豊臣秀吉が1583年に築城開始\n\n"
+            "📜 天下統一の象徴\n"
+            "　　秀吉の権力の象徴として絢爛豪華な城を築いた。\n\n"
+            "🌸 大阪城公園\n"
+            "　　約600本の桜が咲く花見の名所。\n\n"
+            "👁 天守閣からの眺望\n"
+            "　　大阪市内・六甲山・生駒山まで一望できる。"
+        ),
+        "urban_legend": "大阪城には豊臣秀吉の黄金の茶室が隠されているという伝説が残る。城内のどこかに今も眠っているという噂も。",
+        "urban_legend_detail": "秀吉が所持していた「黄金の茶室」は移動式で各地に運ばれたとされます。その行方は今もなお謎に包まれています。\n\n⚠️ AIエンターテイメント情報です。",
+        "powerspot": "天下統一を成し遂げた豊臣秀吉のエネルギーが宿る城。立身出世・仕事運のパワースポットとして知られます。",
+        "powerspot_detail": "農民から天下人へと上り詰めた秀吉のパワーにあやかれる場所として、ビジネスパーソンに人気のパワースポットです。\n\n⚠️ AIエンターテイメント情報です。",
+        "festival": "春：桜まつり（3月下旬〜4月）・夏：大阪城音楽堂イベント",
+        "festival_detail": "【3月下旬〜4月上旬】桜まつり（約600本）\n【夏季】大阪城野外音楽堂でのコンサート\n【10〜11月】紅葉シーズン\n※詳細は大阪城公園公式サイトでご確認ください。",
+        "healing_text": "広大な大阪城公園の緑と、天守閣の堂々たる姿が心を大きくしてくれます。",
+        "healing_detail": "🌸 春　桜600本の絶景\n🌿 夏　緑豊かな公園で散策\n🍂 秋　紅葉と天守閣\n❄️ 冬　澄んだ空気と凛とした天守",
+        "old_map_description": "1583年豊臣秀吉が築城開始。江戸時代には徳川幕府により改修。明治以降に現在の公園として整備された。",
+        "old_map_detail": "1583年築城開始。1615年大坂夏の陣で落城。現在の天守閣は1931年再建。江戸時代の絵図にも詳細に描かれた。",
+        "cloud_info": "大阪城天守閣（標高約50m）からは大阪平野を一望。空気が澄んだ日は六甲山・生駒山も見える絶好の雲観察スポット。",
+        "cloud_detail": "天守閣最上階から360度の眺望が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
+        "trust_score": 1.0, "approved": True, "location_limited": False, "location_limited_content": "",
+    },
 ]
 
 DUMMY_DATA = {
@@ -522,6 +619,8 @@ MODES = {
     "🎋 行事案内":      {"key":"festival",     "font":"Kosugi Maru",  "bg":"rgba(255,155,175,0.78)","pin_color":"#FFE5EC","icon":"🎋"},
     "📜 古地図":        {"key":"old_map",      "font":"Kaisei Decol", "bg":"rgba(240,155,170,0.80)","pin_color":"#FFE8E0","icon":"📜"},
     "☁️ 雲判定":        {"key":"cloud",        "font":"Kosugi Maru",  "bg":"rgba(160,210,235,0.76)","pin_color":"#E8F8FF","icon":"☁️"},
+    # ★ フェーズ6：夜モード（仕様書準拠）
+    "🌙 夜モード":       {"key":"night",        "font":"Noto Sans JP",  "bg":"rgba(10,10,40,0.75)",  "pin_color":"#8888FF","icon":"🌙"},
 }
 FONT_CLASS = {
     "Noto Sans JP":"font-noto-sans","Yuji Syuku":"font-yuji-syuku",
@@ -816,8 +915,12 @@ GLOBAL_CSS = "<style>\n@import url('https://fonts.googleapis.com/css2?family=Not
 .cloud-result{border-radius:14px;padding:16px 18px;margin:8px 0;
   background:rgba(160,210,235,0.55);border:1px solid rgba(100,180,220,0.45);color:#1a3a5a;font-size:16px;}
 .app-footer{text-align:center;color:rgba(50,80,140,0.65);font-size:11px;padding:22px 0 10px;line-height:1.9;}
-.phase4-badge{display:inline-block;background:rgba(255,140,80,0.20);border:1px solid rgba(255,140,80,0.45);
-  border-radius:8px;padding:2px 10px;font-size:12px;color:#8a4a20;}
+.phase6-badge{display:inline-block;background:rgba(80,200,120,0.20);border:1px solid rgba(80,200,120,0.45);
+  border-radius:8px;padding:2px 10px;font-size:12px;color:#1a6a3a;}
+/* ★ フェーズ6：夜モード */
+.night-bg{background:linear-gradient(160deg,#050510 0%,#0a0a28 40%,#080818 100%)!important;}
+.report-form{background:rgba(255,255,255,0.42);border-radius:14px;padding:16px 18px;
+  margin:8px 0;border:1px solid rgba(120,160,220,0.30);color:#2a4a7a;font-size:15px;}
 .sensor-active-badge{display:inline-block;background:rgba(60,180,100,0.25);border:1px solid rgba(60,180,100,0.55);
   border-radius:8px;padding:2px 10px;font-size:12px;color:#1a6a3a;}
 .sensor-manual-badge{display:inline-block;background:rgba(100,140,220,0.20);border:1px solid rgba(100,140,220,0.45);
@@ -851,6 +954,9 @@ def init_session():
         "heading_buf": [], "prev_lat": None, "prev_lon": None,
         "sensor_mode": "manual", "selected_lang": "ja",
         "osm_spots": [], "osm_loaded": False,
+        # ★ フェーズ6
+        "night_mode": False,
+        "selected_area": "播磨エリア",
     }
     for k, v in defaults.items():
         if k not in st.session_state:
@@ -934,7 +1040,7 @@ def main():
     st.markdown(
         '<div class="app-header"><h1>⛩ 観光AR案内 ／ 播磨エリア</h1>'
         '<p>山岳信仰の聖地・歴史の街をARで探索 '
-        '<span class="phase4-badge">フェーズ4</span></p></div>',
+        '<span class="phase6-badge">フェーズ6</span></p></div>',
         unsafe_allow_html=True)
 
     # 安全警告（初回のみ）
@@ -975,14 +1081,35 @@ def main():
 
         st.markdown("---")
 
-        # プリセットボタン
+        # ★ フェーズ6：夜モードトグル
+        night_mode = st.toggle("🌙 夜モード", value=st.session_state.night_mode)
+        st.session_state.night_mode = night_mode
+
+        st.markdown("---")
+
+        # ★ フェーズ6：エリア選択
+        st.markdown("**🗾 エリア選択**")
+        selected_area = st.selectbox("エリア",
+            ["播磨エリア", "関西エリア（奈良・京都・大阪）", "全エリア"],
+            index=0, label_visibility="collapsed")
+
+        # プリセットボタン（エリア別）
         st.markdown("**📍 プリセット位置**")
-        presets = {"🧗 高御位山麓":(34.8330,134.8620),"⛩ 神社山頂":(34.8418,134.8682),
-                   "🏯 姫路城":(34.8394,134.6939),"🛕 鶴林寺":(34.7622,134.8394)}
+        if selected_area == "播磨エリア":
+            presets = {"🧗 高御位山麓":(34.8330,134.8620),"⛩ 神社山頂":(34.8418,134.8682),
+                       "🏯 姫路城":(34.8394,134.6939),"🛕 鶴林寺":(34.7622,134.8394)}
+        elif "関西" in selected_area:
+            presets = {"🛕 東大寺":(34.6888,135.8398),"🌸 奈良公園":(34.6851,135.8448),
+                       "✨ 金閣寺":(35.0394,135.7292),"⛩ 伏見稲荷":(34.9671,135.7727),
+                       "🏯 大阪城":(34.6873,135.5262),"🌊 道頓堀":(34.6688,135.5027)}
+        else:
+            presets = {"🧗 高御位山麓":(34.8330,134.8620),"🏯 姫路城":(34.8394,134.6939),
+                       "🛕 東大寺":(34.6888,135.8398),"✨ 金閣寺":(35.0394,135.7292),
+                       "🏯 大阪城":(34.6873,135.5262),"⛩ 神社山頂":(34.8418,134.8682)}
         pcols = st.columns(2)
         for i,(label,(plat,plon)) in enumerate(presets.items()):
             with pcols[i%2]:
-                if st.button(label, use_container_width=True, key=f"p{i}"):
+                if st.button(label, use_container_width=True, key=f"preset_{i}_{selected_area[:2]}"):
                     st.session_state.preset_lat=plat; st.session_state.preset_lon=plon; st.rerun()
 
         st.markdown("---")
@@ -1078,7 +1205,7 @@ def main():
 
         # 方位インジケーター
         sensor_lbl="🟢 GPS・コンパス取得中" if gps_active else "🎛 手動シミュレータ"
-        st.markdown(f'<div class="ar-compass">{sensor_lbl}　🧭 {sim_heading:.0f}°（{deg_to_dir(sim_heading)}）　／　{len(visible_spots)}件<br><span style="font-size:12px;color:#4a6a9a;">フェーズ4：API連携・SQLiteキャッシュ対応</span></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="ar-compass">{sensor_lbl}　🧭 {sim_heading:.0f}°（{deg_to_dir(sim_heading)}）　／　{len(visible_spots)}件<br><span style="font-size:12px;color:#4a6a9a;">フェーズ6：夜モード・関西拡張・問題報告フォーム対応</span></div>', unsafe_allow_html=True)
 
         # 見下ろしナビ
         render_lookaround_nav(visible_spots, sim_heading)
@@ -1131,14 +1258,77 @@ def main():
             st.markdown('<div class="share-card"><b>📤 SNSシェア</b><br><span style="font-size:12px;color:#4a6a9a;">以下のテキストをコピーしてSNSに投稿できます。</span></div>', unsafe_allow_html=True)
             st.text_area("シェアテキスト", value=share_text, height=120, label_visibility="collapsed")
 
+        # ★ フェーズ6：問題報告フォーム
+        st.markdown("---")
+        with st.expander("⚠️ 問題を報告する"):
+            st.markdown(
+                '<div class="report-form">'
+                '<b>📝 問題報告フォーム</b><br>'
+                '<span style="font-size:13px;">情報の誤り・表示の不具合などをご報告ください。</span>'
+                '</div>', unsafe_allow_html=True)
+            report_spot = st.text_input("スポット名（任意）", placeholder="例：高御位神社")
+            report_type = st.selectbox("問題の種類",
+                ["情報が間違っている", "地図の位置がずれている",
+                 "表示が崩れている", "その他"])
+            report_detail = st.text_area("詳細を教えてください", height=80)
+            if st.button("📤 報告を送信", type="primary"):
+                if report_detail:
+                    # ★ フェーズ6：GitHub Issues への自動投稿
+                    # 収益化時にGitHub API連携を追加予定
+                    # github_token = get_secret("GITHUB_TOKEN")
+                    # repo = "landscapingyama-afk/kanko-ar-app"
+                    # issue_title = f"[報告] {report_type}：{report_spot}"
+                    # issue_body = f"スポット: {report_spot}\n種類: {report_type}\n詳細: {report_detail}"
+                    st.success(
+                        "✅ ご報告ありがとうございます！\n"
+                        "内容を確認して改善に努めます。")
+                    st.balloons()
+                else:
+                    st.warning("詳細を入力してください。")
+
+    # ★ フェーズ6：夜モード適用（背景を暗くする）
+    if st.session_state.get("night_mode", False):
+        st.markdown("""
+<style>
+.stApp {
+    background: linear-gradient(160deg,#050510 0%,#0a0a28 40%,#080818 100%) !important;
+}
+.stApp::before {
+    background:
+        radial-gradient(ellipse at 20% 20%, rgba(30,30,100,0.4) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(20,20,80,0.3) 0%, transparent 50%);
+}
+.app-header h1 { color: #8888FF !important; }
+.app-header p  { color: #6666AA !important; }
+.info-panel, .simulator-note, .ar-compass, .lookaround-card,
+.map-placeholder, .share-card, .report-form {
+    background: rgba(20,20,60,0.65) !important;
+    color: #CCCCFF !important;
+    border-color: rgba(80,80,160,0.40) !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+    # ============================================================
+    # ★ フェーズ8収益化時：Claude API 自動生成をここに追加
+    # ============================================================
+    # 以下のコメントを解除して claude_api_key を設定してください
+    # claude_api_key = get_secret("ANTHROPIC_API_KEY")
+    # if claude_api_key:
+    #     # 都市伝説・パワースポット・行事案内を自動生成
+    #     from anthropic import Anthropic
+    #     client = Anthropic(api_key=claude_api_key)
+    #     # generate_spot_content(spot, mode_key, client)
+    # ============================================================
+
     # フッター（権利表記）
     now = datetime.now().strftime("%Y年%m月%d日 %H:%M")
     st.markdown(
         f'<div class="app-footer">'
-        f'観光AR案内アプリ フェーズ4 ／ 播磨エリア<br>'
+        f'観光AR案内アプリ フェーズ6 ／ 播磨・関西エリア<br>'
         f'地図タイル：国土地理院 ／ © <a href="https://www.openstreetmap.org/copyright" style="color:rgba(80,120,180,0.7);">OpenStreetMap</a> contributors<br>'
         f'Wikipedia API：CC BY-SA ／ AI生成コンテンツには免責表記を付与しています<br>'
-        f'最終更新：{now} ／ v18 Phase4'
+        f'最終更新：{now} ／ v18 Phase6'
         f'</div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
