@@ -102,7 +102,6 @@ def cloud_usage_increment():
 # ============================================================
 def get_secret(key):
     try:
-        # GEMINI_API_KEYは2分割されている場合はつなげる
         if key == "GEMINI_API_KEY":
             k1 = st.secrets.get("GEMINI_API_KEY_1", "")
             k2 = st.secrets.get("GEMINI_API_KEY_2", "")
