@@ -102,10 +102,16 @@ def cloud_usage_increment():
 # ============================================================
 def get_secret(key):
     try:
-        val=st.secrets.get(key,"")
+        # GEMINI_API_KEYは2分割されている場合はつなげる
+        if key == "GEMINI_API_KEY":
+            k1 = st.secrets.get("GEMINI_API_KEY_1", "")
+            k2 = st.secrets.get("GEMINI_API_KEY_2", "")
+            if k1 and k2:
+                return k1 + k2
+        val = st.secrets.get(key, "")
         if val: return val
     except Exception: pass
-    return os.environ.get(key,"")
+    return os.environ.get(key, "")
 
 # ============================================================
 # ■ Wikipedia API
