@@ -1,0 +1,16 @@
+# ============================================================
+# .streamlit/config.toml
+# Streamlit設定ファイル
+# 赤字エラー（removeChild等）を画面に表示しない設定
+# ============================================================
+
+[client]
+# エラーの詳細を画面に表示しない
+showErrorDetails = false
+
+[browser]
+gatherUsageStats = false
+
+[server]
+# ファイル変更の監視を無効化（再描画エラーを減らす）
+fileWatcherType = "none"
