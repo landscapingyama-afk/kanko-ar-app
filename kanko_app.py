@@ -1787,8 +1787,17 @@ def main():
     with col_main:
         st.markdown(f'<div class="mode-title-bar" style="background:{mode_cfg["bg"]};">{mode_cfg["icon"]} {mode_label}</div>', unsafe_allow_html=True)
 
-        # 地図（⑦ 再描画抑制）
-        map_key=f"kanko_map_{int(sim_lat*200)}_{int(sim_lon*200)}_{int(sim_heading/45)}_{tile_name[:3]}_{map_zoom}"
+        # 地図（再描画抑制強化版）
+        # map_keyをモード変更・詳細表示切替では変えない
+        # → 地図の不要な再描画を最小化してremoveChildエラーを抑制
+        map_key = (
+            f"kanko_map"
+            f"_{int(sim_lat * 100)}"   # 約1km単位で変化
+            f"_{int(sim_lon * 100)}"
+            f"_{int(sim_heading / 90)}" # 90度単位で変化
+            f"_{tile_name[:2]}"
+            f"_{map_zoom}"
+        )
         map_data={}; map_ok=False
         try:
             fmap=build_map(sim_lat,sim_lon,sim_heading,tile_name,map_zoom,mode_cfg,visible_spots)
