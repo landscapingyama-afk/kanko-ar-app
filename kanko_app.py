@@ -804,32 +804,38 @@ GLOBAL_CSS = "<style>\n@import url('https://fonts.googleapis.com/css2?family=Not
 /* ① 4行クランプ（修正版） */
 .ar-card{border-radius:18px;padding:18px 22px;margin:10px 0;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   border:1px solid rgba(255,255,255,0.60);box-shadow:0 5px 28px rgba(160,80,120,0.18);
-  animation:fadeInUp 0.5s ease both;color:#FFFFFF!important;font-size:18px!important;
-  text-shadow:0 1px 5px rgba(120,40,70,0.60),0 0 4px rgba(0,0,0,0.38);}
-.ar-card-title{font-size:23px;font-weight:700;color:#FFFFFF;text-shadow:0 1px 7px rgba(120,40,70,0.70),0 0 5px rgba(0,0,0,0.45);
+  animation:fadeInUp 0.5s ease both;color:#1a0010!important;font-size:18px!important;font-weight:500;}
+.ar-card-title{font-size:23px;font-weight:800;color:#0a0008;
   margin-bottom:7px;display:flex;align-items:center;gap:8px;letter-spacing:0.04em;}
-.ar-card-kana{font-size:15px;color:rgba(255,255,255,0.93);margin-bottom:10px;text-shadow:0 0 5px rgba(0,0,0,0.45);}
-
-/* ④ 写真エリア */
-
+.ar-card-kana{font-size:15px;color:#2a0a1a;font-weight:500;margin-bottom:10px;}
+.ar-card-photo{width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-bottom:10px;}
+.ar-card-photo-credit{font-size:10px;color:#5a3a4a;text-align:right;margin-bottom:6px;}
 /* ① 4行クランプ */
 .ar-card-summary{overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;
-  font-size:17px;line-height:1.75;color:#FFFFFF;text-shadow:0 0 5px rgba(0,0,0,0.50);margin-top:6px;}
-.ar-card-detail{font-size:17px;line-height:1.95;color:#FFFFFF;text-shadow:0 0 5px rgba(0,0,0,0.48);
-  white-space:pre-wrap;margin:12px -4px -4px;padding:14px 18px;background:rgba(0,0,0,0.12);
-  border-radius:0 0 14px 14px;border-top:1px solid rgba(255,255,255,0.38);}
-.ar-detail-label{font-size:14px;color:rgba(255,255,255,0.88);margin-top:10px;padding-top:7px;
-  border-top:1px dashed rgba(255,255,255,0.38);}
-.ar-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(0,0,0,0.18);
-  border:1px solid rgba(255,255,255,0.48);border-radius:20px;padding:4px 12px;font-size:14px;
-  margin:3px 4px 3px 0;color:#FFFFFF;font-weight:600;}
-.ar-disclaimer{font-size:13px;opacity:0.88;margin-top:8px;color:rgba(255,255,240,0.95);}
-.ar-fallback-badge{display:inline-block;background:rgba(0,0,0,0.18);border:1px solid rgba(255,255,255,0.42);
-  border-radius:8px;padding:2px 10px;font-size:13px;color:rgba(255,245,220,0.95);margin-bottom:6px;}
-.wiki-badge{display:inline-block;background:rgba(60,120,200,0.18);border:1px solid rgba(60,120,200,0.40);
-  border-radius:6px;padding:1px 8px;font-size:11px;color:rgba(200,230,255,0.9);margin-left:6px;}
-.osm-badge{display:inline-block;background:rgba(60,180,80,0.18);border:1px solid rgba(60,180,80,0.40);
-  border-radius:6px;padding:1px 8px;font-size:11px;color:rgba(200,255,210,0.9);margin-left:4px;}
+  font-size:17px;line-height:1.75;color:#1a0010;font-weight:500;margin-top:6px;}
+.ar-card-detail{font-size:16px;line-height:1.95;color:#0a0008;font-weight:500;
+  white-space:pre-wrap;margin:12px -4px -4px;padding:14px 18px;background:rgba(0,0,0,0.08);
+  border-radius:0 0 14px 14px;border-top:1px solid rgba(100,50,70,0.25);}
+.ar-detail-label{font-size:14px;color:#2a0a1a;font-weight:700;margin-top:10px;padding-top:7px;
+  border-top:1px dashed rgba(100,50,70,0.30);}
+.ar-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(0,0,0,0.12);
+  border:1px solid rgba(100,50,70,0.35);border-radius:20px;padding:4px 12px;font-size:14px;
+  margin:3px 4px 3px 0;color:#0a0008;font-weight:700;}
+.ar-disclaimer{font-size:13px;font-weight:500;margin-top:8px;color:#2a0a1a;}
+.ar-fallback-badge{display:inline-block;background:rgba(0,0,0,0.10);border:1px solid rgba(100,50,70,0.30);
+  border-radius:8px;padding:2px 10px;font-size:13px;color:#2a0a1a;font-weight:600;margin-bottom:6px;}
+.wiki-badge{display:inline-block;background:rgba(60,120,200,0.15);border:1px solid rgba(60,120,200,0.35);
+  border-radius:6px;padding:1px 8px;font-size:11px;color:#1a3a7a;font-weight:600;margin-left:6px;}
+.osm-badge{display:inline-block;background:rgba(60,180,80,0.15);border:1px solid rgba(60,180,80,0.35);
+  border-radius:6px;padding:1px 8px;font-size:11px;color:#1a5a2a;font-weight:600;margin-left:4px;}
+/* ⑦ Streamlitエラー表示を強制非表示 */
+div[data-testid="stException"],
+div[class*="stException"],
+div[class*="exception-text"],
+.element-container div[class*="stAlert"] div[class*="stMarkdownContainer"] pre,
+iframe + div div[data-testid="stException"]{
+  display:none!important;visibility:hidden!important;height:0!important;
+  overflow:hidden!important;margin:0!important;padding:0!important;}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 .app-header{text-align:center;padding:14px 0 6px;animation:fadeInUp 0.4s ease both;}
 .app-header h1{font-family:'Kaisei Decol',serif;font-size:27px;color:#2a4a7a;
@@ -843,8 +849,8 @@ GLOBAL_CSS = "<style>\n@import url('https://fonts.googleapis.com/css2?family=Not
 .ar-compass{background:rgba(255,255,255,0.40);border-radius:12px;padding:10px 14px;margin-top:8px;
   color:#2a4a7a;font-size:13px;text-align:center;border:1px solid rgba(120,160,220,0.32);backdrop-filter:blur(6px);}
 .mode-title-bar{border-radius:12px;padding:10px 16px;margin-bottom:10px;
-  border:1px solid rgba(255,255,255,0.55);text-align:center;color:#FFFFFF;font-size:18px;font-weight:700;
-  animation:fadeInUp 0.3s ease both;text-shadow:0 1px 4px rgba(120,40,80,0.50);backdrop-filter:blur(10px);}
+  border:1px solid rgba(255,255,255,0.55);text-align:center;color:#1a0010;font-size:18px;font-weight:700;
+  animation:fadeInUp 0.3s ease both;backdrop-filter:blur(10px);}
 .location-limited-card{border-radius:14px;padding:14px 18px;margin:8px 0;
   background:rgba(200,230,255,0.60);border:1.5px solid rgba(120,180,240,0.55);backdrop-filter:blur(10px);}
 .lookaround-card{background:rgba(255,255,255,0.38);border-radius:14px;padding:14px 18px;margin:8px 0;
@@ -914,7 +920,10 @@ def init_session():
         "sensor_mode":"manual","selected_lang":"ja",
         "osm_spots":[],"osm_loaded":False,
         "night_mode":False,"selected_area":"播磨エリア",
-        "omikuji_result": None,  # おみくじ結果
+        "omikuji_result": None,
+        "selected_spot_id": None,  # ★ 選択中のプリセットスポットID
+        "osm_center_lat": None,    # ★ OSM取得の基準座標
+        "osm_center_lon": None,
     }
     for k,v in defaults.items():
         if k not in st.session_state: st.session_state[k]=v
@@ -1684,26 +1693,58 @@ def main():
                 ["播磨エリア","関西エリア（奈良・京都・大阪）","全エリア"],
                 index=0, label_visibility="collapsed")
 
-            # プリセットボタン
+            # ★ プリセットボタン（選択したスポットのみ表示）
             st.markdown("**📍 プリセット位置**")
+
+            # プリセットとスポットIDの対応表
             if selected_area=="播磨エリア":
-                presets={"🧗 高御位山麓":(34.8330,134.8620),
-                         "🏯 姫路城":(34.8394,134.6939),"🛕 鶴林寺":(34.7622,134.8394),
-                         "🛕 斑鳩寺":(34.837339,134.575457),"⛩ 賀茂神社":(34.766021,134.502835),
-                         "⛩ 伊和都比売神社":(34.727571,134.408226),"⛩ 高屋神社":(34.160608,133.654837)}
+                presets={
+                    "🧗 高御位山麓":  (34.8330,134.8620, "takamikura_001"),
+                    "🏯 姫路城":     (34.8394,134.6939, "himeji_castle_003"),
+                    "🛕 鶴林寺":     (34.7622,134.8394, "kakurinji_004"),
+                    "🛕 斑鳩寺":     (34.837339,134.575457, "ikarugatera_008"),
+                    "⛩ 賀茂神社":   (34.766021,134.502835, "kamo_jinja_010"),
+                    "⛩ 伊和都比売神社":(34.727571,134.408226, "iwatsuhime_011"),
+                    "⛩ 高屋神社":   (34.160608,133.654837, "takaya_jinja_009"),
+                }
             elif "関西" in selected_area:
-                presets={"🛕 東大寺":(34.6888,135.8398),"🌸 奈良公園":(34.6851,135.8448),
-                         "✨ 金閣寺":(35.0394,135.7292),"⛩ 伏見稲荷":(34.9671,135.7727),
-                         "🏯 大阪城":(34.6873,135.5262),"🌊 道頓堀":(34.6688,135.5027)}
+                presets={
+                    "🛕 東大寺":  (34.6888,135.8398, "nara_todaiji_005"),
+                    "✨ 金閣寺":  (35.0394,135.7292, "kyoto_kinkakuji_006"),
+                    "🏯 大阪城":  (34.6873,135.5262, "osaka_castle_007"),
+                    "🌸 奈良公園": (34.6851,135.8448, None),
+                    "⛩ 伏見稲荷": (34.9671,135.7727, None),
+                    "🌊 道頓堀":  (34.6688,135.5027, None),
+                }
             else:
-                presets={"🧗 高御位山麓":(34.8330,134.8620),"🏯 姫路城":(34.8394,134.6939),
-                         "🛕 東大寺":(34.6888,135.8398),"✨ 金閣寺":(35.0394,135.7292),
-                         "🏯 大阪城":(34.6873,135.5262),"🧗 高御位山麓":(34.8330,134.8620)}
+                presets={
+                    "🧗 高御位山麓": (34.8330,134.8620, "takamikura_001"),
+                    "🏯 姫路城":    (34.8394,134.6939, "himeji_castle_003"),
+                    "🛕 東大寺":   (34.6888,135.8398, "nara_todaiji_005"),
+                    "✨ 金閣寺":   (35.0394,135.7292, "kyoto_kinkakuji_006"),
+                    "🏯 大阪城":   (34.6873,135.5262, "osaka_castle_007"),
+                    "🛕 斑鳩寺":   (34.837339,134.575457, "ikarugatera_008"),
+                }
+
             pcols=st.columns(2)
-            for i,(label,(plat,plon)) in enumerate(presets.items()):
+            for i,(label,(plat,plon,spot_id)) in enumerate(presets.items()):
                 with pcols[i%2]:
-                    if st.button(label,use_container_width=True,key=f"preset_{i}_{selected_area[:2]}"):
-                        st.session_state.preset_lat=plat; st.session_state.preset_lon=plon; st.rerun()
+                    is_selected = (
+                        st.session_state.preset_lat == plat and
+                        st.session_state.preset_lon == plon
+                    )
+                    btn_label = f"✅ {label}" if is_selected else label
+                    if st.button(btn_label, use_container_width=True,
+                                 key=f"preset_{i}_{selected_area[:2]}"):
+                        st.session_state.preset_lat = plat
+                        st.session_state.preset_lon = plon
+                        st.session_state.selected_spot_id = spot_id
+                        # OSMは座標変更時にリセット
+                        st.session_state.osm_loaded = False
+                        st.session_state.osm_spots = []
+                        st.session_state.osm_center_lat = plat
+                        st.session_state.osm_center_lon = plon
+                        st.rerun()
 
             st.markdown("---")
 
@@ -1716,6 +1757,8 @@ def main():
                     'スライダーの操作は不要です。'
                     '</div>', unsafe_allow_html=True)
                 sim_lat=gps_lat; sim_lon=gps_lon; sim_heading=gps_heading
+                # GPS使用時は選択スポットをリセット
+                st.session_state.selected_spot_id = None
             else:
                 st.markdown(
                     '<div style="font-size:12px;color:#3a5a8a;background:rgba(200,220,255,0.3);'
@@ -1756,25 +1799,52 @@ def main():
             st.markdown("---")
             show_detail=st.toggle("🔍 詳細情報を表示", value=False)
 
-            # OSM自動取得
+            # ★ 周辺スポット自動取得（選択座標基準）
             st.markdown("---")
-            use_osm=st.toggle("🌐 周辺スポット自動取得（OSM）", value=False)
+            use_osm=st.toggle("🌐 周辺スポット自動取得（OSM）", value=False,
+                              help="選択した観光地周辺のスポットをOpenStreetMapから取得します")
 
-        # スポット合成
-        all_spots=list(SPOT_DATA_BUILTIN)
+        # ★ スポット表示ロジック
+        all_spots = list(SPOT_DATA_BUILTIN)
+
+        # OSM取得（プリセット選択時の座標を基準に）
         if use_osm:
+            osm_lat = st.session_state.osm_center_lat or sim_lat
+            osm_lon = st.session_state.osm_center_lon or sim_lon
             if not st.session_state.osm_loaded:
-                with st.spinner("OpenStreetMapからスポットを取得中..."):
-                    osm=fetch_overpass_spots(sim_lat,sim_lon,3000)
-                    st.session_state.osm_spots=osm; st.session_state.osm_loaded=True
+                with st.spinner("OpenStreetMapから周辺スポットを取得中..."):
+                    osm = fetch_overpass_spots(osm_lat, osm_lon, 3000)
+                    st.session_state.osm_spots = osm
+                    st.session_state.osm_loaded = True
             if st.session_state.osm_spots:
-                all_spots=all_spots+st.session_state.osm_spots
-                st.markdown(f'<div style="font-size:11px;color:#2a7a3a;">🌐 OSM: {len(st.session_state.osm_spots)}件追加<br>© OpenStreetMap contributors</div>', unsafe_allow_html=True)
+                all_spots = all_spots + st.session_state.osm_spots
+                st.markdown(
+                    f'<div style="font-size:11px;color:#2a7a3a;">🌐 OSM: {len(st.session_state.osm_spots)}件追加<br>© OpenStreetMap contributors</div>',
+                    unsafe_allow_html=True)
         else:
-            st.session_state.osm_loaded=False
+            st.session_state.osm_loaded = False
 
-        visible_spots=filter_spots(all_spots,sim_lat,sim_lon)
-        nearest=visible_spots[0] if visible_spots else None
+        # ★ プリセット選択中はそのスポット1件のみ表示
+        selected_id = st.session_state.get("selected_spot_id")
+        if selected_id and not gps_active:
+            # 選択スポットを1件だけ抽出
+            selected_spot = next(
+                (sp for sp in all_spots if sp.get("id") == selected_id), None)
+            if selected_spot:
+                dist = haversine_km(sim_lat, sim_lon, selected_spot["lat"], selected_spot["lon"])
+                brg  = bearing_deg(sim_lat, sim_lon, selected_spot["lat"], selected_spot["lon"])
+                visible_spots = [(selected_spot, dist, brg)]
+                # OSMスポットも追加（周辺スポット取得時）
+                if use_osm and st.session_state.osm_spots:
+                    osm_visible = filter_spots(st.session_state.osm_spots, sim_lat, sim_lon)
+                    visible_spots = visible_spots + osm_visible
+            else:
+                visible_spots = filter_spots(all_spots, sim_lat, sim_lon)
+        else:
+            # GPS使用時 or プリセット未選択時は通常フィルタ
+            visible_spots = filter_spots(all_spots, sim_lat, sim_lon)
+
+        nearest = visible_spots[0] if visible_spots else None
 
         sensor_badge='<span class="sensor-active-badge">🟢 GPS</span>' if gps_active else '<span class="sensor-manual-badge">🎛 手動</span>'
         if nearest:
@@ -1786,17 +1856,10 @@ def main():
     with col_main:
         st.markdown(f'<div class="mode-title-bar" style="background:{mode_cfg["bg"]};">{mode_cfg["icon"]} {mode_label}</div>', unsafe_allow_html=True)
 
-        # 地図（再描画抑制強化版）
-        # map_keyをモード変更・詳細表示切替では変えない
-        # → 地図の不要な再描画を最小化してremoveChildエラーを抑制
-        map_key = (
-            f"kanko_map"
-            f"_{int(sim_lat * 100)}"   # 約1km単位で変化
-            f"_{int(sim_lon * 100)}"
-            f"_{int(sim_heading / 90)}" # 90度単位で変化
-            f"_{tile_name[:2]}"
-            f"_{map_zoom}"
-        )
+        # 地図（再描画抑制・完全固定key版）
+        # プリセットボタン切替では地図を再描画しない
+        # タイル変更・ズーム変更時のみ再描画
+        map_key = f"kanko_map_{tile_name[:2]}_{map_zoom}"
         map_data={}; map_ok=False
         try:
             fmap=build_map(sim_lat,sim_lon,sim_heading,tile_name,map_zoom,mode_cfg,visible_spots)
@@ -1877,6 +1940,14 @@ def main():
 .stApp::before{background:radial-gradient(ellipse at 20% 20%,rgba(30,30,100,0.4) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(20,20,80,0.3) 0%,transparent 50%);}
 .app-header h1{color:#8888FF!important;}.app-header p{color:#6666AA!important;}
 .info-panel,.ar-compass,.lookaround-card,.map-placeholder,.share-card,.report-form{background:rgba(20,20,60,0.65)!important;color:#CCCCFF!important;border-color:rgba(80,80,160,0.40)!important;}
+.ar-card{color:#EEEEFF!important;}
+.ar-card-title{color:#FFFFFF!important;}
+.ar-card-kana{color:#CCCCFF!important;}
+.ar-card-summary{color:#EEEEFF!important;}
+.ar-card-detail{color:#DDDDFF!important;}
+.ar-badge{color:#FFFFFF!important;border-color:rgba(150,150,255,0.50)!important;}
+.ar-disclaimer{color:#BBBBEE!important;}
+.mode-title-bar{color:#FFFFFF!important;}
 </style>""", unsafe_allow_html=True)
 
     # ★ フェーズ8収益化時：Claude API 自動生成をここに追加
