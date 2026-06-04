@@ -1,5 +1,5 @@
 # ============================================================
-# kanko_app.py  観光AR案内アプリ フェーズ7（古地図表示追加版）
+# kanko_app.py  観光観光案内アプリ フェーズ7（古地図表示追加版）
 # ============================================================
 import streamlit as st
 import math, json, sqlite3, hashlib, os, time
@@ -175,7 +175,7 @@ def analyze_cloud_gemini(image_bytes):
 def make_share_text(spot, mode_cfg, dist_km):
     cat_map={"shrine":"⛩","mountain":"🏔","castle":"🏯","temple":"🛕","default":"📍"}
     icon=cat_map.get(spot.get("category","default"),"📍")
-    mode_name={"main":"観光案内","urban_legend":"都市伝説","powerspot":"パワースポット","healing":"撮影スポット","festival":"行事案内","old_map":"歴史案内","cloud":"雲判定"}.get(mode_cfg["key"],"AR案内")
+    mode_name={"main":"観光案内","urban_legend":"都市伝説","powerspot":"パワースポット","healing":"撮影スポット","festival":"行事案内","old_map":"歴史案内","cloud":"雲判定"}.get(mode_cfg["key"],"観光案内")
     # 季節
     month = datetime.now().month
     season = "🌸 春" if month in (3,4,5) else "☀️ 夏" if month in (6,7,8) else "🍂 秋" if month in (9,10,11) else "❄️ 冬"
@@ -190,7 +190,7 @@ def make_share_text(spot, mode_cfg, dist_km):
         f"📍 {spot['prefecture']} {spot['city']}\n"
         f"🏔 標高{spot['altitude']}m\n"
         f"📖 {desc}\n"
-        f"📱 {mode_name}モードで探索中\n"
+        f"📱 {mode_name}で探索中\n"
         f"📅 {visit_dt}　{season}\n"
         f"\n"
         f"▶ https://kanko-ar-harima.streamlit.app\n"
@@ -1194,7 +1194,7 @@ def main():
         sensor_lbl="🟢 GPS・コンパス取得中" if gps_active else "🎛 手動シミュレータ"
         st.markdown(f'<div class="ar-compass">{sensor_lbl}　🧭 {sim_heading:.0f}°（{deg_to_dir(sim_heading)}）　／　{len(visible_spots)}件</div>',unsafe_allow_html=True)
 
-        render_ar_view(visible_spots,sim_heading,sim_lat,sim_lon)
+        # 簡易ARビューは後実装で対応
 
         if mode_cfg["key"]=="omikuji":
             spot_name=visible_spots[0][0]["name"] if visible_spots else "播磨エリア"
