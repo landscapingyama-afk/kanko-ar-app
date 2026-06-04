@@ -175,24 +175,40 @@ def translate_deepl(text, target_lang="EN"):
 # ■ Gemini 雲判定
 # ============================================================
 def analyze_cloud_gemini(image_bytes):
-    api_key=get_secret("GEMINI_API_KEY")
-    dummy={"cloud_type":"判定できませんでした","description":"APIキーを設定するか画像を再アップロードしてください。","weather_hint":"天気の予報は気象庁等でご確認ください。","is_dummy":True}
+    api_key = get_secret("GEMINI_API_KEY")
+    dummy = {"cloud_type":"判定できませんでした","description":"APIキーを設定するか画像を再アップロードしてください。","weather_hint":"天気の予報は気象庁等でご確認ください。","is_dummy":True}
     if not api_key:
-        dummy["description"]="Gemini APIキー未設定。st.secretsにGEMINI_API_KEYを設定してください。（サンプルデータ）"; return dummy
-    if cloud_usage_today()>=3:
-        dummy["description"]="本日の雲判定上限（3回）に達しました。明日またお試しください。"; dummy["is_dummy"]=False; return dummy
-    try:
-        import base64; img_b64=base64.b64encode(image_bytes).decode()
-        url=f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
-        payload={"contents":[{"parts":[{"text":'この画像の雲を分析してください。JSONのみで回答:{"cloud_type":"雲の種類","description":"特徴を2行以内","weather_hint":"天気の傾向を1行で"}'},{"inline_data":{"mime_type":"image/jpeg","data":img_b64}}]}]}
-        r=requests.post(url,json=payload,timeout=15)
-        if r.status_code!=200: return dummy
-        text=r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
-        if "{" in text and "}" in text:
-            result=json.loads(text[text.index("{"):text.rindex("}")+1]); result["is_dummy"]=False; cloud_usage_increment(); return result
+        dummy["description"] = f"APIキー未取得（長さ0）"
         return dummy
-    except Exception: return dummy
-
+    if cloud_usage_today() >= 3:
+        dummy["description"] = "本日の雲判定上限（3回）に達しました。明日またお試しください。"
+        dummy["is_dummy"] = False
+        return dummy
+    try:
+        import base64; img_b64 = base64.b64encode(image_bytes).decode()
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+        payload = {"contents":[{"parts":[{"text":'この画像の雲を分析してください。JSONのみで回答:{"cloud_type":"雲の種類","description":"特徴を2行以内","weather_hint":"天気の傾向を1行で"}'},{"inline_data":{"mime_type":"image/jpeg","data":img_b64}}]}]}
+        r = requests.post(url, json=payload, timeout=20)
+        if r.status_code == 400:
+            dummy["description"] = f"APIキーエラー(400)。キーの値を確認してください。key先頭:{api_key[:12]}"
+            return dummy
+        if r.status_code != 200:
+            dummy["description"] = f"API通信エラー（HTTP {r.status_code}）"
+            return dummy
+        text = r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+        if "{" in text and "}" in text:
+            result = json.loads(text[text.index("{"):text.rindex("}")+1])
+            result["is_dummy"] = False
+            cloud_usage_increment()
+            return result
+        dummy["cloud_type"] = "解析完了"
+        dummy["description"] = text[:120]
+        dummy["is_dummy"] = False
+        cloud_usage_increment()
+        return dummy
+    except Exception as e:
+        dummy["description"] = f"エラー: {str(e)[:80]}"
+        return dummy
 # ============================================================
 # ■ SNSシェアテキスト
 # ============================================================
