@@ -1138,7 +1138,7 @@ def main():
             st.markdown("---")
             show_detail=st.toggle("🔍 詳細情報を表示",value=False)
             st.markdown("---")
-            use_osm=st.toggle("🌐 周辺スポット自動取得（OSM）",value=True)
+            use_osm=st.toggle("🌐 周辺スポット自動取得（OSM）",value=False)
 
         all_spots=list(SPOT_DATA_BUILTIN)
         if use_osm:
@@ -1208,6 +1208,68 @@ def main():
                 if sp.get("location_limited") and dist_km<0.3:
                     st.markdown(f'<div class="location-limited-card">🌟 <strong style="color:#2a4a8a;">現地限定コンテンツ解放！</strong><br><span style="font-size:16px;color:#2a4060;">{sp["location_limited_content"]}</span></div>',unsafe_allow_html=True)
 
+                # ★ 現地限定写真アップロード（GPS確認済み・半径100m以内のみ）
+                is_osm = sp.get("id","").startswith("osm_")
+                if gps_active and dist_km < 0.1 and not is_osm:
+                    st.markdown(
+                        f'''<div style="background:rgba(255,240,200,0.60);border-radius:14px;
+                        padding:14px 18px;margin:8px 0;
+                        border:1px solid rgba(200,160,50,0.55);">
+                        <div style="font-size:16px;font-weight:700;color:#3a2000;margin-bottom:6px;">
+                        【現地限定】📸 あなたの写真を追加</div>
+                        <div style="font-size:13px;color:#5a3a00;margin-bottom:8px;">
+                        ✅ GPS確認済み：<b>{sp["name"]}</b>から<b>{int(dist_km*1000)}m</b>以内
+                        </div>
+                        </div>''',
+                        unsafe_allow_html=True
+                    )
+                    user_photo = st.file_uploader(
+                        "写真を選ぶ",
+                        type=["jpg","jpeg","png"],
+                        key=f"photo_{sp['id']}",
+                        label_visibility="collapsed"
+                    )
+                    if user_photo:
+                        with st.spinner("写真を確認中..."):
+                            # Geminiで不適切写真チェック
+                            api_key = get_secret("GEMINI_API_KEY")
+                            is_safe = True
+                            check_msg = ""
+                            if api_key:
+                                try:
+                                    import base64
+                                    img_b64 = base64.b64encode(user_photo.read()).decode()
+                                    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
+                                    payload = {"contents":[{"parts":[
+                                        {"text": f'この画像は観光地「{sp["name"]}」で撮影された観光写真として適切ですか？不適切なコンテンツ（暴力・性的・個人情報など）が含まれていますか？「適切」または「不適切：理由」のみで答えてください。'},
+                                        {"inline_data": {"mime_type": "image/jpeg", "data": img_b64}}
+                                    ]}]}
+                                    r = requests.post(url, json=payload, timeout=15)
+                                    if r.status_code == 200:
+                                        result_text = r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+                                        if "不適切" in result_text:
+                                            is_safe = False
+                                            check_msg = result_text
+                                    user_photo.seek(0)
+                                except Exception:
+                                    user_photo.seek(0)
+
+                        if is_safe:
+                            st.image(user_photo, caption=f"📍 {sp['name']}で撮影", use_column_width=True)
+                            st.success("✅ 写真を表示しました！ページを閉じると写真は消えます。")
+                            st.info("📮 この写真を永久保存したい場合は下の「問題を報告する」から「写真を登録したい」を選んで送信してください。")
+                        else:
+                            st.error(f"⛔ この写真は投稿できません。{check_msg}")
+
+                    st.markdown(
+                        '''<div style="font-size:11px;color:#7a5a20;margin-top:4px;">
+                        ※ 現地で撮影した写真のみ投稿できます<br>
+                        ※ ページを閉じると写真は消えます<br>
+                        ※ 不適切な写真は自動でブロックされます
+                        </div>''',
+                        unsafe_allow_html=True
+                    )
+
         if mode_cfg["key"]=="cloud":
             st.markdown("---")
             today_count=cloud_usage_today(); remaining=3-today_count
@@ -1243,14 +1305,23 @@ def main():
             )
 
         st.markdown("---")
-        with st.expander("⚠️ 問題を報告する"):
-            st.markdown('<div class="report-form"><b>📝 問題報告フォーム</b><br><span style="font-size:13px;">情報の誤り・表示の不具合などをご報告ください。</span></div>',unsafe_allow_html=True)
+        with st.expander("⚠️ 問題を報告する・写真を登録したい"):
+            st.markdown('<div class="report-form"><b>📝 問題報告・写真登録フォーム</b><br><span style="font-size:13px;">情報の誤り・写真の登録などをご報告ください。</span></div>',unsafe_allow_html=True)
             report_spot=st.text_input("スポット名（任意）",placeholder="例：高御位神社")
-            report_type=st.selectbox("問題の種類",["情報が間違っている","地図の位置がずれている","表示が崩れている","その他"])
-            report_detail=st.text_area("詳細を教えてください",height=80)
-            if st.button("📤 報告を送信",type="primary"):
-                if report_detail: st.success("✅ ご報告ありがとうございます！内容を確認して改善に努めます。"); st.balloons()
-                else: st.warning("詳細を入力してください。")
+            report_type=st.selectbox("種類",["情報が間違っている","地図の位置がずれている","表示が崩れている","📸 写真を登録したい","その他"])
+            report_detail=st.text_area("詳細を教えてください",height=80,placeholder="写真登録の場合は撮影場所・日時などをお書きください")
+            # 写真登録の場合は添付できる
+            report_photo = None
+            if report_type == "📸 写真を登録したい":
+                st.markdown('<div style="font-size:13px;color:#3a5a8a;margin-bottom:4px;">📎 写真を添付してください</div>',unsafe_allow_html=True)
+                report_photo = st.file_uploader("写真を添付",type=["jpg","jpeg","png"],key="report_photo",label_visibility="collapsed")
+                if report_photo:
+                    st.image(report_photo, caption="添付写真のプレビュー", use_column_width=True)
+                    st.caption("※ 管理者が確認後、アプリに追加します。")
+            if st.button("📤 送信",type="primary"):
+                if report_detail or report_photo:
+                    st.success("✅ ご報告ありがとうございます！内容を確認して対応します。"); st.balloons()
+                else: st.warning("詳細を入力するか写真を添付してください。")
 
     if st.session_state.get("night_mode",False):
         st.markdown("""<style>.stApp{background:linear-gradient(160deg,#050510 0%,#0a0a28 40%,#080818 100%)!important;}.app-header h1{color:#8888FF!important;}.info-panel,.ar-compass,.lookaround-card,.share-card,.report-form{background:rgba(20,20,60,0.65)!important;color:#CCCCFF!important;}.ar-card{color:#EEEEFF!important;}.ar-card-title{color:#FFFFFF!important;}.mode-title-bar{color:#FFFFFF!important;}</style>""",unsafe_allow_html=True)
