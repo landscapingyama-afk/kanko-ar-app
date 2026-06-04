@@ -1115,6 +1115,10 @@ def main():
             st.markdown('<div class="ar-card font-noto-sans" style="background:rgba(100,150,220,0.55);text-align:center;">📭 この範囲にスポットがありません</div>',unsafe_allow_html=True)
         else:
             for sp,dist_km,brg in visible_spots:
+                is_osm = sp.get("id","").startswith("osm_")
+                # OSMスポットはメイン案内のみ表示（詳細データがないモードでは非表示）
+                if is_osm and mode_cfg["key"] not in ("main","night"):
+                    continue
                 render_spot_card(sp,mode_cfg,dist_km,brg,show_detail,selected_lang)
                 if sp.get("location_limited") and dist_km<0.3:
                     st.markdown(f'<div class="location-limited-card">🌟 <strong style="color:#2a4a8a;">現地限定コンテンツ解放！</strong><br><span style="font-size:16px;color:#2a4060;">{sp["location_limited_content"]}</span></div>',unsafe_allow_html=True)
