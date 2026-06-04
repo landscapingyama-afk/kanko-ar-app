@@ -581,6 +581,130 @@ SPOT_DATA_BUILTIN = [
         "trust_score": 0.9, "approved": True, "location_limited": False, "location_limited_content": "",
     },
     {
+        "id": "wakasano_tenman_012",
+        "name": "若狭野天満宮",
+        "name_kana": "わかさのてんまんぐう",
+        "category": "shrine",
+        "priority": 2,
+        "wiki_title": "若狭野天満宮",
+        "lat": 34.768611,
+        "lon": 134.447222,
+        "altitude": 50,
+        "prefecture": "兵庫県",
+        "city": "相生市",
+        "description": "アジサイ神社として知られる天満宮。梅雨の時期に約200株のアジサイが境内を彩る播磨の花の名所。菅原道真公を祀る。",
+        "main_detail": "⛩ 菅原道真公を祀る天満宮\n\n💠 アジサイ神社の別名\n　　境内には約200株のアジサイが咲き誇ります。\n\n🌸 見頃：6月上旬〜7月上旬\n　　梅雨の時期に様々な色のアジサイが鮮やかに咲きます。\n\n📜 和泉式部伝説\n　　書写山参詣の帰途、娘の小式部を若狭野に訪ねた式部伝説の地。\n\n🚌 アクセス\n　　国道2号沿いに位置。相生駅からバスでアクセス可能。",
+        "urban_legend": "和泉式部が書写山参詣の帰路にこの地を訪れたという伝説が残る。天満宮の神木には不思議な力が宿るという言い伝えがある。",
+        "urban_legend_detail": "平安の女流歌人・和泉式部がこの地を訪れた際、天満宮の神前で詠んだ歌が石碑に刻まれています。\n雨の日に境内を歩くと、菅原道真公の御霊が宿るアジサイが一層輝くと伝えられています。\n\n⚠️ AIエンターテイメント情報です。史実とは異なる場合があります。",
+        "powerspot": "学問の神様・菅原道真公を祀るパワースポット。試験合格・学業成就を願う参拝者が多く訪れます。",
+        "powerspot_detail": "菅原道真公の強い御神徳が宿る境内。梅雨の時期にはアジサイの精気とあいまって、特別なパワーが満ちるとされています。\n\n⚠️ AIエンターテイメント情報です。",
+        "festival": "6〜7月：アジサイの時期（見頃）・1月25日：初天神",
+        "festival_detail": "【6月上旬〜7月上旬】アジサイの見頃\n　　約200株のアジサイが境内を彩ります。\n【1月25日】初天神\n　　年始最初の天神の縁日。\n【毎月25日】天神縁日\n※詳細は相生市観光協会でご確認ください。",
+        "healing_text": "📸 撮影スポット情報",
+        "healing_detail": "📍 おすすめ撮影ポイント\n\n💠 アジサイと社殿（6月）\n　　青・紫・ピンクのアジサイと朱色の社殿のコントラストが美しい。\n\n🌧 雨上がりの朝\n　　水滴が光るアジサイは格別の美しさ。\n\n🌿 参道のアジサイ\n　　参道両側に咲き誇るアジサイのトンネルが人気。",
+        "old_map_description": "相生市若狭野に鎮座する古社。江戸時代の播磨国絵図にも記された由緒ある天満宮。",
+        "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・相生周辺に記載。\n菅原道真公ゆかりの天満宮として、江戸時代から地域の人々の信仰を集めてきた。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」を検索すると閲覧できます。",
+        "cloud_info": "相生市の丘の上に位置し、播磨灘を見渡せる清々しいスポットです。",
+        "cloud_detail": "境内から相生湾と播磨灘が望めます。梅雨の時期の曇り空もアジサイを引き立てます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
+        "trust_score": 0.9,
+        "approved": True,
+        "location_limited": False,
+        "location_limited_content": "",
+    },
+    {
+        "id": "izanagi_jingu_013",
+        "name": "伊弉諾神宮",
+        "name_kana": "いざなぎじんぐう",
+        "category": "shrine",
+        "priority": 1,
+        "wiki_title": "伊弉諾神宮",
+        "lat": 34.459967,
+        "lon": 134.852439,
+        "altitude": 5,
+        "prefecture": "兵庫県",
+        "city": "淡路市",
+        "description": "日本最古の神社。古事記・日本書紀の国生み神話に登場する伊弉諾大神・伊弉冉大神を祀る淡路国一宮。兵庫県唯一の神宮。",
+        "main_detail": "⛩ 日本最古の神社・淡路国一宮\n\n📜 国生み神話の聖地\n　　伊弉諾・伊弉冉の二神が日本列島を生んだ神話の地。\n\n🌳 夫婦の大楠\n　　県指定天然記念物。縁結び・夫婦円満のご神木。\n\n☀️ 陽の道しるべ\n　　神宮を中心に伊勢・出雲・諏訪など有名神社が配置されるパワースポット。\n\n🏛 格式\n　　延喜式名神大社・旧官幣大社。兵庫県唯一の神宮号。",
+        "urban_legend": "伊弉諾神宮を中心に、伊勢神宮・出雲大社・諏訪大社など日本の有名神社が計算されたように配置されているという神秘的な伝説がある。",
+        "urban_legend_detail": "「陽の道しるべ」と呼ばれるモニュメントが示すように、春分・秋分の日の出は伊勢神宮から昇り対馬の海神神社に沈みます。\n夏至には諏訪大社から出雲大社へ、冬至には熊野那智大社から高千穂へと太陽が移動する。これは古代人が計算して神社を配置したのではないかと言われています。\n\n⚠️ これは研究者の間でも議論のある説です。AIエンターテイメント情報も含みます。",
+        "powerspot": "日本最古の神社として最強クラスのパワースポット。縁結び・夫婦円満・国家安泰のご神徳を持つ伊弉諾・伊弉冉の二神が宿る聖地。",
+        "powerspot_detail": "国生みの神様が余生を過ごされた「幽宮（かくりのみや）」跡に創建された神社。\n夫婦の大楠は縁結び・夫婦円満の最強パワースポットとして知られています。\n境内に立つだけで神々しいエネルギーを感じると多くの参拝者が語ります。\n\n⚠️ AIエンターテイメント情報です。",
+        "festival": "春分・秋分：陽の道しるべ祭・1月1日：歳旦祭",
+        "festival_detail": "【1月1日】歳旦祭（年始の大祭）\n【春分の日】陽の道しるべ特別祈祷\n【秋分の日】陽の道しるべ特別祈祷\n【毎月1日・11日・21日】月次祭\n※詳細は伊弉諾神宮公式サイトでご確認ください。",
+        "healing_text": "📸 撮影スポット情報",
+        "healing_detail": "📍 おすすめ撮影ポイント\n\n🌳 夫婦の大楠\n　　樹齢推定900年の巨木。見上げると圧倒される存在感。\n\n⛩ 参道の朝の光\n　　早朝に差し込む光が神秘的な雰囲気を醸し出します。\n\n🌸 春の境内（3〜4月）\n　　桜と社殿のコントラストが美しい。\n\n☀️ 陽の道しるべモニュメント\n　　春分・秋分の日の出方向が刻まれた石碑。",
+        "old_map_description": "古事記・日本書紀に記された日本最古の神社。江戸時代から全国の崇敬を集めた淡路国一宮。",
+        "old_map_detail": "📜 天保国絵図（1838年）の淡路国に記載。\n延喜式（927年）にも名神大社として記された由緒ある神社。江戸時代には徳島藩主・蜂須賀氏が保護し東・西神門が建立された。\n🔍 国立公文書館デジタルアーカイブで「天保国絵図」を検索すると閲覧できます。",
+        "cloud_info": "淡路島の平野部に位置し、周囲の田園風景と空の眺めが美しいスポットです。",
+        "cloud_detail": "境内から見渡す淡路の空は澄んでいて、四季折々の雲が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
+        "trust_score": 1.0,
+        "approved": True,
+        "location_limited": False,
+        "location_limited_content": "",
+    },
+    {
+        "id": "taishi_kurookajinja_014",
+        "name": "黒岡神社",
+        "name_kana": "くろおかじんじゃ",
+        "category": "shrine",
+        "priority": 2,
+        "wiki_title": "黒岡神社",
+        "lat": 34.846944,
+        "lon": 134.582222,
+        "altitude": 20,
+        "prefecture": "兵庫県",
+        "city": "揖保郡太子町",
+        "description": "太子町の総社的存在。八幡大神・黒岡明神・菅原道真公を祀る。宮本武蔵ゆかりの地・太子町の中心的な古社。",
+        "main_detail": "⛩ 太子町の総社的存在\n\n🙏 ご祭神\n　　八幡大神・黒岡明神（藤原貞國）・菅原道真公の三柱。\n\n⚔️ 宮本武蔵との関係\n　　太子町は宮本武蔵の生誕地との説があり、武蔵ゆかりの地として知られる。\n\n🌸 春の例大祭\n　　太子町最大のお祭りとして地域に親しまれる。\n\n📜 歴史\n　　古くから太子町の氏神として崇敬されてきた格式ある神社。",
+        "urban_legend": "宮本武蔵が幼少期にこの神社で剣術の修行をしたという伝説が太子町に残っている。",
+        "urban_legend_detail": "五輪書に「生国播磨」と記した宮本武蔵。太子町には武蔵誕生にまつわる伝説が多く残ります。\n黒岡神社では幼い武蔵が神前で剣を振り、その才能を見出されたという言い伝えがあります。\n\n⚠️ AIエンターテイメント情報です。史実とは異なる場合があります。",
+        "powerspot": "武運・勝負事・学問のご神徳を持つ三柱の神様が宿るパワースポット。特に勝負事の祈願に訪れる人が多い。",
+        "powerspot_detail": "八幡大神の武運・黒岡明神の地縁・道真公の学問の三つのご神徳が重なる強力なパワースポットとされています。\n\n⚠️ AIエンターテイメント情報です。",
+        "festival": "春：例大祭（4月）・秋：秋祭り（10月）",
+        "festival_detail": "【4月】春の例大祭（太子町最大のお祭り）\n【10月】秋祭り（神輿渡御）\n※詳細は太子町観光協会でご確認ください。",
+        "healing_text": "📸 撮影スポット情報",
+        "healing_detail": "📍 おすすめ撮影ポイント\n\n🌸 春の例大祭（4月）\n　　神輿や屋台が出る賑やかなお祭りの様子。\n\n🌳 境内の御神木\n　　樹齢数百年の大木が境内を守っています。\n\n⛩ 本殿と参道\n　　朝の光が差し込む静かな参道が美しい。",
+        "old_map_description": "太子町の古社として江戸時代の播磨国絵図にも記された由緒ある神社。",
+        "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・揖保郡に記載。\n太子町の氏神として古くから地域の信仰を集めてきた。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」を検索すると閲覧できます。",
+        "cloud_info": "太子町の平野部に位置し、周囲の田園風景と山並みが美しいスポットです。",
+        "cloud_detail": "境内から揖保川流域の平野が見渡せます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
+        "trust_score": 0.85,
+        "approved": True,
+        "location_limited": False,
+        "location_limited_content": "",
+    },
+    {
+        "id": "taishi_shirohata_015",
+        "name": "聖徳太子御廟・太子町歴史館",
+        "name_kana": "しょうとくたいしごびょう・たいしちょうれきしかん",
+        "category": "historical",
+        "priority": 2,
+        "wiki_title": "斑鳩寺",
+        "lat": 34.839444,
+        "lon": 134.576944,
+        "altitude": 15,
+        "prefecture": "兵庫県",
+        "city": "揖保郡太子町",
+        "description": "聖徳太子ゆかりの太子町の歴史を学べる施設。太子町は町名の由来となった聖徳太子にちなんだ史跡が多数残る。",
+        "main_detail": "🏛 太子町の歴史を学ぶ\n\n👑 聖徳太子ゆかりの地\n　　太子町は聖徳太子から賜った土地に由来する歴史の町。\n\n📜 太子町の由来\n　　推古天皇が聖徳太子に賜った土地「鵤（いかるが）の荘」が太子町の起源。\n\n🛕 斑鳩寺との関係\n　　太子町の中心にある斑鳩寺（国宝）と一体となった歴史ゾーン。\n\n🌸 見どころ\n　　1400年の歴史が息づく播磨の古都的な雰囲気。",
+        "urban_legend": "聖徳太子が生涯で最後に訪れた播磨の地が太子町であると伝える古文書が斑鳩寺に残るという言い伝えがある。",
+        "urban_legend_detail": "太子町一帯は推古天皇から聖徳太子に賜った「鵤の荘」。太子がこの地を深く愛した証として、斑鳩寺には太子の念持仏が今も祀られています。\n\n⚠️ AIエンターテイメント情報です。史実とは異なる場合があります。",
+        "powerspot": "聖徳太子の霊力が満ちた太子町一帯。1400年の祈りが積み重なった聖地として、訪れるだけで特別なエネルギーを感じるとされます。",
+        "powerspot_detail": "太子町全体が聖徳太子ゆかりの聖地。特に斑鳩寺周辺は太子の御霊が宿るとされる強力なパワーゾーンです。\n\n⚠️ AIエンターテイメント情報です。",
+        "festival": "2月22〜23日：聖徳太子忌法要・春・秋：各種法要",
+        "festival_detail": "【2月22〜23日】聖徳太子忌法要（斑鳩寺）\n　　太子の命日に行われる厳かな法要。\n【春・秋】特別公開\n　　国宝・重要文化財の特別公開が行われます。\n※詳細は太子町観光協会でご確認ください。",
+        "healing_text": "📸 撮影スポット情報",
+        "healing_detail": "📍 おすすめ撮影ポイント\n\n🛕 斑鳩寺三重塔\n　　快晴の青空と三重塔の組み合わせが美しい。\n\n🌸 春の桜（3〜4月）\n　　境内の桜と古建築のコントラスト。\n\n🍂 秋の紅葉（11月）\n　　静かな境内に紅葉が映える。",
+        "old_map_description": "推古天皇元年（593年）に聖徳太子が開いた「鵤の荘」。太子町の歴史の中心地。",
+        "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・揖保郡に記載。\n聖徳太子ゆかりの地として奈良時代から歴史に登場する太子町の中心地域。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」を検索すると閲覧できます。",
+        "cloud_info": "太子町の平野部に位置し、三重塔と空の眺めが美しいスポットです。",
+        "cloud_detail": "斑鳩寺の三重塔から見渡す空は開放的。四季折々の雲が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
+        "trust_score": 0.85,
+        "approved": True,
+        "location_limited": False,
+        "location_limited_content": "",
+    },
+    {
         "id": "iwatsuhime_011", "name": "伊和都比売神社", "name_kana": "いわつひめじんじゃ",
         "category": "shrine", "priority": 2, "wiki_title": "伊和都比売神社",
         "lat": 34.727571, "lon": 134.408226, "altitude": 5,
@@ -1035,15 +1159,16 @@ def main():
             st.markdown("---")
             selected_area="播磨エリア"  # エリア別アコーディオンに変更
             # ★ 登録済みスポット数を表示
-            harima_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県"]
+            harima_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city")!="淡路市"]
             kansai_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture") in ("奈良県","京都府","大阪府")]
             kagawa_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="香川県"]
+            awaji_spots  = [s for s in SPOT_DATA_BUILTIN if s.get("city")=="淡路市"]
             total = len(SPOT_DATA_BUILTIN)
             st.markdown(
                 f'''<div style="background:rgba(100,160,255,0.15);border-radius:10px;padding:8px 12px;
                 font-size:12px;color:#2a4a7a;margin-bottom:8px;line-height:1.8;">
                 📊 <b>登録済みスポット：{total}件</b><br>
-                　播磨：{len(harima_spots)}件 ／ 関西：{len(kansai_spots)}件 ／ 香川：{len(kagawa_spots)}件
+                　播磨：{len(harima_spots)}件 ／ 関西：{len(kansai_spots)}件 ／ 淡路：{len(awaji_spots)}件 ／ 香川：{len(kagawa_spots)}件
                 </div>''',
                 unsafe_allow_html=True
             )
@@ -1094,6 +1219,22 @@ def main():
                             st.session_state.osm_center_lat = sp["lat"]
                             st.session_state.osm_center_lon = sp["lon"]
                             st.rerun()
+
+            # 淡路島エリア
+            with st.expander("🗾 淡路島エリア", expanded=False):
+                awaji = [s for s in SPOT_DATA_BUILTIN if s.get("city")=="淡路市"]
+                for sp in awaji:
+                    is_selected = st.session_state.get("selected_spot_id") == sp["id"]
+                    btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
+                    if st.button(btn_label, use_container_width=True, key=f"sp_{sp['id']}"):
+                        st.session_state.preset_lat = sp["lat"]
+                        st.session_state.preset_lon = sp["lon"]
+                        st.session_state.selected_spot_id = sp["id"]
+                        st.session_state.osm_loaded = False
+                        st.session_state.osm_spots = []
+                        st.session_state.osm_center_lat = sp["lat"]
+                        st.session_state.osm_center_lon = sp["lon"]
+                        st.rerun()
 
             # 香川エリア
             with st.expander("🗾 香川エリア", expanded=False):
@@ -1192,7 +1333,6 @@ def main():
             st.markdown('<div class="map-placeholder">🗺️ 地図の読み込みに失敗しました。F5で再読み込みしてください。</div>',unsafe_allow_html=True)
 
         sensor_lbl="🟢 GPS・コンパス取得中" if gps_active else "🎛 手動シミュレータ"
-        st.markdown(f'<div class="ar-compass">{sensor_lbl}　🧭 {sim_heading:.0f}°（{deg_to_dir(sim_heading)}）　／　{len(visible_spots)}件</div>',unsafe_allow_html=True)
 
         # 簡易ARビューは後実装で対応
 
