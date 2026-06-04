@@ -189,56 +189,56 @@ OLD_MAP_IMAGES = {
         "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
         "title": "元禄国絵図 播磨国",
         "era": "元禄15年（1702年）",
-        "source": "国立公文書館デジタルアーカイブ",
-        "source_url": "https://www.digital.archives.go.jp/gallery/0000000228",
+        "source": "国土地理院 古地図コレクション",
+        "source_url": "https://kochizu.gsi.go.jp/items/8",
         "note": "江戸幕府が作成した播磨国の公式絵図。1里＝6寸の縮尺で村名・石高が記されています。",
     },
     "kasagatayama_002": {
         "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
         "title": "元禄国絵図 播磨国",
         "era": "元禄15年（1702年）",
-        "source": "国立公文書館デジタルアーカイブ",
-        "source_url": "https://www.digital.archives.go.jp/gallery/0000000228",
+        "source": "国土地理院 古地図コレクション",
+        "source_url": "https://kochizu.gsi.go.jp/items/8",
         "note": "笠形山は播磨の名山として古地図にも記されています。",
     },
     "himeji_castle_003": {
         "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
         "title": "元禄国絵図 播磨国",
         "era": "元禄15年（1702年）",
-        "source": "国立公文書館デジタルアーカイブ",
-        "source_url": "https://www.digital.archives.go.jp/gallery/0000000228",
+        "source": "国土地理院 古地図コレクション",
+        "source_url": "https://kochizu.gsi.go.jp/items/8",
         "note": "江戸時代の絵図には「姫路」として城下町が白四角で記されています。",
     },
     "kakurinji_004": {
         "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
         "title": "元禄国絵図 播磨国",
         "era": "元禄15年（1702年）",
-        "source": "国立公文書館デジタルアーカイブ",
-        "source_url": "https://www.digital.archives.go.jp/gallery/0000000228",
+        "source": "国土地理院 古地図コレクション",
+        "source_url": "https://kochizu.gsi.go.jp/items/8",
         "note": "加古川周辺の村々が色分けされた楕円形の枠内に記されています。",
     },
     "ikarugatera_008": {
         "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
         "title": "元禄国絵図 播磨国",
         "era": "元禄15年（1702年）",
-        "source": "国立公文書館デジタルアーカイブ",
-        "source_url": "https://www.digital.archives.go.jp/gallery/0000000228",
+        "source": "国土地理院 古地図コレクション",
+        "source_url": "https://kochizu.gsi.go.jp/items/8",
         "note": "太子町周辺は揖保郡として記載されています。",
     },
     "kamo_jinja_010": {
         "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
         "title": "元禄国絵図 播磨国",
         "era": "元禄15年（1702年）",
-        "source": "国立公文書館デジタルアーカイブ",
-        "source_url": "https://www.digital.archives.go.jp/gallery/0000000228",
+        "source": "国土地理院 古地図コレクション",
+        "source_url": "https://kochizu.gsi.go.jp/items/8",
         "note": "龍野（たつの）は龍野藩の城下町として絵図に記されています。",
     },
     "iwatsuhime_011": {
         "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
         "title": "元禄国絵図 播磨国",
         "era": "元禄15年（1702年）",
-        "source": "国立公文書館デジタルアーカイブ",
-        "source_url": "https://www.digital.archives.go.jp/gallery/0000000228",
+        "source": "国土地理院 古地図コレクション",
+        "source_url": "https://kochizu.gsi.go.jp/items/8",
         "note": "赤穂は赤穂藩の城下町として記載。播磨灘沿岸の地形がわかります。",
     },
     # 奈良
@@ -246,8 +246,8 @@ OLD_MAP_IMAGES = {
         "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
         "title": "天保国絵図 大和国",
         "era": "天保9年（1838年）",
-        "source": "国立公文書館デジタルアーカイブ",
-        "source_url": "https://www.digital.archives.go.jp/gallery/0000000290",
+        "source": "国土地理院 古地図コレクション",
+        "source_url": "https://kochizu.gsi.go.jp/items/8",
         "note": "奈良は大和国として記載。東大寺・興福寺などの寺院が描かれています。",
     },
     # 京都
@@ -255,8 +255,8 @@ OLD_MAP_IMAGES = {
         "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
         "title": "天保国絵図 山城国",
         "era": "天保9年（1838年）",
-        "source": "国立公文書館デジタルアーカイブ",
-        "source_url": "https://www.digital.archives.go.jp/gallery/0000000290",
+        "source": "国土地理院 古地図コレクション",
+        "source_url": "https://kochizu.gsi.go.jp/items/8",
         "note": "京都は山城国として記載。金閣寺周辺の地形が江戸時代の視点でわかります。",
     },
     # 大阪
@@ -264,8 +264,8 @@ OLD_MAP_IMAGES = {
         "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
         "title": "天保国絵図 摂津国",
         "era": "天保9年（1838年）",
-        "source": "国立公文書館デジタルアーカイブ",
-        "source_url": "https://www.digital.archives.go.jp/gallery/0000000290",
+        "source": "国土地理院 古地図コレクション",
+        "source_url": "https://kochizu.gsi.go.jp/items/8",
         "note": "大阪城は摂津国の城下として記載。江戸時代の大坂の街並みがわかります。",
     },
     # 香川
@@ -273,8 +273,8 @@ OLD_MAP_IMAGES = {
         "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
         "title": "天保国絵図 讃岐国",
         "era": "天保9年（1838年）",
-        "source": "国立公文書館デジタルアーカイブ",
-        "source_url": "https://www.digital.archives.go.jp/gallery/0000000290",
+        "source": "国土地理院 古地図コレクション",
+        "source_url": "https://kochizu.gsi.go.jp/items/8",
         "note": "讃岐国（香川県）の絵図。高屋神社がある稲積山周辺の地形が確認できます。",
     },
 }
@@ -325,7 +325,6 @@ def show_old_map_image(spot):
     # 権利表記（必須）
     st.caption(
         f"📖 出典：{map_info['source']} ／ パブリックドメイン（著作権保護期間満了）"
-        f" ／ {map_info['source_url']}"
     )
 
 # ============================================================
