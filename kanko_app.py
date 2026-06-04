@@ -1114,7 +1114,7 @@ def main():
             if gps_active:
                 st.markdown('<div class="gps-auto-note">🟢 <b>GPS自動取得中です</b><br>現在地・向きはスマホのセンサーから自動で入力されています。</div>',unsafe_allow_html=True)
                 sim_lat=gps_lat; sim_lon=gps_lon; sim_heading=gps_heading
-                st.session_state.selected_spot_id=None
+                # GPS取得中もプリセット選択を維持する（リセットしない）
             else:
                 st.markdown('<div style="font-size:12px;color:#3a5a8a;background:rgba(200,220,255,0.3);border-radius:8px;padding:6px 10px;margin-bottom:6px;">💻 パソコン・GPS未取得時はスライダーで場所を模擬できます</div>',unsafe_allow_html=True)
                 sim_lat=st.slider("📍 緯度",34.70,35.10,st.session_state.preset_lat,0.0005,format="%.4f")
@@ -1153,18 +1153,24 @@ def main():
             st.session_state.osm_loaded=False
 
         selected_id=st.session_state.get("selected_spot_id")
-        if selected_id and not gps_active:
+        if selected_id:
+            # プリセット選択中：選択スポットのみ表示
             selected_spot=next((sp for sp in all_spots if sp.get("id")==selected_id),None)
             if selected_spot:
                 dist=haversine_km(sim_lat,sim_lon,selected_spot["lat"],selected_spot["lon"])
                 brg=bearing_deg(sim_lat,sim_lon,selected_spot["lat"],selected_spot["lon"])
                 visible_spots=[(selected_spot,dist,brg)]
+                # 周辺スポットONの場合はそのスポット周辺のOSMスポットを追加
                 if use_osm and st.session_state.osm_spots:
-                    visible_spots=visible_spots+filter_spots(st.session_state.osm_spots,sim_lat,sim_lon)
+                    osm_near=filter_spots(st.session_state.osm_spots,selected_spot["lat"],selected_spot["lon"])
+                    visible_spots=visible_spots+osm_near
             else:
                 visible_spots=filter_spots(all_spots,sim_lat,sim_lon)
         else:
+            # プリセット未選択：GPS現在地から近い順に表示
             visible_spots=filter_spots(all_spots,sim_lat,sim_lon)
+            if use_osm and st.session_state.osm_spots:
+                visible_spots=visible_spots+filter_spots(st.session_state.osm_spots,sim_lat,sim_lon)
 
         nearest=visible_spots[0] if visible_spots else None
         sensor_badge='<span class="sensor-active-badge">🟢 GPS</span>' if gps_active else '<span class="sensor-manual-badge">🎛 手動</span>'
