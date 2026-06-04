@@ -285,7 +285,7 @@ def show_old_map_image(spot):
     map_info = OLD_MAP_IMAGES.get(spot_id)
 
     if not map_info:
-        st.info("📜 この地点の古地図データは準備中です。")
+        # OSMスポットや未登録スポットは何も表示しない
         return
 
     st.markdown("---")
