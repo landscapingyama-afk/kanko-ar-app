@@ -105,6 +105,8 @@ def get_secret(key):
         if key == "GEMINI_API_KEY":
             k1 = st.secrets.get("GEMINI_API_KEY_1", "")
             k2 = st.secrets.get("GEMINI_API_KEY_2", "")
+            if k1 and not k2:
+                return k1
             if k1 and k2:
                 return k1 + k2
         val = st.secrets.get(key, "")
