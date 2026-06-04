@@ -176,7 +176,27 @@ def make_share_text(spot, mode_cfg, dist_km):
     cat_map={"shrine":"⛩","mountain":"🏔","castle":"🏯","temple":"🛕","default":"📍"}
     icon=cat_map.get(spot.get("category","default"),"📍")
     mode_name={"main":"観光案内","urban_legend":"都市伝説","powerspot":"パワースポット","healing":"撮影スポット","festival":"行事案内","old_map":"歴史案内","cloud":"雲判定"}.get(mode_cfg["key"],"AR案内")
-    return (f"{icon} {spot['name']}を訪れました！\n📍 {spot['prefecture']} {spot['city']}\n🏔 標高{spot['altitude']}m\n📱 {mode_name}モードで探索中\n\n#播磨AR #観光アプリ #{spot['name'].replace(' ','')} #{spot['city'].replace(' ','')}")
+    # 季節
+    month = datetime.now().month
+    season = "🌸 春" if month in (3,4,5) else "☀️ 夏" if month in (6,7,8) else "🍂 秋" if month in (9,10,11) else "❄️ 冬"
+    # 訪問日時
+    visit_dt = datetime.now().strftime("%Y年%m月%d日 %H:%M")
+    # 説明文（最初の30文字）
+    desc = spot.get("description","")[:30]
+    if len(spot.get("description","")) > 30:
+        desc += "…"
+    return (
+        f"{icon} {spot['name']}を訪れました！\n"
+        f"📍 {spot['prefecture']} {spot['city']}\n"
+        f"🏔 標高{spot['altitude']}m\n"
+        f"📖 {desc}\n"
+        f"📱 {mode_name}モードで探索中\n"
+        f"📅 {visit_dt}　{season}\n"
+        f"\n"
+        f"▶ https://kanko-ar-harima.streamlit.app\n"
+        f"\n"
+        f"#播磨AR #観光アプリ #{spot['name'].replace(' ','')} #{spot['city'].replace(' ','')}"
+    )
 
 # ============================================================
 # ■ 古地図データ（国立公文書館デジタルアーカイブ）
@@ -1144,8 +1164,21 @@ def main():
         if visible_spots:
             st.markdown("---")
             sp_share,d_share,_=visible_spots[0]; share_text=make_share_text(sp_share,mode_cfg,d_share)
-            st.markdown('<div class="share-card"><b>📤 SNSシェア</b><br><span style="font-size:12px;color:#4a6a9a;">以下のテキストをコピーしてSNSに投稿できます。</span></div>',unsafe_allow_html=True)
-            st.text_area("シェアテキスト",value=share_text,height=120,label_visibility="collapsed")
+            st.markdown('<div class="share-card"><b>📤 SNSシェア</b><br><span style="font-size:12px;color:#4a6a9a;">ボタンをタップして投稿できます。投稿前に内容を編集することもできます。</span></div>',unsafe_allow_html=True)
+            st.text_area("シェアテキスト",value=share_text,height=180,label_visibility="collapsed")
+            import urllib.parse
+            encoded = urllib.parse.quote(share_text)
+            x_url = f"https://twitter.com/intent/tweet?text={encoded}"
+            fb_url = f"https://www.facebook.com/sharer/sharer.php?u=https://kanko-ar-harima.streamlit.app&quote={encoded}"
+            line_url = f"https://social-plugins.line.me/lineit/share?url=https://kanko-ar-harima.streamlit.app&text={encoded}"
+            st.markdown(
+                f'''<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+                <a href="{x_url}" target="_blank" style="display:inline-block;background:#000000;color:#FFF;text-decoration:none;padding:10px 18px;border-radius:10px;font-weight:700;font-size:14px;">𝕏 Xに投稿</a>
+                <a href="{fb_url}" target="_blank" style="display:inline-block;background:#1877F2;color:#FFF;text-decoration:none;padding:10px 18px;border-radius:10px;font-weight:700;font-size:14px;">📘 Facebookに投稿</a>
+                <a href="{line_url}" target="_blank" style="display:inline-block;background:#06C755;color:#FFF;text-decoration:none;padding:10px 18px;border-radius:10px;font-weight:700;font-size:14px;">💬 LINEで送る</a>
+                </div>''',
+                unsafe_allow_html=True
+            )
 
         st.markdown("---")
         with st.expander("⚠️ 問題を報告する"):
