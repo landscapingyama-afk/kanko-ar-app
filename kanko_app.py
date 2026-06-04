@@ -1030,7 +1030,7 @@ def main():
         else: st.markdown('<div class="sensor-manual-badge">🎛 手動シミュレータ</div>',unsafe_allow_html=True)
         st.markdown("---")
 
-        with st.expander("⚙️ 表示設定（タップで開く）",expanded=True):
+        with st.expander("⚙️ 表示設定（タップで開く）",expanded=False):
             night_mode=st.toggle("🌙 夜モード",value=st.session_state.night_mode); st.session_state.night_mode=night_mode
             st.markdown("---")
             selected_area="播磨エリア"  # エリア別アコーディオンに変更
@@ -1052,7 +1052,7 @@ def main():
             st.markdown("**📍 エリアから探す**")
 
             # 播磨エリア
-            with st.expander("🗾 播磨エリア（兵庫県）", expanded=selected_area=="播磨エリア"):
+            with st.expander("🗾 播磨エリア（兵庫県）", expanded=False):
                 categories = {
                     "⛩ 神社": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("category")=="shrine"],
                     "🛕 寺院": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("category")=="temple"],
@@ -1195,7 +1195,6 @@ def main():
         st.markdown(f'<div class="ar-compass">{sensor_lbl}　🧭 {sim_heading:.0f}°（{deg_to_dir(sim_heading)}）　／　{len(visible_spots)}件</div>',unsafe_allow_html=True)
 
         render_ar_view(visible_spots,sim_heading,sim_lat,sim_lon)
-        render_lookaround_nav(visible_spots,sim_heading)
 
         if mode_cfg["key"]=="omikuji":
             spot_name=visible_spots[0][0]["name"] if visible_spots else "播磨エリア"
