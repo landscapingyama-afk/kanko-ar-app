@@ -1033,25 +1033,82 @@ def main():
         with st.expander("⚙️ 表示設定（タップで開く）",expanded=True):
             night_mode=st.toggle("🌙 夜モード",value=st.session_state.night_mode); st.session_state.night_mode=night_mode
             st.markdown("---")
-            st.markdown("**🗾 エリア選択**")
-            selected_area=st.selectbox("エリア",["播磨エリア","関西エリア（奈良・京都・大阪）","全エリア"],index=0,label_visibility="collapsed")
-            st.markdown("**📍 プリセット位置**")
-            if selected_area=="播磨エリア":
-                presets={"🧗 高御位山麓":(34.8330,134.8620,"takamikura_001"),"🏯 姫路城":(34.8394,134.6939,"himeji_castle_003"),"🛕 鶴林寺":(34.7622,134.8394,"kakurinji_004"),"🛕 斑鳩寺":(34.837339,134.575457,"ikarugatera_008"),"⛩ 賀茂神社":(34.766021,134.502835,"kamo_jinja_010"),"⛩ 伊和都比売神社":(34.727571,134.408226,"iwatsuhime_011"),"⛩ 高屋神社":(34.160608,133.654837,"takaya_jinja_009")}
-            elif "関西" in selected_area:
-                presets={"🛕 東大寺":(34.6888,135.8398,"nara_todaiji_005"),"✨ 金閣寺":(35.0394,135.7292,"kyoto_kinkakuji_006"),"🏯 大阪城":(34.6873,135.5262,"osaka_castle_007"),"🌸 奈良公園":(34.6851,135.8448,None),"⛩ 伏見稲荷":(34.9671,135.7727,None),"🌊 道頓堀":(34.6688,135.5027,None)}
-            else:
-                presets={"🧗 高御位山麓":(34.8330,134.8620,"takamikura_001"),"🏯 姫路城":(34.8394,134.6939,"himeji_castle_003"),"🛕 東大寺":(34.6888,135.8398,"nara_todaiji_005"),"✨ 金閣寺":(35.0394,135.7292,"kyoto_kinkakuji_006"),"🏯 大阪城":(34.6873,135.5262,"osaka_castle_007"),"🛕 斑鳩寺":(34.837339,134.575457,"ikarugatera_008")}
-            pcols=st.columns(2)
-            for i,(label,(plat,plon,spot_id)) in enumerate(presets.items()):
-                with pcols[i%2]:
-                    is_selected=(st.session_state.preset_lat==plat and st.session_state.preset_lon==plon)
-                    btn_label=f"✅ {label}" if is_selected else label
-                    if st.button(btn_label,use_container_width=True,key=f"preset_{i}_{selected_area[:2]}"):
-                        st.session_state.preset_lat=plat; st.session_state.preset_lon=plon
-                        st.session_state.selected_spot_id=spot_id
-                        st.session_state.osm_loaded=False; st.session_state.osm_spots=[]
-                        st.session_state.osm_center_lat=plat; st.session_state.osm_center_lon=plon
+            selected_area="播磨エリア"  # エリア別アコーディオンに変更
+            # ★ 登録済みスポット数を表示
+            harima_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県"]
+            kansai_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture") in ("奈良県","京都府","大阪府")]
+            kagawa_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="香川県"]
+            total = len(SPOT_DATA_BUILTIN)
+            st.markdown(
+                f'''<div style="background:rgba(100,160,255,0.15);border-radius:10px;padding:8px 12px;
+                font-size:12px;color:#2a4a7a;margin-bottom:8px;line-height:1.8;">
+                📊 <b>登録済みスポット：{total}件</b><br>
+                　播磨：{len(harima_spots)}件 ／ 関西：{len(kansai_spots)}件 ／ 香川：{len(kagawa_spots)}件
+                </div>''',
+                unsafe_allow_html=True
+            )
+
+            # ★ エリア別カテゴリ表示
+            st.markdown("**📍 エリアから探す**")
+
+            # 播磨エリア
+            with st.expander("🗾 播磨エリア（兵庫県）", expanded=selected_area=="播磨エリア"):
+                categories = {
+                    "⛩ 神社": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("category")=="shrine"],
+                    "🛕 寺院": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("category")=="temple"],
+                    "🏯 城・史跡": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("category") in ("castle","historical")],
+                    "🏔 山・自然": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("category")=="mountain"],
+                }
+                for cat_label, spots in categories.items():
+                    if not spots: continue
+                    st.markdown(f'<div style="font-size:12px;color:#3a5a8a;font-weight:700;margin:4px 0 2px;">{cat_label}</div>', unsafe_allow_html=True)
+                    for sp in spots:
+                        is_selected = st.session_state.get("selected_spot_id") == sp["id"]
+                        btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
+                        if st.button(btn_label, use_container_width=True, key=f"sp_{sp['id']}"):
+                            st.session_state.preset_lat = sp["lat"]
+                            st.session_state.preset_lon = sp["lon"]
+                            st.session_state.selected_spot_id = sp["id"]
+                            st.session_state.osm_loaded = False
+                            st.session_state.osm_spots = []
+                            st.session_state.osm_center_lat = sp["lat"]
+                            st.session_state.osm_center_lon = sp["lon"]
+                            st.rerun()
+
+            # 関西エリア
+            with st.expander("🗾 関西エリア（奈良・京都・大阪）", expanded=selected_area!="播磨エリア" and "関西" in selected_area):
+                kansai_prefs = {"奈良県":"🦌 奈良", "京都府":"⛩ 京都", "大阪府":"🏯 大阪"}
+                for pref, pref_label in kansai_prefs.items():
+                    pref_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")==pref]
+                    if not pref_spots: continue
+                    st.markdown(f'<div style="font-size:12px;color:#3a5a8a;font-weight:700;margin:4px 0 2px;">{pref_label}</div>', unsafe_allow_html=True)
+                    for sp in pref_spots:
+                        is_selected = st.session_state.get("selected_spot_id") == sp["id"]
+                        btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
+                        if st.button(btn_label, use_container_width=True, key=f"sp_{sp['id']}"):
+                            st.session_state.preset_lat = sp["lat"]
+                            st.session_state.preset_lon = sp["lon"]
+                            st.session_state.selected_spot_id = sp["id"]
+                            st.session_state.osm_loaded = False
+                            st.session_state.osm_spots = []
+                            st.session_state.osm_center_lat = sp["lat"]
+                            st.session_state.osm_center_lon = sp["lon"]
+                            st.rerun()
+
+            # 香川エリア
+            with st.expander("🗾 香川エリア", expanded=False):
+                kagawa = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="香川県"]
+                for sp in kagawa:
+                    is_selected = st.session_state.get("selected_spot_id") == sp["id"]
+                    btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
+                    if st.button(btn_label, use_container_width=True, key=f"sp_{sp['id']}"):
+                        st.session_state.preset_lat = sp["lat"]
+                        st.session_state.preset_lon = sp["lon"]
+                        st.session_state.selected_spot_id = sp["id"]
+                        st.session_state.osm_loaded = False
+                        st.session_state.osm_spots = []
+                        st.session_state.osm_center_lat = sp["lat"]
+                        st.session_state.osm_center_lon = sp["lon"]
                         st.rerun()
             st.markdown("---")
             if gps_active:
