@@ -11,7 +11,7 @@ from datetime import datetime, date
 from collections import deque
 
 st.set_page_config(
-    page_title="観光AR案内 | 播磨・関西エリア",
+    page_title="観光スポットナビ | 播磨・関西・香川",
     page_icon="⛩",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -1006,10 +1006,10 @@ def render_ar_view(visible_spots, heading, user_lat, user_lon):
 def main():
     init_session(); init_db()
     st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
-    st.markdown('<div class="app-header"><h1>⛩ 観光AR案内 ／ 播磨・関西</h1><p>山岳信仰の聖地・歴史の街をARで探索 <span class="phase7-badge">フェーズ7+古地図</span></p></div>',unsafe_allow_html=True)
+    st.markdown('<div class="app-header"><h1>📍 観光スポットナビ</h1><p>GPS連動・都市伝説・パワースポット・おみくじ・雲判定… 旅をもっと楽しくする10の機能</p></div>',unsafe_allow_html=True)
 
     if not st.session_state.safety_shown:
-        st.markdown('<div class="safety-warning"><p>⚠️ 歩きながらの使用は危険です。<br>必ず立ち止まってご使用ください。<br><span style="font-size:13px;font-weight:400;">登山中は足元・周囲の安全を最優先にしてください。</span></p></div>',unsafe_allow_html=True)
+        st.markdown('<div class="safety-warning"><p>⚠️ 歩きながらの使用は危険です。<br>必ず立ち止まってご使用ください。</p></div>',unsafe_allow_html=True)
         if st.button("✅ 確認しました",type="primary",use_container_width=True):
             st.session_state.safety_shown=True; st.rerun()
         st.stop()
@@ -1192,7 +1192,7 @@ def main():
             st.markdown('<div class="map-placeholder">🗺️ 地図の読み込みに失敗しました。F5で再読み込みしてください。</div>',unsafe_allow_html=True)
 
         sensor_lbl="🟢 GPS・コンパス取得中" if gps_active else "🎛 手動シミュレータ"
-        st.markdown(f'<div class="ar-compass">{sensor_lbl}　🧭 {sim_heading:.0f}°（{deg_to_dir(sim_heading)}）　／　{len(visible_spots)}件<br><span style="font-size:12px;color:#4a6a9a;">フェーズ7+古地図：国立公文書館の江戸時代絵図を表示</span></div>',unsafe_allow_html=True)
+        st.markdown(f'<div class="ar-compass">{sensor_lbl}　🧭 {sim_heading:.0f}°（{deg_to_dir(sim_heading)}）　／　{len(visible_spots)}件</div>',unsafe_allow_html=True)
 
         render_ar_view(visible_spots,sim_heading,sim_lat,sim_lon)
         render_lookaround_nav(visible_spots,sim_heading)
@@ -1257,7 +1257,7 @@ def main():
         st.markdown("""<style>.stApp{background:linear-gradient(160deg,#050510 0%,#0a0a28 40%,#080818 100%)!important;}.app-header h1{color:#8888FF!important;}.info-panel,.ar-compass,.lookaround-card,.share-card,.report-form{background:rgba(20,20,60,0.65)!important;color:#CCCCFF!important;}.ar-card{color:#EEEEFF!important;}.ar-card-title{color:#FFFFFF!important;}.mode-title-bar{color:#FFFFFF!important;}</style>""",unsafe_allow_html=True)
 
     now=datetime.now().strftime("%Y年%m月%d日 %H:%M")
-    st.markdown(f'<div class="app-footer">観光AR案内アプリ フェーズ7+古地図 ／ 播磨・関西エリア<br>Wikipedia API：CC BY-SA ／ 歴史案内：国立公文書館デジタルアーカイブ（パブリックドメイン）<br>最終更新：{now} ／ v18 Phase7+OldMap</div>',unsafe_allow_html=True)
+    st.markdown(f'<div class="app-footer">観光スポットナビ ／ 播磨・関西・香川エリア<br>Wikipedia API：CC BY-SA ／ 地図：国土地理院・OpenStreetMap contributors<br>最終更新：{now}</div>',unsafe_allow_html=True)
 
 if __name__=="__main__":
     main()
