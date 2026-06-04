@@ -869,12 +869,19 @@ def render_spot_card(spot, mode_cfg, dist_km, brg, expanded, lang="ja"):
                "powerspot":"✨ パワースポット詳細","healing":"📸 撮影スポット詳細",
                "festival":"🗓 行事・祭り日程","old_map":"📜 歴史・古地図情報",
                "cloud":"☁️ 雲と天気の詳細","night":"🌙 夜の見どころ"}
-    fb='<span class="ar-fallback-badge">📡 サンプルデータ</span>' if content["is_dummy"] else ""
+    fb='<span class="ar-fallback-badge">📡 サンプルデータ</span>' if content["is_dummy"] and not is_osm else ""
     osm_badge='<span class="osm-badge">OSM</span>' if is_osm else ""
     wiki_badge='<span class="wiki-badge">Wikipedia</span>' if spot.get("wiki_title") and not is_osm else ""
 
-    det=(f'<div class="ar-detail-label">▼ {label_map.get(mode_key,"📋 詳細情報")}</div>'
-         f'<div class="ar-card-detail">{content["detail"]}</div>') if expanded else ""
+    # OSMスポットは詳細展開・免責・サマリーを非表示にしてシンプル表示
+    if is_osm:
+        det = ""
+        disclaimer = ""
+        summary_html = '<div class="ar-card-summary" style="color:rgba(255,255,255,0.7);font-size:14px;">📍 周辺スポット（OpenStreetMapデータ）</div>'
+    else:
+        det=(f'<div class="ar-detail-label">▼ {label_map.get(mode_key,"📋 詳細情報")}</div>'
+             f'<div class="ar-card-detail">{content["detail"]}</div>') if expanded else ""
+        summary_html = f'<div class="ar-card-summary">{content["summary"]}</div>'
 
     html=(f'<div class="ar-card {fc}" style="background:{mode_cfg["bg"]};opacity:{opac};">'
           + fb + osm_badge + wiki_badge
@@ -883,7 +890,7 @@ def render_spot_card(spot, mode_cfg, dist_km, brg, expanded, lang="ja"):
           + f'<span class="ar-badge">📏 {dist_label(dist_km)}</span>'
           + f'<span class="ar-badge">🧭 {deg_to_dir(brg)} {int(brg)}°</span>'
           + f'<span class="ar-badge">🏔 {spot["altitude"]}m</span>'
-          + f'<div class="ar-card-summary">{content["summary"]}</div>'
+          + summary_html
           + det
           + (f'<div class="ar-disclaimer">{disclaimer}</div>' if disclaimer else "")
           + "</div>")
@@ -1115,10 +1122,6 @@ def main():
             st.markdown('<div class="ar-card font-noto-sans" style="background:rgba(100,150,220,0.55);text-align:center;">📭 この範囲にスポットがありません</div>',unsafe_allow_html=True)
         else:
             for sp,dist_km,brg in visible_spots:
-                is_osm = sp.get("id","").startswith("osm_")
-                # OSMスポットはメイン案内のみ表示（詳細データがないモードでは非表示）
-                if is_osm and mode_cfg["key"] not in ("main","night"):
-                    continue
                 render_spot_card(sp,mode_cfg,dist_km,brg,show_detail,selected_lang)
                 if sp.get("location_limited") and dist_km<0.3:
                     st.markdown(f'<div class="location-limited-card">🌟 <strong style="color:#2a4a8a;">現地限定コンテンツ解放！</strong><br><span style="font-size:16px;color:#2a4060;">{sp["location_limited_content"]}</span></div>',unsafe_allow_html=True)
