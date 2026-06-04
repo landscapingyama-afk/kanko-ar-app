@@ -1061,7 +1061,7 @@ def main():
             st.markdown("---")
             show_detail=st.toggle("🔍 詳細情報を表示",value=False)
             st.markdown("---")
-            use_osm=st.toggle("🌐 周辺スポット自動取得（OSM）",value=False)
+            use_osm=st.toggle("🌐 周辺スポット自動取得（OSM）",value=True)
 
         all_spots=list(SPOT_DATA_BUILTIN)
         if use_osm:
