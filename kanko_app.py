@@ -186,7 +186,7 @@ def analyze_cloud_gemini(image_bytes):
         return dummy
     try:
         import base64; img_b64 = base64.b64encode(image_bytes).decode()
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
         payload = {"contents":[{"parts":[{"text":'この画像の雲を分析してください。JSONのみで回答:{"cloud_type":"雲の種類","description":"特徴を2行以内","weather_hint":"天気の傾向を1行で"}'},{"inline_data":{"mime_type":"image/jpeg","data":img_b64}}]}]}
         r = requests.post(url, json=payload, timeout=20)
         if r.status_code == 400:
