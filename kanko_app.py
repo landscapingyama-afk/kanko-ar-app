@@ -175,7 +175,7 @@ def analyze_cloud_gemini(image_bytes):
 def make_share_text(spot, mode_cfg, dist_km):
     cat_map={"shrine":"⛩","mountain":"🏔","castle":"🏯","temple":"🛕","default":"📍"}
     icon=cat_map.get(spot.get("category","default"),"📍")
-    mode_name={"main":"観光案内","urban_legend":"都市伝説","powerspot":"パワースポット","healing":"撮影スポット","festival":"行事案内","old_map":"古地図","cloud":"雲判定"}.get(mode_cfg["key"],"AR案内")
+    mode_name={"main":"観光案内","urban_legend":"都市伝説","powerspot":"パワースポット","healing":"撮影スポット","festival":"行事案内","old_map":"歴史案内","cloud":"雲判定"}.get(mode_cfg["key"],"AR案内")
     return (f"{icon} {spot['name']}を訪れました！\n📍 {spot['prefecture']} {spot['city']}\n🏔 標高{spot['altitude']}m\n📱 {mode_name}モードで探索中\n\n#播磨AR #観光アプリ #{spot['name'].replace(' ','')} #{spot['city'].replace(' ','')}")
 
 # ============================================================
@@ -301,31 +301,25 @@ def show_old_map_image(spot):
         <div style="font-size:18px;font-weight:700;color:#3a2000;margin-bottom:10px;">
         📜 {map_info['title']}</div>
 
-        <div style="font-size:14px;color:#5a3a00;line-height:1.8;margin-bottom:12px;">
+        <div style="font-size:14px;color:#5a3a00;line-height:1.8;margin-bottom:8px;">
         ⏳ <b>作成年：</b>{map_info['era']}<br>
         📍 <b>{spot['name']}</b>はこの時代から記録に残る歴史的な地点です。<br>
         📝 {map_info['note']}
         </div>
 
-        <a href="{map_info['source_url']}" target="_blank"
-        style="display:inline-block;background:linear-gradient(135deg,#8B6914,#C8960C);
-        color:#FFF;text-decoration:none;padding:10px 20px;border-radius:10px;
-        font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(100,60,0,0.3);">
-        🗺 古地図を別タブで開く →
-        </a>
-
-        <div style="font-size:12px;color:#7a5a20;margin-top:10px;">
-        🔍 現代の地図と見比べると、地名や道の変化がわかります。
+        <div style="background:rgba(255,240,200,0.60);border-radius:10px;
+        padding:10px 14px;font-size:13px;color:#5a3a00;line-height:1.8;">
+        🔍 <b>江戸時代の絵図を見るには</b><br>
+        国立公文書館デジタルアーカイブ（digital.archives.go.jp）で<br>
+        「元禄国絵図」または「天保国絵図」と検索してください。<br>
+        播磨・大和・山城・摂津・讃岐国の絵図が無料で閲覧できます。
         </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # 権利表記（必須）
-    st.caption(
-        f"📖 出典：{map_info['source']} ／ パブリックドメイン（著作権保護期間満了）"
-    )
+    st.caption("📖 出典：国立公文書館デジタルアーカイブ ／ パブリックドメイン（著作権保護期間満了）")
 
 # ============================================================
 # ■ スポットデータ
@@ -370,7 +364,7 @@ SPOT_DATA_BUILTIN = [
             "　　赤・黄・緑のグラデーションが楽しめます。"
         ),
         "old_map_description": "江戸時代の播磨国絵図にも記された神聖な山。古来より地域の人々の信仰を集めてきた。",
-        "old_map_detail": "📜 元禄国絵図（1702年）に播磨国として記載。\n🗺 明治以降の地形図と比較すると参拝道の変遷が読み取れます。\n🖼 下の「古地図を別タブで開く」から実際の江戸時代の絵図をご覧いただけます。",
+        "old_map_detail": "📜 元禄国絵図（1702年）に播磨国として記載。\n🗺 明治以降の地形図と比較すると参拝道の変遷が読み取れます。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "播磨平野を一望できる山頂からの雲の観察に最適な場所です。",
         "cloud_detail": "☁️ 積乱雲：夏の午後に南西から発達。雷雨の前兆。\n🌤 層積雲：朝のうちに漂う雲。晴天のサイン。\n🌫 高層雲：薄いベール状。翌日の雨の予兆。\n\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 1.0, "approved": True,
@@ -393,7 +387,7 @@ SPOT_DATA_BUILTIN = [
         "healing_text": "📸 撮影スポット情報",
         "healing_detail": "📍 おすすめ撮影ポイント\n\n🌅 山頂からの雲海（秋〜冬の早朝）\n　　播磨平野を覆う雲海は息をのむ絶景。日の出前後がベスト。\n\n🌸 ミツバツツジ（4〜5月）\n　　山全体がピンクに染まる季節。\n\n🍂 紅葉（10〜11月）\n　　ブナ林の黄葉が山を黄金色に染めます。\n\n❄️ 霧氷（12〜2月）\n　　氷の花が咲く幻想的な世界をぜひ。",
         "old_map_description": "江戸時代の播磨国絵図に「笠形山」として記された播磨の象徴的な名山。",
-        "old_map_detail": "📜 元禄国絵図（1702年）に播磨国の名山として記載。\n古くから播磨の目印として航行の目標にもなった山。江戸時代の紀行文にも登場します。\n🖼 下の「古地図を別タブで開く」から実際の江戸時代の絵図をご覧いただけます。",
+        "old_map_detail": "📜 元禄国絵図（1702年）に播磨国の名山として記載。\n古くから播磨の目印として航行の目標にもなった山。江戸時代の紀行文にも登場します。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "山頂からの雲海が有名。早朝に播磨平野を覆う雲海は幻想的な絶景です。",
         "cloud_detail": "秋〜冬の早朝に播磨平野に雲海が発生しやすくなります。\n⚠️ 天気予報は気象庁等でご確認ください。",
         "trust_score": 0.9, "approved": True, "location_limited": False, "location_limited_content": "",
@@ -414,7 +408,7 @@ SPOT_DATA_BUILTIN = [
         "healing_text": "📸 撮影スポット情報",
         "healing_detail": "📍 おすすめ撮影ポイント\n\n🌸 三の丸広場（春）\n　　桜と天守閣の絶景スポット。早朝は人が少なくおすすめ。\n\n🌊 姫路城好古園の池\n　　池に映る逆さ姫路城が幻想的。\n\n🌅 城見台公園（夕景）\n　　夕日に染まる姫路城が絶景。\n\n✨ ライトアップ（夏〜秋）\n　　白亜の天守が夜空に浮かぶ幻想的な光景。",
         "old_map_description": "江戸時代初期（1609年完成）の天守が現存する奇跡の城。",
-        "old_map_detail": "📜 慶長14年（1609年）に現在の天守が完成。元禄国絵図には「姫路」として城下町が記載。\n1993年世界遺産登録。江戸時代の絵図にも詳細に記された播磨の象徴。\n🖼 下の「古地図を別タブで開く」から実際の江戸時代の絵図をご覧いただけます。",
+        "old_map_detail": "📜 慶長14年（1609年）に現在の天守が完成。元禄国絵図には「姫路」として城下町が記載。\n1993年世界遺産登録。江戸時代の絵図にも詳細に記された播磨の象徴。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "姫路城天守閣（標高92m）からの眺望は絶品。東に高御位山、北に笠形山が見渡せます。",
         "cloud_detail": "東：高御位山（約17km）\n北：笠形山（約25km）\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 1.0, "approved": True, "location_limited": False, "location_limited_content": "",
@@ -435,7 +429,7 @@ SPOT_DATA_BUILTIN = [
         "healing_text": "📸 撮影スポット情報",
         "healing_detail": "📍 おすすめ撮影ポイント\n\n🌸 桜と本堂（3月下旬〜4月）\n　　国宝の本堂と桜のコントラストが美しい。\n\n🌳 大銀杏（11月）\n　　樹齢700年の大銀杏の黄葉は圧巻。\n　　根元から見上げる構図がおすすめ。\n\n🏛 太子堂と中門\n　　朝の光が差し込む時間帯が幻想的。\n\n❄️ 冬の境内\n　　人が少なく静寂の中で撮影できます。",
         "old_map_description": "推古天皇元年（593年）創建。江戸時代には「播磨の法隆寺」として広く知られた古刹。",
-        "old_map_detail": "📜 元禄国絵図（1702年）の加古川周辺に記載。\n平安時代の建築様式を今に伝える本堂（国宝）と太子堂（国宝）が残ります。\n🖼 下の「古地図を別タブで開く」から実際の江戸時代の絵図をご覧いただけます。",
+        "old_map_detail": "📜 元禄国絵図（1702年）の加古川周辺に記載。\n平安時代の建築様式を今に伝える本堂（国宝）と太子堂（国宝）が残ります。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "境内の大銀杏（樹齢推定700年）の梢から見上げる空は特別な美しさがあります。",
         "cloud_detail": "大銀杏の根元から空を見上げると、四季折々の雲の表情が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.95, "approved": True, "location_limited": False, "location_limited_content": "",
@@ -456,7 +450,7 @@ SPOT_DATA_BUILTIN = [
         "healing_text": "📸 撮影スポット情報",
         "healing_detail": "📍 おすすめ撮影ポイント\n\n🦌 南大門と鹿（早朝）\n　　人が少ない早朝に鹿と南大門を一緒に撮影。\n\n🌸 大仏殿と桜（3月下旬）\n　　春の東大寺は格別の美しさ。\n\n🍂 若草山の紅葉（11月）\n　　東大寺を背景に紅葉の写真が撮れます。\n\n✨ 二月堂からの夜景\n　　奈良市内を見渡す夜景スポット。",
         "old_map_description": "天平15年（743年）聖武天皇の勅願で創建。江戸時代に現在の大仏殿が再建された。",
-        "old_map_detail": "📜 天保国絵図（1838年）の大和国に記載。743年聖武天皇の詔により建立開始。\n現在の大仏殿は江戸時代（1709年）に再建されたもの。世界最大級の木造建築。\n🖼 下の「古地図を別タブで開く」から実際の江戸時代の絵図をご覧いただけます。",
+        "old_map_detail": "📜 天保国絵図（1838年）の大和国に記載。743年聖武天皇の詔により建立開始。\n現在の大仏殿は江戸時代（1709年）に再建されたもの。世界最大級の木造建築。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "若草山山頂（342m）からの眺望は奈良盆地を一望できる絶好の雲観察スポットです。",
         "cloud_detail": "若草山から奈良盆地を見渡すと四季折々の雲が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 1.0, "approved": True, "location_limited": False, "location_limited_content": "",
@@ -477,7 +471,7 @@ SPOT_DATA_BUILTIN = [
         "healing_text": "📸 撮影スポット情報",
         "healing_detail": "📍 おすすめ撮影ポイント\n\n🌊 鏡湖池からの金閣（午前中）\n　　午前中は逆光を避けられ、池に映る逆さ金閣が美しい。\n\n❄️ 雪の金閣（冬）\n　　金と白のコントラストは絶景。積雪の翌朝が狙い目。\n\n🍂 紅葉と金閣（11月下旬）\n　　赤・金・緑のコントラストが最高の季節。\n\n🌸 夜明けの金閣\n　　開門直後（9時）は観光客が少なくゆっくり撮影できます。",
         "old_map_description": "1397年足利義満が創建。江戸時代の絵図にも「金閣」として描かれた京都を代表する名所。",
-        "old_map_detail": "📜 天保国絵図（1838年）の山城国に記載。1397年足利義満が「北山山荘」として造営。\n義満の死後に禅寺となった。現在の建物は1955年の再建。1994年世界遺産登録。\n🖼 下の「古地図を別タブで開く」から実際の江戸時代の絵図をご覧いただけます。",
+        "old_map_detail": "📜 天保国絵図（1838年）の山城国に記載。1397年足利義満が「北山山荘」として造営。\n義満の死後に禅寺となった。現在の建物は1955年の再建。1994年世界遺産登録。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "衣笠山を背景にした金閣寺からの空の眺めは特別な美しさがあります。",
         "cloud_detail": "鏡湖池から空を見上げると、金閣と雲のコントラストが楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 1.0, "approved": True, "location_limited": False, "location_limited_content": "",
@@ -498,7 +492,7 @@ SPOT_DATA_BUILTIN = [
         "healing_text": "📸 撮影スポット情報",
         "healing_detail": "📍 おすすめ撮影ポイント\n\n🌸 西の丸庭園（春）\n　　桜と天守閣の定番構図。600本の桜が咲き誇る。\n\n🏯 極楽橋から見上げる天守閣\n　　石垣と天守閣の迫力ある構図が撮れる。\n\n🌅 天守閣最上階からの夕景\n　　大阪の街が夕日に染まる絶景スポット。\n\n✨ ライトアップ（不定期）\n　　夜の大阪城は昼間とは異なる幻想的な雰囲気。",
         "old_map_description": "1583年豊臣秀吉が築城開始。江戸時代には徳川幕府により改修。明治以降に現在の公園として整備された。",
-        "old_map_detail": "📜 天保国絵図（1838年）の摂津国に記載。1583年築城開始。1615年大坂夏の陣で落城。\n現在の天守閣は1931年再建。江戸時代の絵図にも詳細に描かれた。\n🖼 下の「古地図を別タブで開く」から実際の江戸時代の絵図をご覧いただけます。",
+        "old_map_detail": "📜 天保国絵図（1838年）の摂津国に記載。1583年築城開始。1615年大坂夏の陣で落城。\n現在の天守閣は1931年再建。江戸時代の絵図にも詳細に描かれた。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "大阪城天守閣（標高約50m）からは大阪平野を一望。空気が澄んだ日は六甲山・生駒山も見える絶好の雲観察スポット。",
         "cloud_detail": "天守閣最上階から360度の眺望が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 1.0, "approved": True, "location_limited": False, "location_limited_content": "",
@@ -519,7 +513,7 @@ SPOT_DATA_BUILTIN = [
         "healing_text": "📸 撮影スポット情報",
         "healing_detail": "📍 おすすめ撮影ポイント\n\n🌸 三重塔と桜（3月下旬〜4月）\n　　古い塔と桜のコントラストが美しい。\n\n🍂 紅葉と伽藍（11月）\n　　静かな境内に紅葉が映える。",
         "old_map_description": "推古天皇元年（593年）聖徳太子が建立したと伝わる。江戸時代には法隆寺の末寺として栄えた。",
-        "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・揖保郡に記載。593年創建と伝わる古刹。\n播磨国の重要な寺院として江戸時代の絵図にも記されています。\n🖼 下の「古地図を別タブで開く」から実際の江戸時代の絵図をご覧いただけます。",
+        "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・揖保郡に記載。593年創建と伝わる古刹。\n播磨国の重要な寺院として江戸時代の絵図にも記されています。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "揖保川沿いの平野に位置し、周囲の山並みと雲の眺めが美しいスポットです。",
         "cloud_detail": "揖保川流域の平野から見渡す空は開放的です。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.9, "approved": True, "location_limited": False, "location_limited_content": "",
@@ -540,7 +534,7 @@ SPOT_DATA_BUILTIN = [
         "healing_text": "📸 撮影スポット情報",
         "healing_detail": "📍 おすすめ撮影ポイント\n\n☁️ 天空の鳥居（雲海の日）\n　　雲が出た日の朝に鳥居と雲海を撮影！絶景。\n\n🌅 夕日と鳥居\n　　夕暮れ時に鳥居越しに沈む夕日は格別。\n\n🌊 山頂からの讃岐平野\n　　360度の絶景パノラマは必撮。",
         "old_map_description": "創建年代不詳の古社。稲積山に鎮座し、古くから讃岐の人々の信仰を集めてきた。",
-        "old_map_detail": "📜 天保国絵図（1838年）の讃岐国に記載。稲積山山頂に鎮座する古社。\n江戸時代の讃岐国の絵図にも記された地域の守護神。近年は天空の鳥居として全国的に有名に。\n🖼 下の「古地図を別タブで開く」から実際の江戸時代の絵図をご覧いただけます。",
+        "old_map_detail": "📜 天保国絵図（1838年）の讃岐国に記載。稲積山山頂に鎮座する古社。\n江戸時代の讃岐国の絵図にも記された地域の守護神。近年は天空の鳥居として全国的に有名に。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "標高404mの山頂から見渡す讃岐平野と瀬戸内海。雲海が発生する日は特別な絶景が楽しめます。",
         "cloud_detail": "☁️ 雲海（秋〜冬の早朝）：讃岐平野を覆う雲海は絶景。\n🌤 積乱雲：夏の午後に瀬戸内海方面から発達します。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 1.0, "approved": True, "location_limited": False, "location_limited_content": "",
@@ -561,7 +555,7 @@ SPOT_DATA_BUILTIN = [
         "healing_text": "📸 撮影スポット情報",
         "healing_detail": "📍 おすすめ撮影ポイント\n\n🌸 参道の桜（3月下旬〜4月）\n　　桜並木と鳥居の組み合わせが美しい。\n\n🌿 境内の御神木\n　　樹齢数百年の御神木は存在感抜群。\n\n🍂 秋の紅葉\n　　境内の紅葉が朱塗りの社殿を引き立てます。",
         "old_map_description": "平安時代の延喜式神名帳に記載された式内社。龍野藩の鎮守として歴代藩主に崇敬されてきた。",
-        "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・龍野周辺に記載。\n927年成立の延喜式に記された格式高い神社。龍野の地の守護神として崇敬を集めてきた。\n🖼 下の「古地図を別タブで開く」から実際の江戸時代の絵図をご覧いただけます。",
+        "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・龍野周辺に記載。\n927年成立の延喜式に記された格式高い神社。龍野の地の守護神として崇敬を集めてきた。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "たつの市の平野部に位置し、揖保川と周囲の山々を見渡せる清々しいスポットです。",
         "cloud_detail": "境内の高台から揖保川と周辺の山々が見渡せます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.9, "approved": True, "location_limited": False, "location_limited_content": "",
@@ -582,7 +576,7 @@ SPOT_DATA_BUILTIN = [
         "healing_text": "📸 撮影スポット情報",
         "healing_detail": "📍 おすすめ撮影ポイント\n\n🌅 海と鳥居（夕景）\n　　夕日に染まる瀬戸内海と鳥居のシルエットが絶景。\n\n🌊 海辺の参道\n　　波の音と潮風の中を歩く参道が風情豊か。\n\n🦢 白鷺が来る季節\n　　白鷺が舞い降りる瞬間を狙ってみましょう。",
         "old_map_description": "平安時代の延喜式神名帳に記載された式内社。海辺に鎮座し、古くから航海者・漁師に崇拝されてきた。",
-        "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・赤穂周辺に記載。\n927年成立の延喜式に記された古社。播磨灘を望む立地から瀬戸内の船乗りたちの信仰を集めてきた。\n🖼 下の「古地図を別タブで開く」から実際の江戸時代の絵図をご覧いただけます。",
+        "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・赤穂周辺に記載。\n927年成立の延喜式に記された古社。播磨灘を望む立地から瀬戸内の船乗りたちの信仰を集めてきた。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "瀬戸内海に面した境内から望む空と海の眺めは格別。播磨灘の雲の変化が楽しめます。",
         "cloud_detail": "☁️ 海霧（春〜初夏）：朝に瀬戸内海から霧が流れ込む幻想的な光景。\n🌤 入道雲（夏）：播磨灘に発達する入道雲は壮観。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.9, "approved": True, "location_limited": False, "location_limited_content": "",
@@ -622,7 +616,7 @@ MODES = {
     "📸 撮影スポット":  {"key":"healing",      "font":"Noto Serif JP", "bg":"rgba(255,170,200,0.76)","pin_color":"#FFE8F5","icon":"📸"},
     "⚡ パワースポット": {"key":"powerspot",    "font":"M PLUS 1p",    "bg":"rgba(255,140,160,0.78)","pin_color":"#FFE0E8","icon":"⚡"},
     "🎋 行事案内":      {"key":"festival",     "font":"Kosugi Maru",  "bg":"rgba(255,155,175,0.78)","pin_color":"#FFE5EC","icon":"🎋"},
-    "📜 古地図":        {"key":"old_map",      "font":"Kaisei Decol", "bg":"rgba(240,155,170,0.80)","pin_color":"#FFE8E0","icon":"📜"},
+    "📜 歴史案内":      {"key":"old_map",      "font":"Kaisei Decol", "bg":"rgba(240,155,170,0.80)","pin_color":"#FFE8E0","icon":"📜"},
     "☁️ 雲判定":        {"key":"cloud",        "font":"Kosugi Maru",  "bg":"rgba(160,210,235,0.76)","pin_color":"#E8F8FF","icon":"☁️"},
     "🌙 夜モード":      {"key":"night",        "font":"Noto Sans JP",  "bg":"rgba(10,10,40,0.75)",  "pin_color":"#8888FF","icon":"🌙"},
     "🎴 おみくじ":      {"key":"omikuji",      "font":"Kaisei Decol",  "bg":"rgba(200,140,160,0.82)","pin_color":"#FFE8F0","icon":"🎴"},
@@ -1160,7 +1154,7 @@ def main():
         st.markdown("""<style>.stApp{background:linear-gradient(160deg,#050510 0%,#0a0a28 40%,#080818 100%)!important;}.app-header h1{color:#8888FF!important;}.info-panel,.ar-compass,.lookaround-card,.share-card,.report-form{background:rgba(20,20,60,0.65)!important;color:#CCCCFF!important;}.ar-card{color:#EEEEFF!important;}.ar-card-title{color:#FFFFFF!important;}.mode-title-bar{color:#FFFFFF!important;}</style>""",unsafe_allow_html=True)
 
     now=datetime.now().strftime("%Y年%m月%d日 %H:%M")
-    st.markdown(f'<div class="app-footer">観光AR案内アプリ フェーズ7+古地図 ／ 播磨・関西エリア<br>Wikipedia API：CC BY-SA ／ 古地図：国立公文書館デジタルアーカイブ（パブリックドメイン）<br>最終更新：{now} ／ v18 Phase7+OldMap</div>',unsafe_allow_html=True)
+    st.markdown(f'<div class="app-footer">観光AR案内アプリ フェーズ7+古地図 ／ 播磨・関西エリア<br>Wikipedia API：CC BY-SA ／ 歴史案内：国立公文書館デジタルアーカイブ（パブリックドメイン）<br>最終更新：{now} ／ v18 Phase7+OldMap</div>',unsafe_allow_html=True)
 
 if __name__=="__main__":
     main()
