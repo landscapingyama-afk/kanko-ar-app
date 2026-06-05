@@ -1473,7 +1473,7 @@ def main():
                         )
                         with urllib.request.urlopen(req, timeout=10) as res:
                             if res.status == 200:
-                                st.success("✅ 送信完了！管理者に届きました。ありがとうございます。")
+                                st.success("✅ ご報告ありがとうございます！内容を確認して対応します。")
                                 st.balloons()
                             else:
                                 st.warning("送信に失敗しました。もう一度お試しください。")
