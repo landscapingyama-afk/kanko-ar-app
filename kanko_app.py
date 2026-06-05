@@ -1475,7 +1475,7 @@ def main():
 
         st.markdown("---")
         with st.expander("⚠️ 問題を報告する・写真を提供する"):
-            st.markdown('<div class="report-form"><b>📝 問題報告・写真登録フォーム</b><br><span style="font-size:13px;">情報の誤り・写真の登録などをご報告ください。管理者のメールに届きます。</span></div>',unsafe_allow_html=True)
+            st.markdown('<div class="report-form"><b>📝 問題報告・写真提供フォーム</b><br><span style="font-size:13px;">情報情報の誤りをご報告ください。写真を提供される場合はメール送信時に添付してください。</span></div>',unsafe_allow_html=True)
             report_spot=st.text_input("スポット名（任意）",placeholder="例：高御位神社")
             report_type=st.selectbox("種類",["情報が間違っている","地図の位置がずれている","表示が崩れている","📸 写真を提供する","その他"])
             report_detail=st.text_area("詳細を教えてください",height=80,placeholder="写真登録の場合は撮影場所・日時などをお書きください")
@@ -1486,11 +1486,11 @@ def main():
                     padding:10px 14px;margin-bottom:8px;font-size:13px;color:#5a3a00;line-height:1.8;">
                     📸 <b>写真の送り方</b><br>
                     ① 下の「メールアプリで送信する」をタップ<br>
-                    ② Gmailが開いたら📎アイコンをタップ<br>
+                    ② メールアプリが開いたら📎アイコンをタップ<br>
                     ③ カメラロールから写真を選んで添付<br>
                     ④ 送信！<br>
                     <span style="font-size:11px;color:#7a5a20;">
-                    ※ 問題のない写真はアプリの観光地に掲載します。<br>
+                    ※ ご提供いただいた写真は、管理者が確認後、アプリの観光地案内に掲載させていただく場合があります。<br>
                     ※ みなさんの写真でアプリを一緒に作り上げましょう！
                     </span>
                     </div>''',
