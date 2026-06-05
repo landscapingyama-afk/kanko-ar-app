@@ -774,7 +774,7 @@ MODES = {
     "⚡ パワースポット": {"key":"powerspot",    "font":"M PLUS 1p",    "bg":"rgba(255,140,160,0.78)","pin_color":"#FFE0E8","icon":"⚡"},
     "🎋 行事案内":      {"key":"festival",     "font":"Kosugi Maru",  "bg":"rgba(255,155,175,0.78)","pin_color":"#FFE5EC","icon":"🎋"},
     "📜 歴史案内":      {"key":"old_map",      "font":"Kaisei Decol", "bg":"rgba(240,155,170,0.80)","pin_color":"#FFE8E0","icon":"📜"},
-    "☁️ 雲判定":        {"key":"cloud",        "font":"Kosugi Maru",  "bg":"rgba(160,210,235,0.76)","pin_color":"#E8F8FF","icon":"☁️"},
+    "☁️雲判定":         {"key":"cloud",        "font":"Kosugi Maru",  "bg":"rgba(160,210,235,0.76)","pin_color":"#E8F8FF","icon":"☁️"},
     "🌙 夜モード":      {"key":"night",        "font":"Noto Sans JP",  "bg":"rgba(10,10,40,0.75)",  "pin_color":"#8888FF","icon":"🌙"},
     "🎴 おみくじ":      {"key":"omikuji",      "font":"Kaisei Decol",  "bg":"rgba(200,140,160,0.82)","pin_color":"#FFE8F0","icon":"🎴"},
 }
@@ -1164,12 +1164,12 @@ def main():
     # エラー表示を非表示
     st.markdown('<style>div[data-testid="stException"],div[class*="stException"]{display:none!important;height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;}</style>', unsafe_allow_html=True)
     st.markdown('''<div class="app-header">
-        <h1 style="font-family:'Kaisei Decol',serif;font-size:32px;
+        <h1 style="font-family:'Kaisei Decol',serif;font-size:24px;
         background:linear-gradient(135deg,#2a4a7a,#6a4a9a,#2a6a9a);
         -webkit-background-clip:text;-webkit-text-fill-color:transparent;
         background-clip:text;
         text-shadow:none;
-        letter-spacing:0.12em;font-weight:700;
+        letter-spacing:0.06em;font-weight:700;white-space:nowrap;
         filter:drop-shadow(0 2px 4px rgba(80,60,140,0.3));">
         ✦ 観光スポットナビ ✦</h1>
         <p style="font-family:'Kosugi Maru',sans-serif;font-size:13px;color:#4a6a9a;
