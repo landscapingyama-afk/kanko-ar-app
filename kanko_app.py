@@ -1163,7 +1163,19 @@ def main():
     st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
     # エラー表示を非表示
     st.markdown('<style>div[data-testid="stException"],div[class*="stException"]{display:none!important;height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;}</style>', unsafe_allow_html=True)
-    st.markdown('<div class="app-header"><h1>📍 観光スポットナビ</h1><p>GPS連動・都市伝説・パワースポット・おみくじ・雲判定… 旅をもっと楽しくする10の機能</p></div>',unsafe_allow_html=True)
+    st.markdown('''<div class="app-header">
+        <h1 style="font-family:'Kaisei Decol',serif;font-size:32px;
+        background:linear-gradient(135deg,#2a4a7a,#6a4a9a,#2a6a9a);
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        background-clip:text;
+        text-shadow:none;
+        letter-spacing:0.12em;font-weight:700;
+        filter:drop-shadow(0 2px 4px rgba(80,60,140,0.3));">
+        ✦ 観光スポットナビ ✦</h1>
+        <p style="font-family:'Kosugi Maru',sans-serif;font-size:13px;color:#4a6a9a;
+        letter-spacing:0.05em;">
+        GPS連動・都市伝説・パワースポット・おみくじ・雲判定…<br>旅をもっと楽しくする10の機能</p>
+        </div>''', unsafe_allow_html=True)
 
     if not st.session_state.safety_shown:
         st.markdown('<div class="safety-warning"><p>⚠️ 歩きながらの使用は危険です。<br>必ず立ち止まってご使用ください。</p></div>',unsafe_allow_html=True)
