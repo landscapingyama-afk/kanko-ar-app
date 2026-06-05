@@ -195,7 +195,7 @@ def make_share_text(spot, mode_cfg, dist_km):
         f"\n"
         f"▶ https://kanko-ar-harima.streamlit.app\n"
         f"\n"
-        f"#播磨AR #観光アプリ #{spot['name'].replace(' ','')} #{spot['city'].replace(' ','')}"
+        f"#観光スポットナビ #観光アプリ #{spot['name'].replace(' ','')} #{spot['city'].replace(' ','')}"
     )
 
 # ============================================================
@@ -1179,10 +1179,10 @@ def main():
             # 播磨エリア
             with st.expander("🗾 播磨エリア（兵庫県）", expanded=False):
                 categories = {
-                    "⛩ 神社": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("category")=="shrine"],
-                    "🛕 寺院": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("category")=="temple"],
-                    "🏯 城・史跡": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("category") in ("castle","historical")],
-                    "🏔 山・自然": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("category")=="mountain"],
+                    "⛩ 神社": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city")!="淡路市" and s.get("category")=="shrine"],
+                    "🛕 寺院": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city")!="淡路市" and s.get("category")=="temple"],
+                    "🏯 城・史跡": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city")!="淡路市" and s.get("category") in ("castle","historical")],
+                    "🏔 山・自然": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city")!="淡路市" and s.get("category")=="mountain"],
                 }
                 for cat_label, spots in categories.items():
                     if not spots: continue
