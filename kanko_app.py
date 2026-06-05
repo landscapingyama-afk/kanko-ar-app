@@ -181,10 +181,12 @@ def make_share_text(spot, mode_cfg, dist_km):
     season = "🌸 春" if month in (3,4,5) else "☀️ 夏" if month in (6,7,8) else "🍂 秋" if month in (9,10,11) else "❄️ 冬"
     # 訪問日時
     visit_dt = datetime.now().strftime("%Y年%m月%d日 %H:%M")
-    # 説明文（最初の30文字）
-    desc = spot.get("description","")[:30]
-    if len(spot.get("description","")) > 30:
-        desc += "…"
+    # 説明文（最初の「。」まで表示）
+    full_desc = spot.get("description","")
+    if "。" in full_desc:
+        desc = full_desc[:full_desc.index("。")+1]
+    else:
+        desc = full_desc[:50] + ("…" if len(full_desc) > 50 else "")
     return (
         f"{icon} {spot['name']}を訪れました！\n"
         f"📍 {spot['prefecture']} {spot['city']}\n"
@@ -1159,6 +1161,8 @@ def render_ar_view(visible_spots, heading, user_lat, user_lon):
 def main():
     init_session(); init_db()
     st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
+    # エラー表示を非表示
+    st.markdown('<style>div[data-testid="stException"],div[class*="stException"]{display:none!important;height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;}</style>', unsafe_allow_html=True)
     st.markdown('<div class="app-header"><h1>📍 観光スポットナビ</h1><p>GPS連動・都市伝説・パワースポット・おみくじ・雲判定… 旅をもっと楽しくする10の機能</p></div>',unsafe_allow_html=True)
 
     if not st.session_state.safety_shown:
@@ -1475,10 +1479,10 @@ def main():
 
         st.markdown("---")
         with st.expander("⚠️ 問題を報告する・写真を提供する"):
-            st.markdown('<div class="report-form"><b>📝 問題報告・写真提供フォーム</b><br><span style="font-size:13px;">情報情報の誤りをご報告ください。写真を提供される場合はメール送信時に添付してください。</span></div>',unsafe_allow_html=True)
+            st.markdown('<div class="report-form"><b>📝 問題報告・写真提供フォーム</b><br><span style="font-size:13px;">情報の誤りをご報告ください。写真を提供される場合はメール送信時に添付してください。</span></div>',unsafe_allow_html=True)
             report_spot=st.text_input("スポット名（任意）",placeholder="例：高御位神社")
             report_type=st.selectbox("種類",["情報が間違っている","地図の位置がずれている","表示が崩れている","📸 写真を提供する","その他"])
-            report_detail=st.text_area("詳細を教えてください",height=80,placeholder="写真登録の場合は撮影場所・日時などをお書きください")
+            report_detail=st.text_area("詳細を教えてください",height=80,placeholder="詳細をお書きください（任意）")
             report_photo = None
             if report_type == "📸 写真を提供する":
                 st.markdown(
