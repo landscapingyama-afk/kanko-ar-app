@@ -1457,29 +1457,31 @@ def main():
                 if report_photo:
                     st.image(report_photo, caption="添付写真のプレビュー", use_column_width=True)
                     st.caption("※ 管理者が確認後、アプリに追加します。")
-            if st.button("📤 送信",type="primary"):
+            if st.button("📤 メールで送信",type="primary"):
                 if report_detail or report_photo:
-                    try:
-                        import urllib.request
-                        form_data = urllib.parse.urlencode({
-                            "スポット名": report_spot or "未記入",
-                            "種類": report_type,
-                            "詳細": report_detail or "未記入",
-                        }).encode()
-                        req = urllib.request.Request(
-                            "https://formspree.io/f/mvzngbal",
-                            data=form_data,
-                            headers={"Accept": "application/json"}
-                        )
-                        with urllib.request.urlopen(req, timeout=10) as res:
-                            if res.status == 200:
-                                st.success("✅ ご報告ありがとうございます！内容を確認して対応します。")
-                                st.balloons()
-                            else:
-                                st.warning("送信に失敗しました。もう一度お試しください。")
-                    except Exception as e:
-                        st.success("✅ ご報告ありがとうございます！内容を確認して対応します。")
-                        st.balloons()
+                    # メール本文を作成
+                    subject = urllib.parse.quote(f"【観光スポットナビ報告】{report_type}")
+                    body = urllib.parse.quote(
+                        f"種類：{report_type}\n"
+                        f"スポット名：{report_spot or '未記入'}\n"
+                        f"詳細：{report_detail or '未記入'}\n"
+                        f"\n※ 観光スポットナビアプリからの報告"
+                    )
+                    mailto = f"mailto:landscaping.yama@gmail.com?subject={subject}&body={body}"
+                    st.markdown(
+                        f'''<div style="margin-top:8px;">
+                        <a href="{mailto}"
+                        style="display:inline-block;background:linear-gradient(135deg,#4888e0,#2060c0);
+                        color:#FFF;text-decoration:none;padding:12px 24px;border-radius:10px;
+                        font-weight:700;font-size:15px;">
+                        📧 メールアプリで送信する
+                        </a>
+                        <div style="font-size:12px;color:#4a6a9a;margin-top:8px;">
+                        ※ タップするとメールアプリが開きます。内容を確認して送信してください。
+                        </div>
+                        </div>''',
+                        unsafe_allow_html=True
+                    )
                 else:
                     st.warning("詳細を入力するか写真を添付してください。")
 
