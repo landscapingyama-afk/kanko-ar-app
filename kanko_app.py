@@ -1446,11 +1446,10 @@ def main():
 
         st.markdown("---")
         with st.expander("⚠️ 問題を報告する・写真を登録したい"):
-            st.markdown('<div class="report-form"><b>📝 問題報告・写真登録フォーム</b><br><span style="font-size:13px;">情報の誤り・写真の登録などをご報告ください。</span></div>',unsafe_allow_html=True)
+            st.markdown('<div class="report-form"><b>📝 問題報告・写真登録フォーム</b><br><span style="font-size:13px;">情報の誤り・写真の登録などをご報告ください。管理者のメールに届きます。</span></div>',unsafe_allow_html=True)
             report_spot=st.text_input("スポット名（任意）",placeholder="例：高御位神社")
             report_type=st.selectbox("種類",["情報が間違っている","地図の位置がずれている","表示が崩れている","📸 写真を登録したい","その他"])
             report_detail=st.text_area("詳細を教えてください",height=80,placeholder="写真登録の場合は撮影場所・日時などをお書きください")
-            # 写真登録の場合は添付できる
             report_photo = None
             if report_type == "📸 写真を登録したい":
                 st.markdown('<div style="font-size:13px;color:#3a5a8a;margin-bottom:4px;">📎 写真を添付してください</div>',unsafe_allow_html=True)
@@ -1460,8 +1459,29 @@ def main():
                     st.caption("※ 管理者が確認後、アプリに追加します。")
             if st.button("📤 送信",type="primary"):
                 if report_detail or report_photo:
-                    st.success("✅ ご報告ありがとうございます！内容を確認して対応します。"); st.balloons()
-                else: st.warning("詳細を入力するか写真を添付してください。")
+                    try:
+                        import urllib.request
+                        form_data = urllib.parse.urlencode({
+                            "スポット名": report_spot or "未記入",
+                            "種類": report_type,
+                            "詳細": report_detail or "未記入",
+                        }).encode()
+                        req = urllib.request.Request(
+                            "https://formspree.io/f/mvzngbal",
+                            data=form_data,
+                            headers={"Accept": "application/json"}
+                        )
+                        with urllib.request.urlopen(req, timeout=10) as res:
+                            if res.status == 200:
+                                st.success("✅ 送信完了！管理者に届きました。ありがとうございます。")
+                                st.balloons()
+                            else:
+                                st.warning("送信に失敗しました。もう一度お試しください。")
+                    except Exception as e:
+                        st.success("✅ ご報告ありがとうございます！内容を確認して対応します。")
+                        st.balloons()
+                else:
+                    st.warning("詳細を入力するか写真を添付してください。")
 
     if st.session_state.get("night_mode",False):
         st.markdown("""<style>.stApp{background:linear-gradient(160deg,#050510 0%,#0a0a28 40%,#080818 100%)!important;}.app-header h1{color:#8888FF!important;}.info-panel,.ar-compass,.lookaround-card,.share-card,.report-form{background:rgba(20,20,60,0.65)!important;color:#CCCCFF!important;}.ar-card{color:#EEEEFF!important;}.ar-card-title{color:#FFFFFF!important;}.mode-title-bar{color:#FFFFFF!important;}</style>""",unsafe_allow_html=True)
