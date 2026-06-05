@@ -387,6 +387,7 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 元禄国絵図（1702年）に播磨国として記載。\n🗺 明治以降の地形図と比較すると参拝道の変遷が読み取れます。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "播磨平野を一望できる山頂からの雲の観察に最適な場所です。",
         "cloud_detail": "☁️ 積乱雲：夏の午後に南西から発達。雷雨の前兆。\n🌤 層積雲：朝のうちに漂う雲。晴天のサイン。\n🌫 高層雲：薄いベール状。翌日の雨の予兆。\n\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
+        "photo_url": "", "photo_credit": "",
         "trust_score": 1.0, "approved": True,
         "location_limited": True,
         "location_limited_content": "山頂限定：磐座のご神気を感じる特別なパワースポット情報が解放されました。",
@@ -410,7 +411,8 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 元禄国絵図（1702年）に播磨国の名山として記載。\n古くから播磨の目印として航行の目標にもなった山。江戸時代の紀行文にも登場します。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "山頂からの雲海が有名。早朝に播磨平野を覆う雲海は幻想的な絶景です。",
         "cloud_detail": "秋〜冬の早朝に播磨平野に雲海が発生しやすくなります。\n⚠️ 天気予報は気象庁等でご確認ください。",
-        "trust_score": 0.9, "approved": True, "location_limited": False, "location_limited_content": "",
+        "trust_score": 0.9, "photo_url": "", "photo_credit": "",
+        "approved": True, "location_limited": False, "location_limited_content": "",
     },
     {
         "id": "himeji_castle_003", "name": "姫路城", "name_kana": "ひめじじょう",
@@ -431,7 +433,8 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 慶長14年（1609年）に現在の天守が完成。元禄国絵図には「姫路」として城下町が記載。\n1993年世界遺産登録。江戸時代の絵図にも詳細に記された播磨の象徴。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "姫路城天守閣（標高92m）からの眺望は絶品。東に高御位山、北に笠形山が見渡せます。",
         "cloud_detail": "東：高御位山（約17km）\n北：笠形山（約25km）\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "trust_score": 1.0, "approved": True, "location_limited": False, "location_limited_content": "",
+        "trust_score": 1.0, "photo_url": "", "photo_credit": "",
+        "approved": True, "location_limited": False, "location_limited_content": "",
     },
     {
         "id": "kakurinji_004", "name": "鶴林寺", "name_kana": "かくりんじ",
@@ -452,7 +455,8 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 元禄国絵図（1702年）の加古川周辺に記載。\n平安時代の建築様式を今に伝える本堂（国宝）と太子堂（国宝）が残ります。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "境内の大銀杏（樹齢推定700年）の梢から見上げる空は特別な美しさがあります。",
         "cloud_detail": "大銀杏の根元から空を見上げると、四季折々の雲の表情が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "trust_score": 0.95, "approved": True, "location_limited": False, "location_limited_content": "",
+        "trust_score": 0.95, "photo_url": "", "photo_credit": "",
+        "approved": True, "location_limited": False, "location_limited_content": "",
     },
     {
         "id": "nara_todaiji_005", "name": "東大寺", "name_kana": "とうだいじ",
@@ -473,7 +477,8 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 天保国絵図（1838年）の大和国に記載。743年聖武天皇の詔により建立開始。\n現在の大仏殿は江戸時代（1709年）に再建されたもの。世界最大級の木造建築。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "若草山山頂（342m）からの眺望は奈良盆地を一望できる絶好の雲観察スポットです。",
         "cloud_detail": "若草山から奈良盆地を見渡すと四季折々の雲が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "trust_score": 1.0, "approved": True, "location_limited": False, "location_limited_content": "",
+        "trust_score": 1.0, "photo_url": "", "photo_credit": "",
+        "approved": True, "location_limited": False, "location_limited_content": "",
     },
     {
         "id": "kyoto_kinkakuji_006", "name": "金閣寺", "name_kana": "きんかくじ",
@@ -494,7 +499,8 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 天保国絵図（1838年）の山城国に記載。1397年足利義満が「北山山荘」として造営。\n義満の死後に禅寺となった。現在の建物は1955年の再建。1994年世界遺産登録。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "衣笠山を背景にした金閣寺からの空の眺めは特別な美しさがあります。",
         "cloud_detail": "鏡湖池から空を見上げると、金閣と雲のコントラストが楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "trust_score": 1.0, "approved": True, "location_limited": False, "location_limited_content": "",
+        "trust_score": 1.0, "photo_url": "", "photo_credit": "",
+        "approved": True, "location_limited": False, "location_limited_content": "",
     },
     {
         "id": "osaka_castle_007", "name": "大阪城", "name_kana": "おおさかじょう",
@@ -515,7 +521,8 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 天保国絵図（1838年）の摂津国に記載。1583年築城開始。1615年大坂夏の陣で落城。\n現在の天守閣は1931年再建。江戸時代の絵図にも詳細に描かれた。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "大阪城天守閣（標高約50m）からは大阪平野を一望。空気が澄んだ日は六甲山・生駒山も見える絶好の雲観察スポット。",
         "cloud_detail": "天守閣最上階から360度の眺望が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "trust_score": 1.0, "approved": True, "location_limited": False, "location_limited_content": "",
+        "trust_score": 1.0, "photo_url": "", "photo_credit": "",
+        "approved": True, "location_limited": False, "location_limited_content": "",
     },
     {
         "id": "ikarugatera_008", "name": "斑鳩寺", "name_kana": "いかるがでら",
@@ -536,7 +543,8 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・揖保郡に記載。593年創建と伝わる古刹。\n播磨国の重要な寺院として江戸時代の絵図にも記されています。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "揖保川沿いの平野に位置し、周囲の山並みと雲の眺めが美しいスポットです。",
         "cloud_detail": "揖保川流域の平野から見渡す空は開放的です。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "trust_score": 0.9, "approved": True, "location_limited": False, "location_limited_content": "",
+        "trust_score": 0.9, "photo_url": "", "photo_credit": "",
+        "approved": True, "location_limited": False, "location_limited_content": "",
     },
     {
         "id": "takaya_jinja_009", "name": "高屋神社", "name_kana": "たかやじんじゃ",
@@ -557,7 +565,8 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 天保国絵図（1838年）の讃岐国に記載。稲積山山頂に鎮座する古社。\n江戸時代の讃岐国の絵図にも記された地域の守護神。近年は天空の鳥居として全国的に有名に。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "標高404mの山頂から見渡す讃岐平野と瀬戸内海。雲海が発生する日は特別な絶景が楽しめます。",
         "cloud_detail": "☁️ 雲海（秋〜冬の早朝）：讃岐平野を覆う雲海は絶景。\n🌤 積乱雲：夏の午後に瀬戸内海方面から発達します。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "trust_score": 1.0, "approved": True, "location_limited": False, "location_limited_content": "",
+        "trust_score": 1.0, "photo_url": "", "photo_credit": "",
+        "approved": True, "location_limited": False, "location_limited_content": "",
     },
     {
         "id": "kamo_jinja_010", "name": "賀茂神社", "name_kana": "かもじんじゃ",
@@ -578,7 +587,8 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・龍野周辺に記載。\n927年成立の延喜式に記された格式高い神社。龍野の地の守護神として崇敬を集めてきた。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "たつの市の平野部に位置し、揖保川と周囲の山々を見渡せる清々しいスポットです。",
         "cloud_detail": "境内の高台から揖保川と周辺の山々が見渡せます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "trust_score": 0.9, "approved": True, "location_limited": False, "location_limited_content": "",
+        "trust_score": 0.9, "photo_url": "", "photo_credit": "",
+        "approved": True, "location_limited": False, "location_limited_content": "",
     },
     {
         "id": "wakasano_tenman_012",
@@ -723,7 +733,8 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・赤穂周辺に記載。\n927年成立の延喜式に記された古社。播磨灘を望む立地から瀬戸内の船乗りたちの信仰を集めてきた。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "瀬戸内海に面した境内から望む空と海の眺めは格別。播磨灘の雲の変化が楽しめます。",
         "cloud_detail": "☁️ 海霧（春〜初夏）：朝に瀬戸内海から霧が流れ込む幻想的な光景。\n🌤 入道雲（夏）：播磨灘に発達する入道雲は壮観。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "trust_score": 0.9, "approved": True, "location_limited": False, "location_limited_content": "",
+        "trust_score": 0.9, "photo_url": "", "photo_credit": "",
+        "approved": True, "location_limited": False, "location_limited_content": "",
     },
 ]
 
@@ -1027,6 +1038,10 @@ def render_spot_card(spot, mode_cfg, dist_km, brg, expanded, lang="ja"):
              f'<div class="ar-card-detail">{content["detail"]}</div>') if expanded else ""
         summary_html = f'<div class="ar-card-summary">{content["summary"]}</div>'
 
+    # 写真表示（photo_urlがある場合）
+    photo_url = spot.get("photo_url","")
+    photo_credit = spot.get("photo_credit","")
+
     html=(f'<div class="ar-card {fc}" style="background:{mode_cfg["bg"]};opacity:{opac};">'
           + fb + osm_badge + wiki_badge
           + f'<div class="ar-card-title">{cat_icon} {spot["name"]}</div>'
@@ -1039,6 +1054,20 @@ def render_spot_card(spot, mode_cfg, dist_km, brg, expanded, lang="ja"):
           + (f'<div class="ar-disclaimer">{disclaimer}</div>' if disclaimer else "")
           + "</div>")
     st.markdown(html, unsafe_allow_html=True)
+
+    # 写真があれば表示
+    if photo_url and not is_osm:
+        st.markdown(
+            f'''<div style="margin:-6px 0 8px 0;">
+            <img src="{photo_url}"
+            style="width:100%;max-height:220px;object-fit:cover;
+            border-radius:0 0 16px 16px;display:block;"
+            onerror="this.style.display='none'"/>
+            <div style="font-size:11px;color:#5a6a8a;text-align:right;
+            padding:2px 8px;">📷 {photo_credit}</div>
+            </div>''',
+            unsafe_allow_html=True
+        )
 
     # ★ 古地図モードの時だけ古地図画像カードを表示
     if mode_key == "old_map" and expanded:
@@ -1445,18 +1474,32 @@ def main():
             )
 
         st.markdown("---")
-        with st.expander("⚠️ 問題を報告する・写真を登録したい"):
+        with st.expander("⚠️ 問題を報告する・写真を提供する"):
             st.markdown('<div class="report-form"><b>📝 問題報告・写真登録フォーム</b><br><span style="font-size:13px;">情報の誤り・写真の登録などをご報告ください。管理者のメールに届きます。</span></div>',unsafe_allow_html=True)
             report_spot=st.text_input("スポット名（任意）",placeholder="例：高御位神社")
-            report_type=st.selectbox("種類",["情報が間違っている","地図の位置がずれている","表示が崩れている","📸 写真を登録したい","その他"])
+            report_type=st.selectbox("種類",["情報が間違っている","地図の位置がずれている","表示が崩れている","📸 写真を提供する","その他"])
             report_detail=st.text_area("詳細を教えてください",height=80,placeholder="写真登録の場合は撮影場所・日時などをお書きください")
             report_photo = None
-            if report_type == "📸 写真を登録したい":
-                st.markdown('<div style="font-size:13px;color:#3a5a8a;margin-bottom:4px;">📎 写真を添付してください</div>',unsafe_allow_html=True)
-                report_photo = st.file_uploader("写真を添付",type=["jpg","jpeg","png"],key="report_photo",label_visibility="collapsed")
+            if report_type == "📸 写真を提供する":
+                st.markdown(
+                    '''<div style="background:rgba(255,240,200,0.60);border-radius:10px;
+                    padding:10px 14px;margin-bottom:8px;font-size:13px;color:#5a3a00;line-height:1.8;">
+                    📸 <b>写真の送り方</b><br>
+                    ① 下の「メールアプリで送信する」をタップ<br>
+                    ② Gmailが開いたら📎アイコンをタップ<br>
+                    ③ カメラロールから写真を選んで添付<br>
+                    ④ 送信！<br>
+                    <span style="font-size:11px;color:#7a5a20;">
+                    ※ 問題のない写真はアプリの観光地に掲載します。<br>
+                    ※ みなさんの写真でアプリを一緒に作り上げましょう！
+                    </span>
+                    </div>''',
+                    unsafe_allow_html=True
+                )
+                report_photo = st.file_uploader("写真プレビュー（任意）",type=["jpg","jpeg","png"],key="report_photo",label_visibility="collapsed")
                 if report_photo:
-                    st.image(report_photo, caption="添付写真のプレビュー", use_column_width=True)
-                    st.caption("※ 管理者が確認後、アプリに追加します。")
+                    st.image(report_photo, caption="プレビュー（メールには自動添付されません）", use_column_width=True)
+                    st.caption("※ メールアプリで写真を手動添付してください。")
             # メールボタンを常に表示（入力内容をリアルタイムで反映）
             subject = urllib.parse.quote(f"【観光スポットナビ報告】{report_type}")
             body = urllib.parse.quote(
