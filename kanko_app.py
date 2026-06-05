@@ -1457,33 +1457,29 @@ def main():
                 if report_photo:
                     st.image(report_photo, caption="添付写真のプレビュー", use_column_width=True)
                     st.caption("※ 管理者が確認後、アプリに追加します。")
-            if st.button("📤 メールで送信",type="primary"):
-                if report_detail or report_photo:
-                    # メール本文を作成
-                    subject = urllib.parse.quote(f"【観光スポットナビ報告】{report_type}")
-                    body = urllib.parse.quote(
-                        f"種類：{report_type}\n"
-                        f"スポット名：{report_spot or '未記入'}\n"
-                        f"詳細：{report_detail or '未記入'}\n"
-                        f"\n※ 観光スポットナビアプリからの報告"
-                    )
-                    mailto = f"mailto:landscaping.yama@gmail.com?subject={subject}&body={body}"
-                    st.markdown(
-                        f'''<div style="margin-top:8px;">
-                        <a href="{mailto}"
-                        style="display:inline-block;background:linear-gradient(135deg,#4888e0,#2060c0);
-                        color:#FFF;text-decoration:none;padding:12px 24px;border-radius:10px;
-                        font-weight:700;font-size:15px;">
-                        📧 メールアプリで送信する
-                        </a>
-                        <div style="font-size:12px;color:#4a6a9a;margin-top:8px;">
-                        ※ タップするとメールアプリが開きます。内容を確認して送信してください。
-                        </div>
-                        </div>''',
-                        unsafe_allow_html=True
-                    )
-                else:
-                    st.warning("詳細を入力するか写真を添付してください。")
+            # メールボタンを常に表示（入力内容をリアルタイムで反映）
+            subject = urllib.parse.quote(f"【観光スポットナビ報告】{report_type}")
+            body = urllib.parse.quote(
+                f"種類：{report_type}\n"
+                f"スポット名：{report_spot or '未記入'}\n"
+                f"詳細：{report_detail or '未記入'}\n"
+                f"\n※ 観光スポットナビアプリからの報告"
+            )
+            mailto = f"mailto:landscaping.yama@gmail.com?subject={subject}&body={body}"
+            st.markdown(
+                f'''<div style="margin-top:8px;">
+                <a href="{mailto}"
+                style="display:inline-block;background:linear-gradient(135deg,#4888e0,#2060c0);
+                color:#FFF;text-decoration:none;padding:12px 24px;border-radius:10px;
+                font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(70,130,220,0.35);">
+                📧 メールアプリで送信する
+                </a>
+                <div style="font-size:12px;color:#4a6a9a;margin-top:8px;">
+                ※ タップするとメールアプリが開きます。内容を確認して送信してください。
+                </div>
+                </div>''',
+                unsafe_allow_html=True
+            )
 
     if st.session_state.get("night_mode",False):
         st.markdown("""<style>.stApp{background:linear-gradient(160deg,#050510 0%,#0a0a28 40%,#080818 100%)!important;}.app-header h1{color:#8888FF!important;}.info-panel,.ar-compass,.lookaround-card,.share-card,.report-form{background:rgba(20,20,60,0.65)!important;color:#CCCCFF!important;}.ar-card{color:#EEEEFF!important;}.ar-card-title{color:#FFFFFF!important;}.mode-title-bar{color:#FFFFFF!important;}</style>""",unsafe_allow_html=True)
