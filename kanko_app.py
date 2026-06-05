@@ -1190,7 +1190,7 @@ def main():
                     for sp in spots:
                         is_selected = st.session_state.get("selected_spot_id") == sp["id"]
                         btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
-                        if st.button(btn_label, use_container_width=True, key=f"sp_{sp['id']}"):
+                        if st.button(btn_label, use_container_width=True, key=f"sp_h_{sp['id']}_{cat_label[:2]}"):
                             st.session_state.preset_lat = sp["lat"]
                             st.session_state.preset_lon = sp["lon"]
                             st.session_state.selected_spot_id = sp["id"]
@@ -1210,7 +1210,7 @@ def main():
                     for sp in pref_spots:
                         is_selected = st.session_state.get("selected_spot_id") == sp["id"]
                         btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
-                        if st.button(btn_label, use_container_width=True, key=f"sp_{sp['id']}"):
+                        if st.button(btn_label, use_container_width=True, key=f"sp_k_{sp['id']}_{pref_label[:2]}"):
                             st.session_state.preset_lat = sp["lat"]
                             st.session_state.preset_lon = sp["lon"]
                             st.session_state.selected_spot_id = sp["id"]
@@ -1226,7 +1226,7 @@ def main():
                 for sp in awaji:
                     is_selected = st.session_state.get("selected_spot_id") == sp["id"]
                     btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
-                    if st.button(btn_label, use_container_width=True, key=f"sp_{sp['id']}"):
+                    if st.button(btn_label, use_container_width=True, key=f"sp_a_{sp['id']}"):
                         st.session_state.preset_lat = sp["lat"]
                         st.session_state.preset_lon = sp["lon"]
                         st.session_state.selected_spot_id = sp["id"]
@@ -1242,7 +1242,7 @@ def main():
                 for sp in kagawa:
                     is_selected = st.session_state.get("selected_spot_id") == sp["id"]
                     btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
-                    if st.button(btn_label, use_container_width=True, key=f"sp_{sp['id']}"):
+                    if st.button(btn_label, use_container_width=True, key=f"sp_g_{sp['id']}"):
                         st.session_state.preset_lat = sp["lat"]
                         st.session_state.preset_lon = sp["lon"]
                         st.session_state.selected_spot_id = sp["id"]
