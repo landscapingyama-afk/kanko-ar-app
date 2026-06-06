@@ -1486,13 +1486,29 @@ def main():
             import urllib.parse
             encoded = urllib.parse.quote(share_text)
             x_url = f"https://twitter.com/intent/tweet?text={encoded}"
-            fb_url = f"https://www.facebook.com/sharer/sharer.php?u=https://kanko-ar-harima.streamlit.app&quote={encoded}"
-            line_url = f"https://social-plugins.line.me/lineit/share?url=https://kanko-ar-harima.streamlit.app&text={encoded}"
+            fb_url = f"https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fkanko-ar-harima.streamlit.app&quote={encoded}"
+            line_url = f"https://line.me/R/share?text={encoded}"
+            # JavaScriptでwindow.openを使って外部ウィンドウで開く
             st.markdown(
                 f'''<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
-                <a href="{x_url}" target="_blank" style="display:inline-block;background:#000000;color:#FFF;text-decoration:none;padding:10px 18px;border-radius:10px;font-weight:700;font-size:14px;">𝕏 Xに投稿</a>
-                <a href="{fb_url}" target="_blank" style="display:inline-block;background:#1877F2;color:#FFF;text-decoration:none;padding:10px 18px;border-radius:10px;font-weight:700;font-size:14px;">📘 Facebookに投稿</a>
-                <a href="{line_url}" target="_blank" style="display:inline-block;background:#06C755;color:#FFF;text-decoration:none;padding:10px 18px;border-radius:10px;font-weight:700;font-size:14px;">💬 LINEで送る</a>
+                <a href="{x_url}" target="_blank" rel="noopener noreferrer"
+                onclick="window.open('{x_url}','_blank','width=600,height=400');return false;"
+                style="display:inline-block;background:#000000;color:#FFF;text-decoration:none;
+                padding:10px 18px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;">
+                𝕏 Xに投稿</a>
+                <a href="{fb_url}" target="_blank" rel="noopener noreferrer"
+                onclick="window.open('{fb_url}','_blank','width=600,height=400');return false;"
+                style="display:inline-block;background:#1877F2;color:#FFF;text-decoration:none;
+                padding:10px 18px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;">
+                📘 Facebookに投稿</a>
+                <a href="{line_url}" target="_blank" rel="noopener noreferrer"
+                onclick="window.open('{line_url}','_blank','width=600,height=400');return false;"
+                style="display:inline-block;background:#06C755;color:#FFF;text-decoration:none;
+                padding:10px 18px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;">
+                💬 LINEで送る</a>
+                </div>
+                <div style="font-size:11px;color:#4a6a9a;margin-top:6px;">
+                ※ ボタンをタップするとSNSアプリが開きます
                 </div>''',
                 unsafe_allow_html=True
             )
