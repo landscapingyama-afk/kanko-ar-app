@@ -123,18 +123,28 @@ def fetch_overpass_spots(center_lat, center_lon, radius_m=5000):
         return spots
     except Exception: return []
 
-def translate_deepl(text, target_lang="EN"):
-    api_key=get_secret("DEEPL_API_KEY")
-    if not api_key or not text: return text
-    cache_key=hashlib.md5(f"{text[:50]}_{target_lang}".encode()).hexdigest()
-    cached=cache_get(0.0,0.0,f"translate_{cache_key}",target_lang)
+def translate_google(text, target_lang="en"):
+    """Google翻訳（無料・APIキー不要）"""
+    if not text: return text
+    cache_key = hashlib.md5(f"{text[:50]}_{target_lang}".encode()).hexdigest()
+    cached = cache_get(0.0, 0.0, f"translate_{cache_key}", target_lang)
     if cached: return cached
     try:
-        r=requests.post("https://api-free.deepl.com/v2/translate",timeout=10,data={"auth_key":api_key,"text":text,"target_lang":target_lang})
-        if r.status_code!=200: return text
-        result=r.json()["translations"][0]["text"]
-        cache_set(0.0,0.0,f"translate_{cache_key}",result,target_lang); return result
+        import urllib.parse
+        encoded = urllib.parse.quote(text)
+        url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl=ja&tl={target_lang}&dt=t&q={encoded}"
+        r = requests.get(url, timeout=8, headers={"User-Agent": "Mozilla/5.0"})
+        if r.status_code != 200: return text
+        result = ""
+        for item in r.json()[0]:
+            if item[0]: result += item[0]
+        if result:
+            cache_set(0.0, 0.0, f"translate_{cache_key}", result, target_lang)
+        return result if result else text
     except Exception: return text
+
+def translate_deepl(text, target_lang="EN"):
+    return translate_google(text, target_lang.lower())
 
 def analyze_cloud_gemini(image_bytes):
     api_key = get_secret("GEMINI_API_KEY")
@@ -148,7 +158,7 @@ def analyze_cloud_gemini(image_bytes):
         return dummy
     try:
         import base64; img_b64 = base64.b64encode(image_bytes).decode()
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={api_key}"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-latest:generateContent?key={api_key}"
         payload = {"contents":[{"parts":[{"text":'この画像の雲を分析してください。JSONのみで回答:{"cloud_type":"雲の種類","description":"特徴を2行以内","weather_hint":"天気の傾向を1行で"}'},{"inline_data":{"mime_type":"image/jpeg","data":img_b64}}]}]}
         r = requests.post(url, json=payload, timeout=20)
         if r.status_code == 400:
@@ -783,7 +793,7 @@ FONT_CLASS = {
     "Noto Serif JP":"font-noto-serif","M PLUS 1p":"font-mplus1p",
     "Kosugi Maru":"font-kosugi-maru","Kaisei Decol":"font-kaisei-decol",
 }
-LANG_OPTIONS = {"🇯🇵 日本語":"ja","🇺🇸 English":"EN","🇨🇳 中文（簡体）":"ZH","🇰🇷 한국어":"KO"}
+# 翻訳機能無効のため削除
 GSI_TILES = {
     "標準地図":       {"url":"https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png",          "attr":"国土地理院","max_zoom":18},
     "写真（空中写真）":{"url":"https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg","attr":"国土地理院","max_zoom":18},
@@ -1308,10 +1318,8 @@ def main():
                 sim_heading=st.slider("🧭 向き（方位角）",0,359,45,1)
             st.markdown("---")
             st.markdown("**🌐 表示言語**")
-            lang_label=st.selectbox("言語",list(LANG_OPTIONS.keys()),index=0,label_visibility="collapsed")
-            selected_lang=LANG_OPTIONS[lang_label]
-            if selected_lang!="ja" and not get_secret("DEEPL_API_KEY"):
-                st.markdown('<div style="font-size:11px;color:#aa6030;background:rgba(255,200,150,0.3);border-radius:6px;padding:4px 8px;">⚠️ DeepL APIキー未設定。日本語で表示します。</div>',unsafe_allow_html=True); selected_lang="ja"
+            lang_ja = st.toggle("🇺🇸 英語表示", value=False)
+            selected_lang = "EN" if lang_ja else "ja"
             st.markdown("---")
             st.markdown("**🗺️ 地図タイル**")
             tile_opts=["標準地図","写真（空中写真）","淡色地図","陰影起伏図","OpenStreetMap"]
@@ -1424,7 +1432,7 @@ def main():
                                 try:
                                     import base64
                                     img_b64 = base64.b64encode(user_photo.read()).decode()
-                                    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={api_key}"
+                                    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-latest:generateContent?key={api_key}"
                                     payload = {"contents":[{"parts":[
                                         {"text": f'この画像は観光地「{sp["name"]}」で撮影された観光写真として適切ですか？不適切なコンテンツ（暴力・性的・個人情報など）が含まれていますか？「適切」または「不適切：理由」のみで答えてください。'},
                                         {"inline_data": {"mime_type": "image/jpeg", "data": img_b64}}
