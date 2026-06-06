@@ -1003,6 +1003,7 @@ def init_session():
         "selected_spot_id": None,
         "osm_center_lat": None,
         "osm_center_lon": None,
+        "map_selected_spot_id": None,  # 地図タップで選択されたスポット
     }
     for k,v in defaults.items():
         if k not in st.session_state: st.session_state[k]=v
@@ -1393,8 +1394,58 @@ def main():
             fmap=build_map(sim_lat,sim_lon,sim_heading,tile_name,map_zoom,mode_cfg,visible_spots)
             map_data=st_folium(fmap,width="100%",height=380,returned_objects=["last_clicked"],key=map_key); map_ok=True
         except Exception: pass
+        # 地図ピンタップでスポット特定
+        if map_data and map_data.get("last_clicked"):
+            c = map_data["last_clicked"]
+            click_lat = c.get("lat", 0)
+            click_lng = c.get("lng", 0)
+            nearest_spot = None
+            nearest_dist = 999
+            for sp, dist_km, brg in visible_spots:
+                sp_dist = haversine_km(click_lat, click_lng, sp["lat"], sp["lon"])
+                if sp_dist < 0.2 and sp_dist < nearest_dist:
+                    nearest_dist = sp_dist
+                    nearest_spot = sp
+            if nearest_spot:
+                if st.session_state.get("map_selected_spot_id") != nearest_spot["id"]:
+                    st.session_state.map_selected_spot_id = nearest_spot["id"]
+                    st.session_state.selected_spot_id = nearest_spot["id"]
+                    st.session_state.preset_lat = nearest_spot["lat"]
+                    st.session_state.preset_lon = nearest_spot["lon"]
+                    st.rerun()
+
         if not map_ok:
             st.markdown('<div class="map-placeholder">🗺️ 地図の読み込みに失敗しました。F5で再読み込みしてください。</div>',unsafe_allow_html=True)
+
+        # 地図タップで選択されたスポットの案内を表示
+        map_selected_id = st.session_state.get("map_selected_spot_id")
+        if map_selected_id:
+            map_selected_spot = next((sp for sp in SPOT_DATA_BUILTIN if sp.get("id") == map_selected_id), None)
+            if map_selected_spot:
+                st.markdown(
+                    f'''<div style="background:rgba(255,255,255,0.70);border-radius:14px;
+                    padding:12px 16px;margin:6px 0;border:2px solid rgba(100,150,220,0.55);
+                    backdrop-filter:blur(10px);">
+                    <div style="font-size:13px;color:#2a4a7a;font-weight:700;margin-bottom:4px;">
+                    📍 地図で選択中：{map_selected_spot["name"]}
+                    </div>
+                    <div style="font-size:12px;color:#4a6a9a;">
+                    タップして案内を見るには下の案内カードをご覧ください
+                    </div>
+                    </div>''',
+                    unsafe_allow_html=True
+                )
+                # 選択スポットをプリセットにも反映
+                if st.session_state.get("selected_spot_id") != map_selected_id:
+                    st.session_state.selected_spot_id = map_selected_id
+                    st.session_state.preset_lat = map_selected_spot["lat"]
+                    st.session_state.preset_lon = map_selected_spot["lon"]
+                col_clear1, col_clear2 = st.columns([3,1])
+                with col_clear2:
+                    if st.button("✕ 選択解除", key="clear_map_selection"):
+                        st.session_state.map_selected_spot_id = None
+                        st.session_state.selected_spot_id = None
+                        st.rerun()
 
         sensor_lbl="🟢 GPS・コンパス取得中" if gps_active else "🎛 手動シミュレータ"
 
