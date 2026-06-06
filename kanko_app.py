@@ -1003,7 +1003,8 @@ def init_session():
         "selected_spot_id": None,
         "osm_center_lat": None,
         "osm_center_lon": None,
-        "map_selected_spot_id": None,  # 地図タップで選択されたスポット
+        "map_selected_spot_id": None,
+        "prev_mode": None,
     }
     for k,v in defaults.items():
         if k not in st.session_state: st.session_state[k]=v
@@ -1064,12 +1065,11 @@ def render_spot_card(spot, mode_cfg, dist_km, brg, expanded, lang="ja"):
           + f'<span class="ar-badge">🏔 {spot["altitude"]}m</span>'
           + summary_html
           + det
-          + (f'<div class="ar-disclaimer">{disclaimer}</div>' if disclaimer else "")
           + "</div>")
     st.markdown(html, unsafe_allow_html=True)
 
     # 写真があれば表示
-    if photo_url and not is_osm:
+    if photo_url and not is_osm and isinstance(photo_url, str) and photo_url.startswith("http"):
         st.markdown(
             f'''<div style="margin:-6px 0 8px 0;">
             <img src="{photo_url}"
@@ -1325,8 +1325,12 @@ def main():
                 # GPS取得中もプリセット選択を維持する（リセットしない）
             else:
                 st.markdown('<div style="font-size:12px;color:#3a5a8a;background:rgba(200,220,255,0.3);border-radius:8px;padding:6px 10px;margin-bottom:6px;">💻 パソコン・GPS未取得時はスライダーで場所を模擬できます</div>',unsafe_allow_html=True)
-                sim_lat=st.slider("📍 緯度",34.70,35.10,st.session_state.preset_lat,0.0005,format="%.4f")
-                sim_lon=st.slider("📍 経度",134.60,135.00,st.session_state.preset_lon,0.0005,format="%.4f")
+                sim_lat=st.slider("📍 緯度",33.50,35.70,
+                    float(max(33.50,min(35.70,st.session_state.preset_lat))),
+                    0.0005,format="%.4f")
+                sim_lon=st.slider("📍 経度",133.00,136.00,
+                    float(max(133.00,min(136.00,st.session_state.preset_lon))),
+                    0.0005,format="%.4f")
                 sim_heading=st.slider("🧭 向き（方位角）",0,359,45,1)
             st.markdown("---")
             st.markdown("**🌐 表示言語**")
@@ -1341,6 +1345,12 @@ def main():
             st.markdown('<div style="color:#3a5a8a;font-size:13px;margin-bottom:4px;">📡 表示モード</div>',unsafe_allow_html=True)
             mode_label=st.radio("モード",list(MODES.keys()),index=0,label_visibility="collapsed")
             mode_cfg=MODES[mode_label]
+            # モード切替時に地図選択をリセット
+            if "prev_mode" not in st.session_state:
+                st.session_state.prev_mode = mode_label
+            elif st.session_state.prev_mode != mode_label:
+                st.session_state.map_selected_spot_id = None
+                st.session_state.prev_mode = mode_label
             st.markdown("---")
             show_detail=st.toggle("🔍 詳細情報を表示",value=False)
             st.markdown("---")
@@ -1388,7 +1398,7 @@ def main():
 
     with col_main:
         st.markdown(f'<div class="mode-title-bar" style="background:{mode_cfg["bg"]};">{mode_cfg["icon"]} {mode_label}</div>',unsafe_allow_html=True)
-        map_key=f"kanko_map_{tile_name[:2]}_{map_zoom}"
+        map_key=f"kanko_map_{tile_name[:2]}_{map_zoom}_{round(sim_lat,3)}_{round(sim_lon,3)}"
         map_data={}; map_ok=False
         try:
             fmap=build_map(sim_lat,sim_lon,sim_heading,tile_name,map_zoom,mode_cfg,visible_spots)
@@ -1442,7 +1452,7 @@ def main():
                     st.session_state.preset_lon = map_selected_spot["lon"]
                 col_clear1, col_clear2 = st.columns([3,1])
                 with col_clear2:
-                    if st.button("✕ 選択解除", key="clear_map_selection"):
+                    if st.button("✕ 選択解除", key=f"clear_map_{map_selected_id}"):
                         st.session_state.map_selected_spot_id = None
                         st.session_state.selected_spot_id = None
                         st.rerun()
@@ -1481,7 +1491,7 @@ def main():
                     user_photo = st.file_uploader(
                         "写真を選ぶ",
                         type=["jpg","jpeg","png"],
-                        key=f"photo_{sp['id']}",
+                        key=f"photo_{sp['id']}_{mode_cfg['key']}",
                         label_visibility="collapsed"
                     )
                     if user_photo:
@@ -1542,7 +1552,14 @@ def main():
 
         if visible_spots:
             st.markdown("---")
-            sp_share,d_share,_=visible_spots[0]; share_text=make_share_text(sp_share,mode_cfg,d_share)
+            # 選択中スポットまたは最寄りスポットでシェア
+            selected_id_for_share = st.session_state.get("selected_spot_id")
+            if selected_id_for_share:
+                sp_share_list = [(sp,d,b) for sp,d,b in visible_spots if sp.get("id")==selected_id_for_share]
+                sp_share, d_share, _ = sp_share_list[0] if sp_share_list else visible_spots[0]
+            else:
+                sp_share, d_share, _ = visible_spots[0]
+            share_text=make_share_text(sp_share,mode_cfg,d_share)
             st.markdown('<div class="share-card"><b>📤 SNSシェア</b><br><span style="font-size:12px;color:#4a6a9a;">ボタンをタップして投稿できます。投稿前に内容を編集することもできます。</span></div>',unsafe_allow_html=True)
             st.text_area("シェアテキスト",value=share_text,height=180,label_visibility="collapsed")
             import urllib.parse
