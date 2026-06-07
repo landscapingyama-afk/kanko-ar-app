@@ -849,8 +849,74 @@ SPOT_DATA_BUILTIN = [
         "trust_score": 0.9, "photo_url": "", "photo_credit": "",
         "approved": True, "location_limited": False, "location_limited_content": "",
     },
+    # ★ 追加スポット（播磨・たつの市エリア）
+    {
+        "id": "tatsunoj_021", "name": "龍野城", "name_kana": "たつのじょう",
+        "category": "castle", "priority": 2, "wiki_title": "龍野城",
+        "lat": 34.857100, "lon": 134.544800, "altitude": 60,
+        "prefecture": "兵庫県", "city": "たつの市",
+        "description": "白亜の姫路城に対し「霞城」とも呼ばれる小規模な平山城。たつの市の市街地を見下ろす丘に建つ。醤油・そうめんの産地として知られる龍野の中心スポット。",
+        "main_detail": "🏯 霞城（かすみじょう）とも呼ばれる平山城\n\n🌸 桜の名所\n　　城内に約100本の桜が咲き誇る春の絶景。\n\n🏛 龍野藩\n　　脇坂氏・本多氏が藩主として治めた2万5千石の小藩。\n\n🍜 龍野の特産\n　　醤油・そうめん・革製品の産地として江戸時代から栄えた。\n\n👁 眺望\n　　揖保川と龍野市街を見渡せる眺めが美しい。",
+        "urban_legend": "龍野城の天守から毎晩白い霧が立ちのぼり、霞に包まれた城が幻のように消えると伝えられ「霞城」と呼ばれるようになった。",
+        "urban_legend_detail": "揖保川の霧が丘の上の城を包む幻想的な光景から「霞城」の別名が生まれました。\n城主・脇坂家の先祖は福島正則との戦いで神がかり的な活躍をしたと伝わります。\n\n⚠️ AIエンターテイメント情報です。史実とは異なる場合があります。",
+        "powerspot": "龍野藩を見守り続けた城。地域の守護神として戦国乱世を生き抜いたパワーが宿るとされます。",
+        "powerspot_detail": "城内の稲荷神社には合格祈願・商売繁盛のご神徳があるとされています。\n桜の季節に訪れると特に強いエネルギーを感じるという参拝者が多いです。\n\n⚠️ AIエンターテイメント情報です。",
+        "festival": "3月下旬〜4月：桜まつり・10月：もみじまつり",
+        "festival_detail": "【3月下旬〜4月上旬】桜まつり（約100本）\n【11月】紅葉シーズン\n【10月】たつの市菊花展\n※詳細はたつの市観光協会でご確認ください。",
+        "healing_text": "📸 撮影スポット情報",
+        "healing_detail": "📍 おすすめ撮影ポイント\n\n🌸 本丸の桜（3月下旬〜4月）\n　　城跡と桜が絵になる定番スポット。\n\n🏯 復元天守と揖保川\n　　丘上から揖保川を見下ろす構図が美しい。\n\n🍂 紅葉の城（11月）\n　　紅葉に包まれた静かな城跡。\n\n🌅 夕暮れの眺望\n　　夕日に染まる龍野の街並みが絶景。",
+        "old_map_description": "天正5年（1577年）脇坂安治が築城。元禄国絵図にも「龍野」として城下町が記載された播磨の要衝。",
+        "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・揖保郡に「龍野」として記載。\n1617年脇坂安元が龍野藩を立藩。江戸時代の龍野は醤油・そうめん・革の産地として栄えた。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」を検索すると閲覧できます。",
+        "cloud_info": "丘の上に立つ城跡から揖保川と龍野の市街地、揖保川流域の平野を一望できます。",
+        "cloud_detail": "龍野城跡から揖保川の霞や朝霧が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
+        "trust_score": 0.9, "photo_url": "", "photo_credit": "",
+        "approved": True, "location_limited": False, "location_limited_content": "",
+    },
+    {
+        "id": "murotu_minato_022", "name": "室津港", "name_kana": "むろつみなと",
+        "category": "historical", "priority": 2, "wiki_title": "室津_(兵庫県)",
+        "lat": 34.801200, "lon": 134.523100, "altitude": 5,
+        "prefecture": "兵庫県", "city": "たつの市",
+        "description": "日本書紀にも登場する播磨最古の天然良港。江戸時代は参勤交代の寄港地として栄え「西国一の泊」と称された歴史ある漁港町。",
+        "main_detail": "⚓ 播磨最古の天然良港\n\n📜 日本書紀の港\n　　奈良時代から利用された歴史ある港。遣唐使も寄港した。\n\n🏯 参勤交代の要衝\n　　江戸時代に西国大名の参勤交代船が多数寄港した。\n\n🎭 伝統文化\n　　室津の海女・漁師文化が今も息づく。\n\n🏛 室津海駅館・賀茂神社\n　　港町の歴史を伝える資料館と室津最古の神社。",
+        "urban_legend": "室津には平清盛も立ち寄ったという伝説が残る。港の沖合には幻の島が霧の中に現れることがあり、そこに清盛の霊が宿るという言い伝えがある。",
+        "urban_legend_detail": "平清盛が日宋貿易を進める途中、室津に寄港したと伝えられています。\n霧の日に沖合を見ると幻の帆船が現れるという話が古くから漁師たちの間で語り継がれています。\n\n⚠️ AIエンターテイメント情報です。史実とは異なる場合があります。",
+        "powerspot": "1300年の歴史を持つ港町。古代から海の神々が守る地として、航海安全・縁結び・商売繁盛のパワーが宿るとされます。",
+        "powerspot_detail": "遣唐使や参勤交代大名が頭を垂れて航海の安全を祈った室津の港。\n海神のパワーが今も港全体に満ちていると言われています。\n\n⚠️ AIエンターテイメント情報です。",
+        "festival": "春：賀茂神社例大祭（4月）・夏：室津の海まつり",
+        "festival_detail": "【4月】賀茂神社春の例大祭\n【夏季】室津港まつり・花火大会\n【秋季】秋の収穫まつり\n※詳細はたつの市観光協会でご確認ください。",
+        "healing_text": "📸 撮影スポット情報",
+        "healing_detail": "📍 おすすめ撮影ポイント\n\n⚓ 漁港と漁船（早朝）\n　　早朝の漁港は光と影が美しく、漁船がシルエットになる。\n\n🌅 夕日と播磨灘\n　　播磨灘に沈む夕日は絶景。\n\n🏘 古い港町の街並み\n　　江戸時代の面影を残す古い民家と路地が風情豊か。\n\n🌊 海岸からの眺め\n　　穏やかな内海と家島諸島が見渡せる。",
+        "old_map_description": "奈良時代から記録に残る播磨最古の港。江戸時代の播磨国絵図にも「室津」として記載された西国交通の要衝。",
+        "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・揖保郡に「室津」として記載。\n710年成立の日本書紀にも登場する古港。江戸時代は西国大名の参勤交代の中継地として「西国一の泊」と称された。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」を検索すると閲覧できます。",
+        "cloud_info": "播磨灘に面した室津港から見渡す海と空の眺めは格別。家島諸島と雲のコントラストが美しい。",
+        "cloud_detail": "☁️ 海霧（春〜初夏）：播磨灘からの霧が港を包む幻想的な光景。\n🌤 入道雲（夏）：播磨灘に発達する入道雲が壮観。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
+        "trust_score": 0.85, "photo_url": "", "photo_credit": "",
+        "approved": True, "location_limited": False, "location_limited_content": "",
+    },
+    {
+        "id": "midaiin_023", "name": "弥陀院", "name_kana": "みだいん",
+        "category": "temple", "priority": 3, "wiki_title": "阿弥陀如来",
+        "lat": 34.871500, "lon": 134.542300, "altitude": 30,
+        "prefecture": "兵庫県", "city": "たつの市",
+        "description": "たつの市に鎮座する阿弥陀如来を本尊とする古刹。龍野の町に静かに佇む念仏信仰の寺院。",
+        "main_detail": "🛕 阿弥陀如来を祀る古刹\n\n🙏 浄土信仰の地\n　　阿弥陀如来の加護のもと、念仏信仰が息づく静かな寺院。\n\n🌸 境内の四季\n　　春の桜・秋の紅葉が美しい静かな境内。\n\n🏘 龍野の下町\n　　醤油の産地・龍野の下町に位置する生活に根ざした寺院。\n\n🌿 散策スポット\n　　龍野城・賀茂神社との周遊コースにおすすめ。",
+        "urban_legend": "弥陀院の阿弥陀如来像は夜になると光り輝き、その光を見た者は翌日良縁に恵まれるという言い伝えが龍野の古老たちに伝わっている。",
+        "urban_legend_detail": "龍野に伝わる古い話では、弥陀院の本尊が満月の夜に金色の光を放ち、その光が龍野の町を包んだという記録が寺の古文書に残ると言われています。\n\n⚠️ AIエンターテイメント情報です。史実とは異なる場合があります。",
+        "powerspot": "阿弥陀如来のご慈悲が満ちる地。現世利益・極楽往生・縁結びのご神徳があるとされる癒しのパワースポット。",
+        "powerspot_detail": "阿弥陀如来はすべての人を救う仏様。その慈悲のエネルギーが境内全体に満ちていると言われ、心が穏やかになれる癒しの空間です。\n\n⚠️ AIエンターテイメント情報です。",
+        "festival": "春：花まつり（4月8日）・お盆：施餓鬼法要",
+        "festival_detail": "【4月8日】花まつり（釈迦の誕生祭）\n【8月】お盆・施餓鬼法要\n※詳細はたつの市観光協会でご確認ください。",
+        "healing_text": "📸 撮影スポット情報",
+        "healing_detail": "📍 おすすめ撮影ポイント\n\n🌸 春の境内（3〜4月）\n　　静かな境内の桜が風情豊か。\n\n🍂 秋の紅葉（11月）\n　　秋の木漏れ日と古い建物のコントラスト。\n\n🏘 龍野下町散策と組み合わせ\n　　龍野城・賀茂神社と合わせた散策コースがおすすめ。",
+        "old_map_description": "龍野の地に古くから根づく念仏信仰の寺院。江戸時代の播磨国絵図に記された龍野の町の一部。",
+        "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・揖保郡・龍野周辺に記載された地域。\n龍野藩の城下町として栄えた地域に位置する古刹。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」を検索すると閲覧できます。",
+        "cloud_info": "たつの市の平野部に位置し、揖保川と周辺の山並みを見渡せる清々しいスポットです。",
+        "cloud_detail": "龍野の低地から見渡す播磨の空は開放的。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
+        "trust_score": 0.75, "photo_url": "", "photo_credit": "",
+        "approved": True, "location_limited": False, "location_limited_content": "",
+    },
 ]
-
 
 DUMMY_DATA = {
     "urban_legend": "この地には古くから不思議な言い伝えが残っています。（サンプルデータ）",
@@ -1328,7 +1394,9 @@ def main():
             st.markdown("---")
             selected_area="播磨エリア"  # エリア別アコーディオンに変更
             # ★ 登録済みスポット数を表示
-            harima_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city")!="淡路市"]
+            SHISO_CITIES = ("宍粟市一宮町", "宍粟市山崎町", "宍粟市波賀町", "宍粟市千種町")
+            harima_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city") not in ("淡路市",) and s.get("city") not in SHISO_CITIES]
+            shiso_spots  = [s for s in SPOT_DATA_BUILTIN if s.get("city") in SHISO_CITIES]
             kansai_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture") in ("奈良県","京都府","大阪府")]
             kagawa_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="香川県"]
             awaji_spots  = [s for s in SPOT_DATA_BUILTIN if s.get("city")=="淡路市"]
@@ -1337,7 +1405,8 @@ def main():
                 f'''<div style="background:rgba(100,160,255,0.15);border-radius:10px;padding:8px 12px;
                 font-size:12px;color:#2a4a7a;margin-bottom:8px;line-height:1.8;">
                 📊 <b>登録済みスポット：{total}件</b><br>
-                　播磨：{len(harima_spots)}件 ／ 関西：{len(kansai_spots)}件 ／ 淡路：{len(awaji_spots)}件 ／ 香川：{len(kagawa_spots)}件
+                　播磨：{len(harima_spots)}件 ／ 宍粟：{len(shiso_spots)}件 ／ 関西：{len(kansai_spots)}件<br>
+                　淡路：{len(awaji_spots)}件 ／ 香川：{len(kagawa_spots)}件
                 </div>''',
                 unsafe_allow_html=True
             )
@@ -1345,81 +1414,65 @@ def main():
             # ★ エリア別カテゴリ表示
             st.markdown("**📍 エリアから探す**")
 
-            # 播磨エリア
+            def _spot_button(sp, key_prefix):
+                is_selected = st.session_state.get("selected_spot_id") == sp["id"]
+                btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
+                if st.button(btn_label, use_container_width=True, key=f"{key_prefix}_{sp['id']}"):
+                    st.session_state.preset_lat = sp["lat"]
+                    st.session_state.preset_lon = sp["lon"]
+                    st.session_state.selected_spot_id = sp["id"]
+                    st.session_state.osm_loaded = False
+                    st.session_state.osm_spots = []
+                    st.session_state.osm_center_lat = sp["lat"]
+                    st.session_state.osm_center_lon = sp["lon"]
+                    st.rerun()
+
+            # 播磨エリア（宍粟を除く）
             with st.expander("🗾 播磨エリア（兵庫県）", expanded=False):
                 categories = {
-                    "⛩ 神社": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city")!="淡路市" and s.get("category")=="shrine"],
-                    "🛕 寺院": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city")!="淡路市" and s.get("category")=="temple"],
-                    "🏯 城・史跡": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city")!="淡路市" and s.get("category") in ("castle","historical")],
-                    "🏔 山・自然": [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city")!="淡路市" and s.get("category")=="mountain"],
+                    "⛩ 神社": [s for s in harima_spots if s.get("category")=="shrine"],
+                    "🛕 寺院": [s for s in harima_spots if s.get("category")=="temple"],
+                    "🏯 城・史跡": [s for s in harima_spots if s.get("category") in ("castle","historical")],
+                    "🏔 山・自然": [s for s in harima_spots if s.get("category")=="mountain"],
                 }
                 for cat_label, spots in categories.items():
                     if not spots: continue
                     st.markdown(f'<div style="font-size:12px;color:#3a5a8a;font-weight:700;margin:4px 0 2px;">{cat_label}</div>', unsafe_allow_html=True)
                     for sp in spots:
-                        is_selected = st.session_state.get("selected_spot_id") == sp["id"]
-                        btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
-                        if st.button(btn_label, use_container_width=True, key=f"sp_h_{sp['id']}_{cat_label[:2]}"):
-                            st.session_state.preset_lat = sp["lat"]
-                            st.session_state.preset_lon = sp["lon"]
-                            st.session_state.selected_spot_id = sp["id"]
-                            st.session_state.osm_loaded = False
-                            st.session_state.osm_spots = []
-                            st.session_state.osm_center_lat = sp["lat"]
-                            st.session_state.osm_center_lon = sp["lon"]
-                            st.rerun()
+                        _spot_button(sp, f"sp_h_{cat_label[:2]}")
+
+            # ★ 宍粟市エリア（独立）
+            with st.expander("🏔 宍粟市エリア（兵庫県）", expanded=False):
+                shiso_cats = {
+                    "⛩ 神社": [s for s in shiso_spots if s.get("category")=="shrine"],
+                    "🛕 寺院": [s for s in shiso_spots if s.get("category")=="temple"],
+                    "🏔 山・自然": [s for s in shiso_spots if s.get("category")=="mountain"],
+                }
+                for cat_label, spots in shiso_cats.items():
+                    if not spots: continue
+                    st.markdown(f'<div style="font-size:12px;color:#3a5a8a;font-weight:700;margin:4px 0 2px;">{cat_label}</div>', unsafe_allow_html=True)
+                    for sp in spots:
+                        _spot_button(sp, f"sp_s_{cat_label[:2]}")
 
             # 関西エリア
-            with st.expander("🗾 関西エリア（奈良・京都・大阪）", expanded=selected_area!="播磨エリア" and "関西" in selected_area):
+            with st.expander("🗾 関西エリア（奈良・京都・大阪）", expanded=False):
                 kansai_prefs = {"奈良県":"🦌 奈良", "京都府":"⛩ 京都", "大阪府":"🏯 大阪"}
                 for pref, pref_label in kansai_prefs.items():
                     pref_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")==pref]
                     if not pref_spots: continue
                     st.markdown(f'<div style="font-size:12px;color:#3a5a8a;font-weight:700;margin:4px 0 2px;">{pref_label}</div>', unsafe_allow_html=True)
                     for sp in pref_spots:
-                        is_selected = st.session_state.get("selected_spot_id") == sp["id"]
-                        btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
-                        if st.button(btn_label, use_container_width=True, key=f"sp_k_{sp['id']}_{pref_label[:2]}"):
-                            st.session_state.preset_lat = sp["lat"]
-                            st.session_state.preset_lon = sp["lon"]
-                            st.session_state.selected_spot_id = sp["id"]
-                            st.session_state.osm_loaded = False
-                            st.session_state.osm_spots = []
-                            st.session_state.osm_center_lat = sp["lat"]
-                            st.session_state.osm_center_lon = sp["lon"]
-                            st.rerun()
+                        _spot_button(sp, f"sp_k_{pref_label[:2]}")
 
             # 淡路島エリア
             with st.expander("🗾 淡路島エリア", expanded=False):
-                awaji = [s for s in SPOT_DATA_BUILTIN if s.get("city")=="淡路市"]
-                for sp in awaji:
-                    is_selected = st.session_state.get("selected_spot_id") == sp["id"]
-                    btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
-                    if st.button(btn_label, use_container_width=True, key=f"sp_a_{sp['id']}"):
-                        st.session_state.preset_lat = sp["lat"]
-                        st.session_state.preset_lon = sp["lon"]
-                        st.session_state.selected_spot_id = sp["id"]
-                        st.session_state.osm_loaded = False
-                        st.session_state.osm_spots = []
-                        st.session_state.osm_center_lat = sp["lat"]
-                        st.session_state.osm_center_lon = sp["lon"]
-                        st.rerun()
+                for sp in awaji_spots:
+                    _spot_button(sp, "sp_a")
 
             # 香川エリア
             with st.expander("🗾 香川エリア", expanded=False):
-                kagawa = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="香川県"]
-                for sp in kagawa:
-                    is_selected = st.session_state.get("selected_spot_id") == sp["id"]
-                    btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
-                    if st.button(btn_label, use_container_width=True, key=f"sp_g_{sp['id']}"):
-                        st.session_state.preset_lat = sp["lat"]
-                        st.session_state.preset_lon = sp["lon"]
-                        st.session_state.selected_spot_id = sp["id"]
-                        st.session_state.osm_loaded = False
-                        st.session_state.osm_spots = []
-                        st.session_state.osm_center_lat = sp["lat"]
-                        st.session_state.osm_center_lon = sp["lon"]
-                        st.rerun()
+                for sp in kagawa_spots:
+                    _spot_button(sp, "sp_g")
             st.markdown("---")
             if gps_active:
                 st.markdown('<div class="gps-auto-note">🟢 <b>GPS自動取得中です</b><br>現在地・向きはスマホのセンサーから自動で入力されています。</div>',unsafe_allow_html=True)
