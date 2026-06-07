@@ -629,7 +629,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "相生市の丘の上に位置し、播磨灘を見渡せる清々しいスポットです。",
         "cloud_detail": "境内から相生湾と播磨灘が望めます。梅雨の時期の曇り空もアジサイを引き立てます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.9,
-        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/画像/wakasanotennmannguu.jpg",
+        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/images/wakasanotennmannguu.jpg",
         "photo_credit": "提供：ゆう様",
         "approved": True,
         "location_limited": False,
