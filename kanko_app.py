@@ -1754,19 +1754,32 @@ def main():
             report_type=st.selectbox("種類",["情報が間違っている","地図の位置がずれている","表示が崩れている","📸 写真を提供する","その他"])
             report_detail=st.text_area("詳細を教えてください",height=80,placeholder="詳細をお書きください（任意）")
             report_photo = None
+            report_nickname = ""
             if report_type == "📸 写真を提供する":
                 st.markdown(
                     '''<div style="background:rgba(255,240,200,0.60);border-radius:10px;
                     padding:10px 14px;margin-bottom:8px;font-size:13px;color:#5a3a00;line-height:1.8;">
                     📸 <b>写真の送り方</b><br>
-                    ① 下の「メールアプリで送信する」をタップ<br>
-                    ② メールアプリが開いたら📎アイコンをタップ<br>
-                    ③ カメラロールから写真を選んで添付<br>
-                    ④ 送信！<br>
+                    ① ニックネームを入力してください（アプリ内の写真クレジットに表示されます）<br>
+                    ② 下の「メールアプリで送信する」をタップ<br>
+                    ③ メールアプリが開いたら📎アイコンをタップ<br>
+                    ④ カメラロールから写真を選んで添付して送信！<br>
                     <span style="font-size:11px;color:#7a5a20;">
                     ※ ご提供いただいた写真は、管理者が確認後、アプリの観光地案内に掲載させていただく場合があります。<br>
                     ※ みなさんの写真でアプリを一緒に作り上げましょう！
                     </span>
+                    </div>''',
+                    unsafe_allow_html=True
+                )
+                report_nickname = st.text_input(
+                    "📛 ニックネーム（任意）",
+                    placeholder="例：やまさん、Kさん、匿名希望 など",
+                    help="アプリ内の写真クレジット（「提供：〇〇様」）に表示されます。空欄の場合は「匿名」となります。"
+                )
+                st.markdown(
+                    f'''<div style="background:rgba(200,230,255,0.50);border-radius:8px;
+                    padding:8px 12px;font-size:12px;color:#2a4a7a;margin-bottom:6px;">
+                    📷 アプリ内表示例：<b>提供：{report_nickname or "匿名"}様</b>
                     </div>''',
                     unsafe_allow_html=True
                 )
@@ -1776,8 +1789,10 @@ def main():
                     st.caption("※ メールアプリで写真を手動添付してください。")
             # メールボタンを常に表示（入力内容をリアルタイムで反映）
             subject = urllib.parse.quote(f"【観光スポットナビ報告】{report_type}")
+            nickname_line = f"ニックネーム：{report_nickname or '匿名'}\n" if report_type == "📸 写真を提供する" else ""
             body = urllib.parse.quote(
                 f"種類：{report_type}\n"
+                f"{nickname_line}"
                 f"スポット名：{report_spot or '未記入'}\n"
                 f"詳細：{report_detail or '未記入'}\n"
                 f"\n※ 観光スポットナビアプリからの報告"
