@@ -629,7 +629,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "相生市の丘の上に位置し、播磨灘を見渡せる清々しいスポットです。",
         "cloud_detail": "境内から相生湾と播磨灘が望めます。梅雨の時期の曇り空もアジサイを引き立てます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.9,
-        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/%E7%94%BB%E5%83%8F/wakasanotennmannguu.jpg",
+        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/画像/wakasanotennmannguu.jpg",
         "photo_credit": "提供：ゆう様",
         "approved": True,
         "location_limited": False,
@@ -1070,13 +1070,14 @@ def render_spot_card(spot, mode_cfg, dist_km, brg, expanded, lang="ja"):
           + "</div>")
     st.markdown(html, unsafe_allow_html=True)
 
-    # 写真があれば表示
+    # 写真があれば表示（小さめサイズ）
     if photo_url and not is_osm and isinstance(photo_url, str) and photo_url.startswith("http"):
         st.markdown(
-            f'''<div style="margin:-6px 0 8px 0;">
+            f'''<div style="margin:6px 0 8px 0;text-align:center;">
             <img src="{photo_url}"
-            style="width:100%;max-height:220px;object-fit:cover;
-            border-radius:0 0 16px 16px;display:block;"
+            style="width:60%;max-width:240px;max-height:160px;
+            object-fit:cover;border-radius:10px;display:inline-block;
+            box-shadow:0 2px 8px rgba(0,0,0,0.2);"
             onerror="this.style.display='none'"/>
             <div style="font-size:11px;color:#5a6a8a;text-align:right;
             padding:2px 8px;">📷 {photo_credit}</div>
