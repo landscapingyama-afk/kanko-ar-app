@@ -623,13 +623,15 @@ SPOT_DATA_BUILTIN = [
         "festival": "虚空蔵菩薩縁日・地域の法要",
         "festival_detail": "【毎月13日】虚空蔵菩薩縁日\n【年中】参拝自由\n※詳細は宍粟市観光協会でご確認ください。",
         "healing_text": "📸 撮影スポット情報",
-        "healing_detail": "📍 おすすめ撮影ポイント\n\n🌿 奥院への石段\n　　山深い参道の静寂と緑が美しい。\n\n🍂 秋の紅葉\n　　山中の紅葉が境内を彩ります。\n\n☁️ 山霧の朝\n　　早朝に山霧が漂う幻想的な光景。",
+        "healing_detail": "📍 おすすめ撮影ポイント\n\n🌿 奥院への石段\n　　山深い参道の静寂と緑が美しい。\n\n🌉 幸せ橋\n　　境内の幸せ橋は縁結びスポットとして人気。\n\n🍂 秋の紅葉\n　　山中の紅葉が境内を彩ります。\n\n☁️ 山霧の朝\n　　早朝に山霧が漂う幻想的な光景。",
         "old_map_description": "宍粟の山中に古くから伝わる虚空蔵菩薩の霊場。江戸時代の播磨国絵図にも宍粟郡として記載された地域。",
         "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・宍粟郡に記載された地域に位置します。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」を検索すると閲覧できます。",
         "cloud_info": "宍粟の山中に位置し、山霧や雲の変化が美しいスポットです。",
         "cloud_detail": "山中のため雲の動きが間近に観察できます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "photo_url": "",
-        "photo_credit": "",
+        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/images/sairinji.jpg",
+        "photo_credit": "提供：ゆう様",
+        "photo_url2": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/images/sairinjisiawasehasi.jpg",
+        "photo_credit2": "提供：ゆう様（幸せ橋）",
         "trust_score": 0.85,
         "approved": True,
         "location_limited": False,
@@ -647,6 +649,8 @@ SPOT_DATA_BUILTIN = [
         "altitude": 200,
         "prefecture": "兵庫県",
         "city": "宍粟市一宮町",
+        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/images/iwa_jinja.jpg",
+        "photo_credit": "提供：ゆう様",
         "description": "播磨国一宮。大己貴神を祀る式内名神大社で旧国幣中社。本殿が北向きという珍しい神社。農工商業・縁結び・病気平癒など多くのご神徳を持つ播磨三大社の一つ。",
         "main_detail": "⛩ 播磨国一宮・式内名神大社\n\n🙏 ご祭神：大己貴神（おおなむちのかみ）\n　　農・工・商業の神、縁結びの神、病気平癒の神。\n\n🦢 北向きの本殿\n　　白鶴が北を向いて眠っていたため北向きに建立。非常に珍しい。\n\n📜 播磨三大社\n　　海神社・粒坐天照神社と並ぶ播磨三大社の一つ。\n\n🎋 秋季大祭\n　　毎年10月15・16日。5台の屋台の練り合わせが有名。\n\n🅿️ 駐車場\n　　普通車180台（無料）",
         "urban_legend": "欽明天皇の時代、豪族・伊和恒郷に大己貴神から「我を祀れ」との神託があり、一夜にして木々が群生し白鶴2羽が石の上で北向きに眠っていたという神秘的な創建伝説が残る。",
@@ -661,8 +665,6 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・宍粟郡に記載。\n延喜式（927年）に名神大社として記された格式高い神社。地名「一宮町」は当社に由来します。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」を検索すると閲覧できます。",
         "cloud_info": "宍粟の山々に囲まれた境内から見渡す空は澄んでいて、四季折々の雲が楽しめます。",
         "cloud_detail": "山に囲まれた宍粟盆地の清浄な空気の中、雲の動きが美しく観察できます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "photo_url": "",
-        "photo_credit": "",
         "trust_score": 1.0,
         "approved": True,
         "location_limited": False,
@@ -694,8 +696,8 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・宍粟郡に記載。\n延喜式（927年）に「與比神社」として記された古社。伊和神社と深い関係を持つ伊和三社の一つ。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」を検索すると閲覧できます。",
         "cloud_info": "揖保川沿いの与位周辺から見渡す宍粟の山々と空の眺めが美しいスポットです。",
         "cloud_detail": "揖保川と山々に囲まれた宍粟の清浄な空気の中、四季折々の雲が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "photo_url": "",
-        "photo_credit": "",
+        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/images/yoi_jinjya.jpg",
+        "photo_credit": "提供：ゆう様",
         "trust_score": 0.9,
         "approved": True,
         "location_limited": False,
@@ -760,6 +762,8 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 天保国絵図（1838年）の淡路国に記載。\n延喜式（927年）にも名神大社として記された由緒ある神社。江戸時代には徳島藩主・蜂須賀氏が保護し東・西神門が建立された。\n🔍 国立公文書館デジタルアーカイブで「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "淡路島の平野部に位置し、周囲の田園風景と空の眺めが美しいスポットです。",
         "cloud_detail": "境内から見渡す淡路の空は澄んでいて、四季折々の雲が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
+        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/images/izanagi_jingu.jpg",
+        "photo_credit": "提供：ゆう様",
         "trust_score": 1.0,
         "approved": True,
         "location_limited": False,
@@ -1250,6 +1254,23 @@ def render_spot_card(spot, mode_cfg, dist_km, brg, expanded, lang="ja"):
             unsafe_allow_html=True
         )
 
+    # 2枚目の写真があれば表示
+    photo_url2 = spot.get("photo_url2", "")
+    photo_credit2 = spot.get("photo_credit2", "")
+    if photo_url2 and not is_osm and isinstance(photo_url2, str) and photo_url2.startswith("http"):
+        st.markdown(
+            f'''<div style="margin:2px 0 8px 0;text-align:center;">
+            <img src="{photo_url2}"
+            style="width:60%;max-width:240px;max-height:160px;
+            object-fit:cover;border-radius:10px;display:inline-block;
+            box-shadow:0 2px 8px rgba(0,0,0,0.2);"
+            onerror="this.style.display='none'"/>
+            <div style="font-size:11px;color:#5a6a8a;text-align:right;
+            padding:2px 8px;">📷 {photo_credit2}</div>
+            </div>''',
+            unsafe_allow_html=True
+        )
+
     # ★ 古地図モードの時だけ古地図画像カードを表示
     if mode_key == "old_map" and expanded:
         show_old_map_image(spot)
@@ -1442,7 +1463,7 @@ def main():
                         _spot_button(sp, f"sp_h_{cat_label[:2]}")
 
             # ★ 宍粟市エリア（独立）
-            with st.expander("🏔 宍粟市エリア（兵庫県）", expanded=False):
+            with st.expander("🗾 宍粟市エリア（兵庫県）", expanded=False):
                 shiso_cats = {
                     "⛩ 神社": [s for s in shiso_spots if s.get("category")=="shrine"],
                     "🛕 寺院": [s for s in shiso_spots if s.get("category")=="temple"],
