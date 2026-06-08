@@ -649,8 +649,6 @@ SPOT_DATA_BUILTIN = [
         "altitude": 200,
         "prefecture": "兵庫県",
         "city": "宍粟市一宮町",
-        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/images/iwa_jinja.jpg",
-        "photo_credit": "提供：ゆう様",
         "description": "播磨国一宮。大己貴神を祀る式内名神大社で旧国幣中社。本殿が北向きという珍しい神社。農工商業・縁結び・病気平癒など多くのご神徳を持つ播磨三大社の一つ。",
         "main_detail": "⛩ 播磨国一宮・式内名神大社\n\n🙏 ご祭神：大己貴神（おおなむちのかみ）\n　　農・工・商業の神、縁結びの神、病気平癒の神。\n\n🦢 北向きの本殿\n　　白鶴が北を向いて眠っていたため北向きに建立。非常に珍しい。\n\n📜 播磨三大社\n　　海神社・粒坐天照神社と並ぶ播磨三大社の一つ。\n\n🎋 秋季大祭\n　　毎年10月15・16日。5台の屋台の練り合わせが有名。\n\n🅿️ 駐車場\n　　普通車180台（無料）",
         "urban_legend": "欽明天皇の時代、豪族・伊和恒郷に大己貴神から「我を祀れ」との神託があり、一夜にして木々が群生し白鶴2羽が石の上で北向きに眠っていたという神秘的な創建伝説が残る。",
@@ -665,6 +663,8 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・宍粟郡に記載。\n延喜式（927年）に名神大社として記された格式高い神社。地名「一宮町」は当社に由来します。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」を検索すると閲覧できます。",
         "cloud_info": "宍粟の山々に囲まれた境内から見渡す空は澄んでいて、四季折々の雲が楽しめます。",
         "cloud_detail": "山に囲まれた宍粟盆地の清浄な空気の中、雲の動きが美しく観察できます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
+        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/images/iwa_jinja.jpg",
+        "photo_credit": "提供：ゆう様",
         "trust_score": 1.0,
         "approved": True,
         "location_limited": False,
@@ -698,6 +698,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_detail": "揖保川と山々に囲まれた宍粟の清浄な空気の中、四季折々の雲が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/images/yoi_jinjya.jpg",
         "photo_credit": "提供：ゆう様",
+        "photo_position": "bottom",
         "trust_score": 0.9,
         "approved": True,
         "location_limited": False,
@@ -1241,11 +1242,12 @@ def render_spot_card(spot, mode_cfg, dist_km, brg, expanded, lang="ja"):
 
     # 写真があれば表示（小さめサイズ）
     if photo_url and not is_osm and isinstance(photo_url, str) and photo_url.startswith("http"):
+        photo_pos = spot.get("photo_position", "center")
         st.markdown(
             f'''<div style="margin:6px 0 8px 0;text-align:center;">
             <img src="{photo_url}"
             style="width:60%;max-width:240px;max-height:160px;
-            object-fit:cover;border-radius:10px;display:inline-block;
+            object-fit:cover;object-position:{photo_pos};border-radius:10px;display:inline-block;
             box-shadow:0 2px 8px rgba(0,0,0,0.2);"
             onerror="this.style.display='none'"/>
             <div style="font-size:11px;color:#5a6a8a;text-align:right;
