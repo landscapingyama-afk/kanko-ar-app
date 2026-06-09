@@ -424,7 +424,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "山頂からの雲海が有名。早朝に播磨平野を覆う雲海は幻想的な絶景です。",
         "cloud_detail": "秋〜冬の早朝に播磨平野に雲海が発生しやすくなります。\n⚠️ 天気予報は気象庁等でご確認ください。",
         "trust_score": 0.9, "photo_url": "", "photo_credit": "",
-        "approved": True, "location_limited": False, "location_limited_content": "",
+        "approved": True, "location_limited": True, "location_limited_content": "現地限定🏔 笠形山頂上へようこそ！標高939mの山頂から播磨平野と播磨灘を一望できます。晴れた日には淡路島・四国まで見渡せる絶景をお楽しみください。",
     },
     {
         "id": "himeji_castle_003", "name": "姫路城", "name_kana": "ひめじじょう",
@@ -446,7 +446,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "姫路城天守閣（標高92m）からの眺望は絶品。東に高御位山、北に笠形山が見渡せます。",
         "cloud_detail": "東：高御位山（約17km）\n北：笠形山（約25km）\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 1.0, "photo_url": "", "photo_credit": "",
-        "approved": True, "location_limited": False, "location_limited_content": "",
+        "approved": True, "location_limited": True, "location_limited_content": "現地限定🏯 姫路城へようこそ！世界遺産・国宝の白鷺城を目の前にしています。天守閣からは播磨平野を360度見渡せます。ぜひ天守最上階まで登ってみてください！",
     },
     {
         "id": "kakurinji_004", "name": "鶴林寺", "name_kana": "かくりんじ",
@@ -468,7 +468,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "境内の大銀杏（樹齢推定700年）の梢から見上げる空は特別な美しさがあります。",
         "cloud_detail": "大銀杏の根元から空を見上げると、四季折々の雲の表情が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.95, "photo_url": "", "photo_credit": "",
-        "approved": True, "location_limited": False, "location_limited_content": "",
+        "approved": True, "location_limited": True, "location_limited_content": "現地限定🛕 播磨の法隆寺・鶴林寺へようこそ！国宝の本堂と太子堂をぜひじっくりご覧ください。樹齢700年の大銀杏も必見です。",
     },
     {
         "id": "nara_todaiji_005", "name": "東大寺", "name_kana": "とうだいじ",
@@ -490,7 +490,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "若草山山頂（342m）からの眺望は奈良盆地を一望できる絶好の雲観察スポットです。",
         "cloud_detail": "若草山から奈良盆地を見渡すと四季折々の雲が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 1.0, "photo_url": "", "photo_credit": "",
-        "approved": True, "location_limited": False, "location_limited_content": "",
+        "approved": True, "location_limited": True, "location_limited_content": "現地限定🦌 東大寺へようこそ！世界最大級の木造建築・大仏殿が目の前です。奈良の鹿たちとの出会いもお楽しみください。",
     },
     {
         "id": "kyoto_kinkakuji_006", "name": "金閣寺", "name_kana": "きんかくじ",
@@ -512,7 +512,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "衣笠山を背景にした金閣寺からの空の眺めは特別な美しさがあります。",
         "cloud_detail": "鏡湖池から空を見上げると、金閣と雲のコントラストが楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 1.0, "photo_url": "", "photo_credit": "",
-        "approved": True, "location_limited": False, "location_limited_content": "",
+        "approved": True, "location_limited": True, "location_limited_content": "現地限定✨ 金閣寺へようこそ！黄金に輝く舎利殿は間近で見ると息をのむ美しさです。鏡湖池に映る逆さ金閣もお見逃しなく！",
     },
     {
         "id": "osaka_castle_007", "name": "大阪城", "name_kana": "おおさかじょう",
@@ -534,7 +534,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "大阪城天守閣（標高約50m）からは大阪平野を一望。空気が澄んだ日は六甲山・生駒山も見える絶好の雲観察スポット。",
         "cloud_detail": "天守閣最上階から360度の眺望が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 1.0, "photo_url": "", "photo_credit": "",
-        "approved": True, "location_limited": False, "location_limited_content": "",
+        "approved": True, "location_limited": True, "location_limited_content": "現地限定🏯 大阪城へようこそ！豊臣秀吉が築いた天下の名城です。天守閣8階の展望台から大阪の街並みを一望してください。",
     },
     {
         "id": "ikarugatera_008", "name": "斑鳩寺", "name_kana": "いかるがでら",
@@ -556,7 +556,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "揖保川沿いの平野に位置し、周囲の山並みと雲の眺めが美しいスポットです。",
         "cloud_detail": "揖保川流域の平野から見渡す空は開放的です。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.9, "photo_url": "", "photo_credit": "",
-        "approved": True, "location_limited": False, "location_limited_content": "",
+        "approved": True, "location_limited": True, "location_limited_content": "現地限定🛕 斑鳩寺へようこそ！聖徳太子ゆかりの古刹です。三重塔と仁王門は必見。太子の面影を感じながらゆっくり境内をお歩きください。",
     },
     {
         "id": "takaya_jinja_009", "name": "高屋神社", "name_kana": "たかやじんじゃ",
@@ -578,7 +578,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "標高404mの山頂から見渡す讃岐平野と瀬戸内海。雲海が発生する日は特別な絶景が楽しめます。",
         "cloud_detail": "☁️ 雲海（秋〜冬の早朝）：讃岐平野を覆う雲海は絶景。\n🌤 積乱雲：夏の午後に瀬戸内海方面から発達します。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 1.0, "photo_url": "", "photo_credit": "",
-        "approved": True, "location_limited": False, "location_limited_content": "",
+        "approved": True, "location_limited": True, "location_limited_content": "現地限定⛩ 天空の鳥居・高屋神社へようこそ！標高404mの山頂から讃岐平野と瀬戸内海を見渡す絶景をお楽しみください。ここでしか撮れない写真をぜひ！",
     },
     {
         "id": "kamo_jinja_010", "name": "賀茂神社", "name_kana": "かもじんじゃ",
@@ -600,7 +600,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "たつの市の平野部に位置し、揖保川と周囲の山々を見渡せる清々しいスポットです。",
         "cloud_detail": "境内の高台から揖保川と周辺の山々が見渡せます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.9, "photo_url": "", "photo_credit": "",
-        "approved": True, "location_limited": False, "location_limited_content": "",
+        "approved": True, "location_limited": True, "location_limited_content": "現地限定⛩ 賀茂神社へようこそ！播磨の古社の清らかな空気を感じてください。境内の御神木に手を合わせてご神徳をいただいてください。",
     },
     {
         "id": "kokuzo_do_016",
@@ -634,8 +634,7 @@ SPOT_DATA_BUILTIN = [
         "photo_credit2": "提供：ゆう様（幸せ橋）",
         "trust_score": 0.85,
         "approved": True,
-        "location_limited": False,
-        "location_limited_content": "",
+        "location_limited": True, "location_limited_content": "現地限定🛕 西林寺奥院 虚空蔵堂へようこそ！虚空蔵菩薩のご加護が満ちる霊場です。幸せ橋を渡って願いを込めてお参りください。"
     },
     {
         "id": "iwa_jinja_017",
@@ -668,8 +667,7 @@ SPOT_DATA_BUILTIN = [
         "photo_position": "bottom",
         "trust_score": 1.0,
         "approved": True,
-        "location_limited": False,
-        "location_limited_content": "",
+        "location_limited": True, "location_limited_content": "現地限定⛩ 播磨国一宮・伊和神社へようこそ！大己貴神のご神気が満ちる聖地です。北向きの本殿と鶴石をぜひご覧ください。"
     },
     {
         "id": "yoi_jinja_018",
@@ -702,8 +700,7 @@ SPOT_DATA_BUILTIN = [
         "photo_position": "bottom",
         "trust_score": 0.9,
         "approved": True,
-        "location_limited": False,
-        "location_limited_content": "",
+        "location_limited": True, "location_limited_content": "現地限定⛩ 與位神社へようこそ！延喜式に記された古社の清浄な空気を感じてください。揖保川の流れと山々の眺めが心を癒してくれます。"
     },
     {
         "id": "wakasano_tenman_012",
@@ -735,8 +732,8 @@ SPOT_DATA_BUILTIN = [
         "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/images/wakasanotennmannguu.jpg",
         "photo_credit": "提供：ゆう様",
         "approved": True,
-        "location_limited": False,
-        "location_limited_content": "",
+        "location_limited": True,
+        "location_limited_content": "現地限定：梅雨の境内では約200株のアジサイが咲き誇ります。菅原道真公のご神前でぜひ学業成就をお祈りください。",
     },
     {
         "id": "izanagi_jingu_013",
@@ -768,8 +765,7 @@ SPOT_DATA_BUILTIN = [
         "photo_credit": "提供：ゆう様",
         "trust_score": 1.0,
         "approved": True,
-        "location_limited": False,
-        "location_limited_content": "",
+        "location_limited": True, "location_limited_content": "現地限定⛩ 伊弉諾神宮へようこそ！日本最古の神社・国生み神話の聖地に立っています。夫婦の大楠のご神気をぜひ感じてみてください。"
     },
     {
         "id": "taishi_kurookajinja_014",
@@ -799,8 +795,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_detail": "境内から揖保川流域の平野が見渡せます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.85,
         "approved": True,
-        "location_limited": False,
-        "location_limited_content": "",
+        "location_limited": True, "location_limited_content": "現地限定⛩ 黒岡神社へようこそ！太子町の鎮守の杜に包まれています。聖徳太子ゆかりの地で静かに手を合わせてみてください。"
     },
     {
         "id": "taishi_shirohata_015",
@@ -830,8 +825,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_detail": "斑鳩寺の三重塔から見渡す空は開放的。四季折々の雲が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.85,
         "approved": True,
-        "location_limited": False,
-        "location_limited_content": "",
+        "location_limited": True, "location_limited_content": "現地限定🏛 聖徳太子御廟へようこそ！1400年の歴史に眠る太子の御廟です。太子町の静寂の中で歴史に思いをはせてください。"
     },
     {
         "id": "iwatsuhime_011", "name": "伊和都比売神社", "name_kana": "いわつひめじんじゃ",
@@ -853,7 +847,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "瀬戸内海に面した境内から望む空と海の眺めは格別。播磨灘の雲の変化が楽しめます。",
         "cloud_detail": "☁️ 海霧（春〜初夏）：朝に瀬戸内海から霧が流れ込む幻想的な光景。\n🌤 入道雲（夏）：播磨灘に発達する入道雲は壮観。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.9, "photo_url": "", "photo_credit": "",
-        "approved": True, "location_limited": False, "location_limited_content": "",
+        "approved": True, "location_limited": True, "location_limited_content": "現地限定⛩ 伊和都比売神社へようこそ！相生湾を見守る女神の社です。海からの清らかな風と波音を感じながら参拝してください。",
     },
     # ★ 追加スポット（播磨・たつの市エリア）
     {
@@ -876,7 +870,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "丘の上に立つ城跡から揖保川と龍野の市街地、揖保川流域の平野を一望できます。",
         "cloud_detail": "龍野城跡から揖保川の霞や朝霧が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.9, "photo_url": "", "photo_credit": "",
-        "approved": True, "location_limited": False, "location_limited_content": "",
+        "approved": True, "location_limited": True, "location_limited_content": "現地限定🏯 龍野城へようこそ！霞城とも呼ばれる播磨の名城です。城跡から揖保川と龍野の町並みを見渡す眺めをお楽しみください。",
     },
     {
         "id": "murotu_minato_022", "name": "室津港", "name_kana": "むろつみなと",
@@ -898,7 +892,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "播磨灘に面した室津港から見渡す海と空の眺めは格別。家島諸島と雲のコントラストが美しい。",
         "cloud_detail": "☁️ 海霧（春〜初夏）：播磨灘からの霧が港を包む幻想的な光景。\n🌤 入道雲（夏）：播磨灘に発達する入道雲が壮観。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.85, "photo_url": "", "photo_credit": "",
-        "approved": True, "location_limited": False, "location_limited_content": "",
+        "approved": True, "location_limited": True, "location_limited_content": "現地限定⚓ 室津港へようこそ！1300年の歴史を持つ播磨最古の港です。漁船と播磨灘の眺めをお楽しみください。",
     },
     {
         "id": "midaiin_023", "name": "弥陀院", "name_kana": "みだいん",
@@ -920,7 +914,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "たつの市の平野部に位置し、揖保川と周辺の山並みを見渡せる清々しいスポットです。",
         "cloud_detail": "龍野の低地から見渡す播磨の空は開放的。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.75, "photo_url": "", "photo_credit": "",
-        "approved": True, "location_limited": False, "location_limited_content": "",
+        "approved": True, "location_limited": True, "location_limited_content": "現地限定🛕 弥陀院へようこそ！龍野の下町に静かに佇む念仏信仰の古刹です。阿弥陀如来のご慈悲に包まれながら、静かにお参りください。",
     },
 ]
 
@@ -1667,11 +1661,16 @@ def main():
                         </div>''',
                         unsafe_allow_html=True
                     )
+                    st.markdown(
+                        '<div style="font-size:12px;color:#5a3a00;margin-bottom:4px;">📁 ファイルから写真を選んでください（カメラ撮影はファイル保存後にご利用ください）</div>',
+                        unsafe_allow_html=True
+                    )
                     user_photo = st.file_uploader(
                         "写真を選ぶ",
                         type=["jpg","jpeg","png"],
                         key=f"photo_{sp['id']}_{mode_cfg['key']}",
-                        label_visibility="collapsed"
+                        label_visibility="collapsed",
+                        accept_multiple_files=False,
                     )
                     if user_photo:
                         with st.spinner("写真を確認中..."):
@@ -1701,7 +1700,7 @@ def main():
                         if is_safe:
                             st.image(user_photo, caption=f"📍 {sp['name']}で撮影", use_column_width=True)
                             st.success("✅ 写真を表示しました！ページを閉じると写真は消えます。")
-                            st.info("📮 この写真を永久保存したい場合は下の「問題を報告する」から「写真を登録したい」を選んで送信してください。")
+                            st.info("📮 この写真を永久保存したい場合は下の「問題を報告する」から「📸 写真を提供する」を選んで送信してください。")
                         else:
                             st.error(f"⛔ この写真は投稿できません。{check_msg}")
 
