@@ -1249,6 +1249,7 @@ def main():
                 st.session_state.osm_spots = []
                 st.session_state.osm_center_lat = sp["lat"]
                 st.session_state.osm_center_lon = sp["lon"]
+                st.success(f"✅ {sp['name']}を選択しました")
                 st.rerun()
 
         # ③ 表示設定
