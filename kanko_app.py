@@ -824,6 +824,7 @@ function sendToStreamlit(lat,lon,hdg,spd){
   u.searchParams.set("gps_lat",lat.toFixed(6));u.searchParams.set("gps_lon",lon.toFixed(6));
   u.searchParams.set("gps_heading",hdg.toFixed(1));u.searchParams.set("gps_speed",spd.toFixed(1));
   u.searchParams.set("gps_active","1");
+  u.searchParams.set("gps_reset","1");
   window.parent.history.replaceState(null,"",u.toString());
   document.getElementById("send-status").textContent="✅ "+new Date().toLocaleTimeString()+" 送信済み";}
 function startSensors(){
@@ -1141,7 +1142,10 @@ def main():
         gps_heading=smooth_heading(gps_heading,buf); st.session_state.heading_buf=list(buf)
         gps_lat,gps_lon=smooth_gps(gps_lat,gps_lon,st.session_state.prev_lat,st.session_state.prev_lon)
         st.session_state.prev_lat=gps_lat; st.session_state.prev_lon=gps_lon
-        # 手動選択フラグはGPS ONになっても維持する（エリア選択を優先）
+        # GPS取得開始ボタンを押したとき（gps_reset=1）は手動選択をリセット→現在地優先
+        if st.query_params.get("gps_reset") == "1":
+            st.session_state.manual_spot_selected = False
+            st.session_state.selected_spot_id = None
 
     col_ctrl,col_main=st.columns([1,2],gap="medium")
 
