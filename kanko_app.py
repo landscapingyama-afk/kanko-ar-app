@@ -914,6 +914,7 @@ def init_session():
         "osm_center_lon": None,
         "map_selected_spot_id": None,
         "prev_mode": None,
+        "manual_spot_selected": False,
     }
     for k,v in defaults.items():
         if k not in st.session_state: st.session_state[k]=v
@@ -1181,6 +1182,7 @@ def main():
                     st.session_state.preset_lat = sp["lat"]
                     st.session_state.preset_lon = sp["lon"]
                     st.session_state.selected_spot_id = sp["id"]
+                    st.session_state.manual_spot_selected = True
                     st.session_state.osm_loaded = False
                     st.session_state.osm_spots = []
                     st.session_state.osm_center_lat = sp["lat"]
@@ -1237,8 +1239,9 @@ def main():
             if gps_active:
                 st.markdown('<div class="gps-auto-note">🟢 <b>GPS自動取得中です</b><br>現在地・向きはスマホのセンサーから自動で入力されています。</div>',unsafe_allow_html=True)
                 sim_lat=gps_lat; sim_lon=gps_lon; sim_heading=gps_heading
-                # GPS ON時でもエリア選択済みならそのスポットを維持
-                # 未選択の場合はGPS現在地を使う（selected_spot_idはNoneのまま）
+                # GPS ON時・エリア未選択の場合はselected_spot_idをクリアして現在地優先にする
+                if not st.session_state.get("manual_spot_selected", False):
+                    st.session_state.selected_spot_id = None
             else:
                 st.markdown('<div style="font-size:12px;color:#3a5a8a;background:rgba(200,220,255,0.3);border-radius:8px;padding:6px 10px;margin-bottom:6px;">💻 パソコン・GPS未取得時はスライダーで場所を模擬できます</div>',unsafe_allow_html=True)
                 sim_lat=st.slider("📍 緯度",33.50,35.70,
@@ -1332,7 +1335,7 @@ def main():
                 default_spot = next((sp for sp in SPOT_DATA_BUILTIN if sp["id"]=="takamikura_001"), SPOT_DATA_BUILTIN[0])
                 map_center_lat = default_spot["lat"]
                 map_center_lon = default_spot["lon"]
-            map_key=f"kanko_map_{tile_name[:2]}_{map_zoom}_{round(map_center_lat,3)}_{round(map_center_lon,3)}_{st.session_state.get('selected_spot_id','none')}"
+            map_key=f"kanko_map_{tile_name[:2]}_{map_zoom}_{round(map_center_lat,3)}_{round(map_center_lon,3)}_{st.session_state.get('selected_spot_id','none')}_{round(gps_lat,3) if gps_active else 'nogps'}"
             fmap=build_map(map_center_lat,map_center_lon,sim_heading,tile_name,map_zoom,mode_cfg,visible_spots)
             map_data=st_folium(fmap,width="100%",height=380,returned_objects=["last_clicked"],key=map_key); map_ok=True
         except Exception: pass
