@@ -1313,7 +1313,6 @@ def main():
 
     with col_main:
         st.markdown(f'<div class="mode-title-bar" style="background:{mode_cfg["bg"]};">{mode_cfg["icon"]} {mode_label}</div>',unsafe_allow_html=True)
-        map_key=f"kanko_map_{tile_name[:2]}_{map_zoom}_{round(map_center_lat,3)}_{round(map_center_lon,3)}_{st.session_state.get('selected_spot_id','none')}"
         map_data={}; map_ok=False
         try:
             # スポット選択時はそのスポットを、GPS ON・未選択時は現在地を、それ以外はデフォルトをマップ中心にする
@@ -1326,8 +1325,11 @@ def main():
                 map_center_lat = gps_lat
                 map_center_lon = gps_lon
             else:
-                map_center_lat = sim_lat
-                map_center_lon = sim_lon
+                # GPS OFF・未選択時は高御位神社の座標を使用
+                default_spot = next((sp for sp in SPOT_DATA_BUILTIN if sp["id"]=="takamikura_001"), SPOT_DATA_BUILTIN[0])
+                map_center_lat = default_spot["lat"]
+                map_center_lon = default_spot["lon"]
+            map_key=f"kanko_map_{tile_name[:2]}_{map_zoom}_{round(map_center_lat,3)}_{round(map_center_lon,3)}_{st.session_state.get('selected_spot_id','none')}"
             fmap=build_map(map_center_lat,map_center_lon,sim_heading,tile_name,map_zoom,mode_cfg,visible_spots)
             map_data=st_folium(fmap,width="100%",height=380,returned_objects=["last_clicked"],key=map_key); map_ok=True
         except Exception: pass
