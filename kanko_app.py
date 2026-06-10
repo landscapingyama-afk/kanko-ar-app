@@ -1141,8 +1141,7 @@ def main():
         gps_heading=smooth_heading(gps_heading,buf); st.session_state.heading_buf=list(buf)
         gps_lat,gps_lon=smooth_gps(gps_lat,gps_lon,st.session_state.prev_lat,st.session_state.prev_lon)
         st.session_state.prev_lat=gps_lat; st.session_state.prev_lon=gps_lon
-        # GPS ONになったら手動選択フラグをリセット（現在地優先）
-        st.session_state.manual_spot_selected = False
+        # 手動選択フラグはGPS ONになっても維持する（エリア選択を優先）
 
     col_ctrl,col_main=st.columns([1,2],gap="medium")
 
