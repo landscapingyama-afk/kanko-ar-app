@@ -1213,10 +1213,26 @@ def main():
                 st.session_state.selected_spot_id = None
                 st.rerun()
 
-        def _spot_button(sp, key_prefix):
+        # エリア選択
+        area_options = ["── エリアを選択 ──", "🗾 播磨エリア", "🗾 宍粟市エリア", "🗾 淡路島エリア", "🗾 香川エリア"]
+        selected_area = st.selectbox("エリア", area_options, index=0, label_visibility="collapsed")
+
+        # 選択エリアのスポット一覧を表示
+        if selected_area == "🗾 播磨エリア":
+            area_spots = harima_spots
+        elif selected_area == "🗾 宍粟市エリア":
+            area_spots = shiso_spots
+        elif selected_area == "🗾 淡路島エリア":
+            area_spots = awaji_spots
+        elif selected_area == "🗾 香川エリア":
+            area_spots = kagawa_spots
+        else:
+            area_spots = []
+
+        for sp in area_spots:
             is_selected = st.session_state.get("selected_spot_id") == sp["id"]
             btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
-            if st.button(btn_label, use_container_width=True, key=f"{key_prefix}_{sp['id']}"):
+            if st.button(btn_label, use_container_width=True, key=f"spot_{sp['id']}"):
                 st.session_state.preset_lat = sp["lat"]
                 st.session_state.preset_lon = sp["lon"]
                 st.session_state.selected_spot_id = sp["id"]
@@ -1226,39 +1242,6 @@ def main():
                 st.session_state.osm_center_lat = sp["lat"]
                 st.session_state.osm_center_lon = sp["lon"]
                 st.rerun()
-
-        with st.expander("🗾 播磨エリア（兵庫県）", expanded=False):
-            categories = {
-                "⛩ 神社": [s for s in harima_spots if s.get("category")=="shrine"],
-                "🛕 寺院": [s for s in harima_spots if s.get("category")=="temple"],
-                "🏯 城・史跡": [s for s in harima_spots if s.get("category") in ("castle","historical")],
-                "🏔 山・自然": [s for s in harima_spots if s.get("category")=="mountain"],
-            }
-            for cat_label, spots in categories.items():
-                if not spots: continue
-                st.markdown(f'<div style="font-size:12px;color:#3a5a8a;font-weight:700;margin:4px 0 2px;">{cat_label}</div>', unsafe_allow_html=True)
-                for sp in spots:
-                    _spot_button(sp, f"sp_h_{cat_label[:2]}")
-
-        with st.expander("🗾 宍粟市エリア（兵庫県）", expanded=False):
-            shiso_cats = {
-                "⛩ 神社": [s for s in shiso_spots if s.get("category")=="shrine"],
-                "🛕 寺院": [s for s in shiso_spots if s.get("category")=="temple"],
-                "🏔 山・自然": [s for s in shiso_spots if s.get("category")=="mountain"],
-            }
-            for cat_label, spots in shiso_cats.items():
-                if not spots: continue
-                st.markdown(f'<div style="font-size:12px;color:#3a5a8a;font-weight:700;margin:4px 0 2px;">{cat_label}</div>', unsafe_allow_html=True)
-                for sp in spots:
-                    _spot_button(sp, f"sp_s_{cat_label[:2]}")
-
-        with st.expander("🗾 淡路島エリア", expanded=False):
-            for sp in awaji_spots:
-                _spot_button(sp, "sp_a")
-
-        with st.expander("🗾 香川エリア", expanded=False):
-            for sp in kagawa_spots:
-                _spot_button(sp, "sp_g")
 
         # ③ 表示設定
         st.markdown("---")
