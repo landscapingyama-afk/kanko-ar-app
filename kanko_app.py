@@ -159,7 +159,7 @@ def analyze_cloud_gemini(image_bytes):
     try:
         import base64; img_b64 = base64.b64encode(image_bytes).decode()
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
-        payload = {"contents":[{"parts":[{"text":'この画像の雲を分析してください。JSONのみで回答:{"cloud_type":"雲の種類","description":"特徴を2行以内","weather_hint":"天気の傾向を1行で"}'},{"inline_data":{"mime_type":"image/jpeg","data":img_b64}}]}]}
+        payload = {"contents":[{"parts":[{"text":'この画像の雲を詳しく分析してください。JSONのみで回答:{"cloud_type":"雲の種類（正式名称）","description":"雲の特徴・形・色・高さなどを3〜4行で詳しく説明してください","formation_reason":"この雲が形成される仕組みや気象条件を2〜3行で説明してください","weather_hint":"この雲から読み取れる今後の天気の傾向を2〜3行で説明してください","observation_tips":"この雲を観察する際のポイントや豆知識を1〜2行で"}'},{"inline_data":{"mime_type":"image/jpeg","data":img_b64}}]}]}
         r = requests.post(url, json=payload, timeout=20)
         if r.status_code == 400:
             dummy["description"] = f"APIキーエラー(400)。キーの値を確認してください。key先頭:{api_key[:12]}"
@@ -1466,7 +1466,7 @@ def main():
                 if result.get("is_dummy"):
                     st.markdown(f'<div class="cloud-result">📡 {result["description"]}</div>',unsafe_allow_html=True)
                 else:
-                    st.markdown(f'<div class="cloud-result">☁️ <b>{result.get("cloud_type","不明")}</b><br>{result.get("description","")}<br>🌤 {result.get("weather_hint","")}<br><span style="font-size:12px;opacity:0.8;">⚠️ 雲の分析はAIによるものです。正確な天気予報は気象庁等でご確認ください。</span></div>',unsafe_allow_html=True)
+                    st.markdown(f'<div class="cloud-result">☁️ <b>{result.get("cloud_type","不明")}</b><br><br>{result.get("description","")}<br><br>🌱 <b>形成される理由</b><br>{result.get("formation_reason","")}<br><br>🌤 <b>天気の傾向</b><br>{result.get("weather_hint","")}<br><br>🔭 <b>観察ポイント</b><br>{result.get("observation_tips","")}<br><br><span style="font-size:12px;opacity:0.8;">⚠️ 雲の分析はAIによるものです。正確な天気予報は気象庁等でご確認ください。</span></div>',unsafe_allow_html=True)
             elif uploaded and remaining<=0:
                 st.warning("本日の雲判定上限（3回）に達しました。明日またお試しください。")
 
