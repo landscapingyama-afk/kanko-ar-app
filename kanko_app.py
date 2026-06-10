@@ -1155,93 +1155,7 @@ def main():
         else: st.markdown('<div class="sensor-manual-badge">🎛 手動シミュレータ</div>',unsafe_allow_html=True)
         st.markdown("---")
 
-        with st.expander("⚙️ 表示設定（タップで開く）",expanded=False):
-            night_mode=st.toggle("🌙 夜モード",value=st.session_state.night_mode); st.session_state.night_mode=night_mode
-            st.markdown("---")
-            selected_area = st.session_state.get("selected_area", "播磨エリア")
-            # ★ 登録済みスポット数を表示
-            SHISO_CITIES = ("宍粟市一宮町", "宍粟市山崎町", "宍粟市波賀町", "宍粟市千種町")
-            harima_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city") not in ("淡路市",) and s.get("city") not in SHISO_CITIES]
-            shiso_spots  = [s for s in SPOT_DATA_BUILTIN if s.get("city") in SHISO_CITIES]
-            kansai_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture") in ("奈良県","京都府","大阪府")]
-            kagawa_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="香川県"]
-            awaji_spots  = [s for s in SPOT_DATA_BUILTIN if s.get("city")=="淡路市"]
-            total = len(SPOT_DATA_BUILTIN)
-            st.markdown(
-                f'''<div style="background:rgba(100,160,255,0.15);border-radius:10px;padding:8px 12px;
-                font-size:12px;color:#2a4a7a;margin-bottom:8px;line-height:1.8;">
-                📊 <b>登録済みスポット：{total}件</b><br>
-                　播磨：{len(harima_spots)}件 ／ 宍粟：{len(shiso_spots)}件 ／ 関西：{len(kansai_spots)}件<br>
-                　淡路：{len(awaji_spots)}件 ／ 香川：{len(kagawa_spots)}件
-                </div>''',
-                unsafe_allow_html=True
-            )
-
-            # ★ エリア別カテゴリ表示
-            st.markdown("**📍 エリアから探す**")
-
-            def _spot_button(sp, key_prefix):
-                is_selected = st.session_state.get("selected_spot_id") == sp["id"]
-                btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
-                if st.button(btn_label, use_container_width=True, key=f"{key_prefix}_{sp['id']}"):
-                    st.session_state.preset_lat = sp["lat"]
-                    st.session_state.preset_lon = sp["lon"]
-                    st.session_state.selected_spot_id = sp["id"]
-                    st.session_state.manual_spot_selected = True
-                    st.session_state.osm_loaded = False
-                    st.session_state.osm_spots = []
-                    st.session_state.osm_center_lat = sp["lat"]
-                    st.session_state.osm_center_lon = sp["lon"]
-                    st.rerun()
-
-            # 播磨エリア（宍粟を除く）
-            with st.expander("🗾 播磨エリア（兵庫県）", expanded=False):
-                categories = {
-                    "⛩ 神社": [s for s in harima_spots if s.get("category")=="shrine"],
-                    "🛕 寺院": [s for s in harima_spots if s.get("category")=="temple"],
-                    "🏯 城・史跡": [s for s in harima_spots if s.get("category") in ("castle","historical")],
-                    "🏔 山・自然": [s for s in harima_spots if s.get("category")=="mountain"],
-                }
-                for cat_label, spots in categories.items():
-                    if not spots: continue
-                    st.markdown(f'<div style="font-size:12px;color:#3a5a8a;font-weight:700;margin:4px 0 2px;">{cat_label}</div>', unsafe_allow_html=True)
-                    for sp in spots:
-                        _spot_button(sp, f"sp_h_{cat_label[:2]}")
-
-            # ★ 宍粟市エリア（独立）
-            with st.expander("🗾 宍粟市エリア（兵庫県）", expanded=False):
-                shiso_cats = {
-                    "⛩ 神社": [s for s in shiso_spots if s.get("category")=="shrine"],
-                    "🛕 寺院": [s for s in shiso_spots if s.get("category")=="temple"],
-                    "🏔 山・自然": [s for s in shiso_spots if s.get("category")=="mountain"],
-                }
-                for cat_label, spots in shiso_cats.items():
-                    if not spots: continue
-                    st.markdown(f'<div style="font-size:12px;color:#3a5a8a;font-weight:700;margin:4px 0 2px;">{cat_label}</div>', unsafe_allow_html=True)
-                    for sp in spots:
-                        _spot_button(sp, f"sp_s_{cat_label[:2]}")
-
-            # 関西エリア
-            with st.expander("🗾 関西エリア（奈良・京都・大阪）", expanded=False):
-                kansai_prefs = {"奈良県":"🦌 奈良", "京都府":"⛩ 京都", "大阪府":"🏯 大阪"}
-                for pref, pref_label in kansai_prefs.items():
-                    pref_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")==pref]
-                    if not pref_spots: continue
-                    st.markdown(f'<div style="font-size:12px;color:#3a5a8a;font-weight:700;margin:4px 0 2px;">{pref_label}</div>', unsafe_allow_html=True)
-                    for sp in pref_spots:
-                        _spot_button(sp, f"sp_k_{pref_label[:2]}")
-
-            # 淡路島エリア
-            with st.expander("🗾 淡路島エリア", expanded=False):
-                for sp in awaji_spots:
-                    _spot_button(sp, "sp_a")
-
-            # 香川エリア
-            with st.expander("🗾 香川エリア", expanded=False):
-                for sp in kagawa_spots:
-                    _spot_button(sp, "sp_g")
-
-        # デフォルト値を先に設定（表示設定を開かない場合の安全弁）
+        # デフォルト値を先に設定（安全弁）
         sim_lat = float(st.session_state.get("preset_lat", 34.8330))
         sim_lon = float(st.session_state.get("preset_lon", 134.8620))
         sim_heading = 0
@@ -1253,7 +1167,7 @@ def main():
         mode_label = list(MODES.keys())[0]
         mode_cfg = MODES[mode_label]
 
-        # GPS処理はexpander外で常に実行
+        # ① GPS処理（常に実行）
         st.markdown("---")
         if gps_active:
             st.markdown('<div class="gps-auto-note">🟢 <b>GPS自動取得中です</b><br>現在地・向きはスマホのセンサーから自動で入力されています。</div>',unsafe_allow_html=True)
@@ -1268,7 +1182,78 @@ def main():
                 0.0005,format="%.4f")
             sim_heading=st.slider("🧭 向き（方位角）",0,359,45,1)
 
+        # ② エリアから探す（常に表示）
+        st.markdown("---")
+        SHISO_CITIES = ("宍粟市一宮町", "宍粟市山崎町", "宍粟市波賀町", "宍粟市千種町")
+        harima_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city") not in ("淡路市",) and s.get("city") not in SHISO_CITIES]
+        shiso_spots  = [s for s in SPOT_DATA_BUILTIN if s.get("city") in SHISO_CITIES]
+        kansai_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture") in ("奈良県","京都府","大阪府")]
+        kagawa_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="香川県"]
+        awaji_spots  = [s for s in SPOT_DATA_BUILTIN if s.get("city")=="淡路市"]
+        total = len(SPOT_DATA_BUILTIN)
+        st.markdown(
+            f'''<div style="background:rgba(100,160,255,0.15);border-radius:10px;padding:8px 12px;
+            font-size:12px;color:#2a4a7a;margin-bottom:8px;line-height:1.8;">
+            📊 <b>登録済みスポット：{total}件</b><br>
+            　播磨：{len(harima_spots)}件 ／ 宍粟：{len(shiso_spots)}件<br>
+            　淡路：{len(awaji_spots)}件 ／ 香川：{len(kagawa_spots)}件
+            </div>''',
+            unsafe_allow_html=True
+        )
+        st.markdown("**📍 エリアから探す**")
+
+        def _spot_button(sp, key_prefix):
+            is_selected = st.session_state.get("selected_spot_id") == sp["id"]
+            btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
+            if st.button(btn_label, use_container_width=True, key=f"{key_prefix}_{sp['id']}"):
+                st.session_state.preset_lat = sp["lat"]
+                st.session_state.preset_lon = sp["lon"]
+                st.session_state.selected_spot_id = sp["id"]
+                st.session_state.manual_spot_selected = True
+                st.session_state.osm_loaded = False
+                st.session_state.osm_spots = []
+                st.session_state.osm_center_lat = sp["lat"]
+                st.session_state.osm_center_lon = sp["lon"]
+                st.rerun()
+
+        with st.expander("🗾 播磨エリア（兵庫県）", expanded=False):
+            categories = {
+                "⛩ 神社": [s for s in harima_spots if s.get("category")=="shrine"],
+                "🛕 寺院": [s for s in harima_spots if s.get("category")=="temple"],
+                "🏯 城・史跡": [s for s in harima_spots if s.get("category") in ("castle","historical")],
+                "🏔 山・自然": [s for s in harima_spots if s.get("category")=="mountain"],
+            }
+            for cat_label, spots in categories.items():
+                if not spots: continue
+                st.markdown(f'<div style="font-size:12px;color:#3a5a8a;font-weight:700;margin:4px 0 2px;">{cat_label}</div>', unsafe_allow_html=True)
+                for sp in spots:
+                    _spot_button(sp, f"sp_h_{cat_label[:2]}")
+
+        with st.expander("🗾 宍粟市エリア（兵庫県）", expanded=False):
+            shiso_cats = {
+                "⛩ 神社": [s for s in shiso_spots if s.get("category")=="shrine"],
+                "🛕 寺院": [s for s in shiso_spots if s.get("category")=="temple"],
+                "🏔 山・自然": [s for s in shiso_spots if s.get("category")=="mountain"],
+            }
+            for cat_label, spots in shiso_cats.items():
+                if not spots: continue
+                st.markdown(f'<div style="font-size:12px;color:#3a5a8a;font-weight:700;margin:4px 0 2px;">{cat_label}</div>', unsafe_allow_html=True)
+                for sp in spots:
+                    _spot_button(sp, f"sp_s_{cat_label[:2]}")
+
+        with st.expander("🗾 淡路島エリア", expanded=False):
+            for sp in awaji_spots:
+                _spot_button(sp, "sp_a")
+
+        with st.expander("🗾 香川エリア", expanded=False):
+            for sp in kagawa_spots:
+                _spot_button(sp, "sp_g")
+
+        # ③ 表示設定
+        st.markdown("---")
         with st.expander("⚙️ 表示設定（タップで開く）",expanded=False):
+            night_mode=st.toggle("🌙 夜モード",value=st.session_state.night_mode); st.session_state.night_mode=night_mode
+            st.markdown("---")
             lang_ja = st.toggle("🇺🇸 英語表示", value=False)
             selected_lang = "EN" if lang_ja else "ja"
             st.markdown("---")
@@ -1280,7 +1265,6 @@ def main():
             st.markdown('<div style="color:#3a5a8a;font-size:13px;margin-bottom:4px;">📡 表示モード</div>',unsafe_allow_html=True)
             mode_label=st.radio("モード",list(MODES.keys()),index=0,label_visibility="collapsed")
             mode_cfg=MODES[mode_label]
-            # モード切替時に地図選択をリセット
             if "prev_mode" not in st.session_state:
                 st.session_state.prev_mode = mode_label
             elif st.session_state.prev_mode != mode_label:
