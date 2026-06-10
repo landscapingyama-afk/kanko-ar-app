@@ -1313,14 +1313,21 @@ def main():
 
     with col_main:
         st.markdown(f'<div class="mode-title-bar" style="background:{mode_cfg["bg"]};">{mode_cfg["icon"]} {mode_label}</div>',unsafe_allow_html=True)
-        map_key=f"kanko_map_{tile_name[:2]}_{map_zoom}_{round(sim_lat,3)}_{round(sim_lon,3)}_{st.session_state.get('selected_spot_id','none')}"
+        map_key=f"kanko_map_{tile_name[:2]}_{map_zoom}_{round(map_center_lat,3)}_{round(map_center_lon,3)}_{st.session_state.get('selected_spot_id','none')}"
         map_data={}; map_ok=False
         try:
-            # スポット選択時はそのスポットをマップ中心にする
+            # スポット選択時はそのスポットを、GPS ON・未選択時は現在地を、それ以外はデフォルトをマップ中心にする
             selected_id_for_map = st.session_state.get("selected_spot_id")
             selected_spot_for_map = next((sp for sp in all_spots if sp.get("id")==selected_id_for_map), None) if selected_id_for_map else None
-            map_center_lat = selected_spot_for_map["lat"] if selected_spot_for_map else sim_lat
-            map_center_lon = selected_spot_for_map["lon"] if selected_spot_for_map else sim_lon
+            if selected_spot_for_map:
+                map_center_lat = selected_spot_for_map["lat"]
+                map_center_lon = selected_spot_for_map["lon"]
+            elif gps_active:
+                map_center_lat = gps_lat
+                map_center_lon = gps_lon
+            else:
+                map_center_lat = sim_lat
+                map_center_lon = sim_lon
             fmap=build_map(map_center_lat,map_center_lon,sim_heading,tile_name,map_zoom,mode_cfg,visible_spots)
             map_data=st_folium(fmap,width="100%",height=380,returned_objects=["last_clicked"],key=map_key); map_ok=True
         except Exception: pass
