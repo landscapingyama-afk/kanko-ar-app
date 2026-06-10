@@ -1237,7 +1237,8 @@ def main():
             if gps_active:
                 st.markdown('<div class="gps-auto-note">🟢 <b>GPS自動取得中です</b><br>現在地・向きはスマホのセンサーから自動で入力されています。</div>',unsafe_allow_html=True)
                 sim_lat=gps_lat; sim_lon=gps_lon; sim_heading=gps_heading
-                # GPS取得中もプリセット選択を維持する（リセットしない）
+                # GPS ON時でもエリア選択済みならそのスポットを維持
+                # 未選択の場合はGPS現在地を使う（selected_spot_idはNoneのまま）
             else:
                 st.markdown('<div style="font-size:12px;color:#3a5a8a;background:rgba(200,220,255,0.3);border-radius:8px;padding:6px 10px;margin-bottom:6px;">💻 パソコン・GPS未取得時はスライダーで場所を模擬できます</div>',unsafe_allow_html=True)
                 sim_lat=st.slider("📍 緯度",33.50,35.70,
@@ -1315,17 +1316,19 @@ def main():
         st.markdown(f'<div class="mode-title-bar" style="background:{mode_cfg["bg"]};">{mode_cfg["icon"]} {mode_label}</div>',unsafe_allow_html=True)
         map_data={}; map_ok=False
         try:
-            # スポット選択時はそのスポットを、GPS ON・未選択時は現在地を、それ以外はデフォルトをマップ中心にする
+            # スポット選択時はそのスポットを中心に、GPS ON・未選択時は現在地を、GPS OFF・未選択時はデフォルトを使用
             selected_id_for_map = st.session_state.get("selected_spot_id")
             selected_spot_for_map = next((sp for sp in all_spots if sp.get("id")==selected_id_for_map), None) if selected_id_for_map else None
             if selected_spot_for_map:
+                # エリアからスポットを選択している場合
                 map_center_lat = selected_spot_for_map["lat"]
                 map_center_lon = selected_spot_for_map["lon"]
             elif gps_active:
+                # GPS ON・未選択：現在地を中心
                 map_center_lat = gps_lat
                 map_center_lon = gps_lon
             else:
-                # GPS OFF・未選択時は高御位神社の座標を使用
+                # GPS OFF・未選択：高御位神社をデフォルト
                 default_spot = next((sp for sp in SPOT_DATA_BUILTIN if sp["id"]=="takamikura_001"), SPOT_DATA_BUILTIN[0])
                 map_center_lat = default_spot["lat"]
                 map_center_lon = default_spot["lon"]
