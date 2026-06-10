@@ -1202,6 +1202,13 @@ def main():
         )
         st.markdown("**📍 エリアから探す**")
 
+        # 現在地ボタン（GPS ONの時のみ表示）
+        if gps_active:
+            if st.button("📍 現在地を表示", use_container_width=True, key="btn_current_location"):
+                st.session_state.manual_spot_selected = False
+                st.session_state.selected_spot_id = None
+                st.rerun()
+
         def _spot_button(sp, key_prefix):
             is_selected = st.session_state.get("selected_spot_id") == sp["id"]
             btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
@@ -1323,16 +1330,12 @@ def main():
             selected_id_for_map = st.session_state.get("selected_spot_id")
             manual_selected = st.session_state.get("manual_spot_selected", False)
             selected_spot_for_map = next((sp for sp in all_spots if sp.get("id")==selected_id_for_map), None) if selected_id_for_map else None
-            if gps_active and not manual_selected:
-                # GPS ON・手動選択なし：現在地を中心
-                map_center_lat = gps_lat
-                map_center_lon = gps_lon
-            elif selected_spot_for_map and manual_selected:
+            if selected_spot_for_map and manual_selected:
                 # 手動でスポットを選択している場合：選択スポットを中心
                 map_center_lat = selected_spot_for_map["lat"]
                 map_center_lon = selected_spot_for_map["lon"]
-            elif gps_active:
-                # GPS ON・選択スポットなし：現在地を中心
+            elif gps_active and not manual_selected:
+                # GPS ON・手動選択なし（現在地ボタン押下時）：現在地を中心
                 map_center_lat = gps_lat
                 map_center_lon = gps_lon
             else:
