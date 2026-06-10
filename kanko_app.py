@@ -1146,6 +1146,10 @@ def main():
         if st.query_params.get("gps_reset") == "1":
             st.session_state.manual_spot_selected = False
             st.session_state.selected_spot_id = None
+            # リセット後はgps_resetをURLから削除
+            params = dict(st.query_params)
+            params.pop("gps_reset", None)
+            st.query_params.update(params)
 
     col_ctrl,col_main=st.columns([1,2],gap="medium")
 
