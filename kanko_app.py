@@ -1213,11 +1213,19 @@ def main():
                 st.session_state.selected_spot_id = None
                 st.rerun()
 
-        # エリア選択
+        # エリア選択（session_stateで保持）
         area_options = ["── エリアを選択 ──", "🗾 播磨エリア", "🗾 宍粟市エリア", "🗾 淡路島エリア", "🗾 香川エリア"]
-        selected_area = st.selectbox("エリア", area_options, index=0, label_visibility="collapsed")
+        if "selected_area_index" not in st.session_state:
+            st.session_state.selected_area_index = 0
+        selected_area = st.selectbox(
+            "エリア", area_options,
+            index=st.session_state.selected_area_index,
+            label_visibility="collapsed",
+            key="area_selectbox"
+        )
+        st.session_state.selected_area_index = area_options.index(selected_area)
 
-        # 選択エリアのスポット一覧を表示
+        # 選択エリアのスポット一覧
         if selected_area == "🗾 播磨エリア":
             area_spots = harima_spots
         elif selected_area == "🗾 宍粟市エリア":
