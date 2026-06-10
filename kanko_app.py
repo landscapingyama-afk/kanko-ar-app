@@ -1459,7 +1459,11 @@ def main():
             st.markdown("---")
             today_count=cloud_usage_today(); remaining=3-today_count
             st.markdown(f'<div class="cloud-result">☁️ <b>雲判定モード</b>　本日残り：{remaining}/3回<br><span style="font-size:14px;">空の写真をアップロードすると雲の種類を判定します。</span><br><span style="font-size:12px;opacity:0.8;">⚠️ 雲の分析はAIによるものです。正確な天気予報は気象庁等でご確認ください。</span></div>',unsafe_allow_html=True)
-            uploaded=st.file_uploader("☁️ 空の写真をアップロード",type=["jpg","jpeg","png"],label_visibility="collapsed")
+            st.markdown(
+                '<div style="font-size:12px;color:#5a3a00;background:rgba(255,240,200,0.6);border-radius:8px;padding:6px 10px;margin-bottom:6px;">📱 事前にスマホのカメラで空を撮影し、カメラロールに保存してからファイルを選択してください</div>',
+                unsafe_allow_html=True
+            )
+            uploaded=st.file_uploader("☁️ 空の写真をアップロード",type=["jpg","jpeg","png"],label_visibility="collapsed",accept_multiple_files=False)
             if uploaded and remaining>0:
                 with st.spinner("雲を分析中..."):
                     result=analyze_cloud_gemini(uploaded.read())
