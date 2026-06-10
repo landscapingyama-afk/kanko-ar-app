@@ -1141,8 +1141,6 @@ def main():
         gps_heading=smooth_heading(gps_heading,buf); st.session_state.heading_buf=list(buf)
         gps_lat,gps_lon=smooth_gps(gps_lat,gps_lon,st.session_state.prev_lat,st.session_state.prev_lon)
         st.session_state.prev_lat=gps_lat; st.session_state.prev_lon=gps_lon
-        # デバッグ表示（確認後削除）
-        st.warning(f"🔍 DEBUG: gps_lat={gps_lat:.4f} gps_lon={gps_lon:.4f} manual={st.session_state.get('manual_spot_selected')} selected_id={st.session_state.get('selected_spot_id')}")
 
     col_ctrl,col_main=st.columns([1,2],gap="medium")
 
@@ -1241,11 +1239,9 @@ def main():
             if gps_active:
                 st.markdown('<div class="gps-auto-note">🟢 <b>GPS自動取得中です</b><br>現在地・向きはスマホのセンサーから自動で入力されています。</div>',unsafe_allow_html=True)
                 sim_lat=gps_lat; sim_lon=gps_lon; sim_heading=gps_heading
-                # デバッグ表示（確認後削除）
-                st.markdown(f'<div style="font-size:11px;color:#888;background:rgba(0,0,0,0.1);padding:4px 8px;border-radius:6px;">🔍 DEBUG: gps_lat={gps_lat:.4f} gps_lon={gps_lon:.4f} manual={st.session_state.get("manual_spot_selected")} selected_id={st.session_state.get("selected_spot_id")}</div>', unsafe_allow_html=True)
-                # GPS ON時・手動選択していない場合はselected_spot_idをクリアして現在地優先にする
-                if not st.session_state.get("manual_spot_selected", False):
-                    st.session_state.selected_spot_id = None
+                # GPS ONになったら常に手動選択をリセット→現在地優先
+                st.session_state.manual_spot_selected = False
+                st.session_state.selected_spot_id = None
             else:
                 st.markdown('<div style="font-size:12px;color:#3a5a8a;background:rgba(200,220,255,0.3);border-radius:8px;padding:6px 10px;margin-bottom:6px;">💻 パソコン・GPS未取得時はスライダーで場所を模擬できます</div>',unsafe_allow_html=True)
                 sim_lat=st.slider("📍 緯度",33.50,35.70,
