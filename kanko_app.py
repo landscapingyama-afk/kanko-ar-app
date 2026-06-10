@@ -909,7 +909,7 @@ def init_session():
         "osm_spots":[],"osm_loaded":False,
         "night_mode":False,"selected_area":"播磨エリア",
         "omikuji_result": None,
-        "selected_spot_id": SPOT_DATA_BUILTIN[0]["id"] if SPOT_DATA_BUILTIN else None,
+        "selected_spot_id": None,
         "osm_center_lat": None,
         "osm_center_lon": None,
         "map_selected_spot_id": None,
