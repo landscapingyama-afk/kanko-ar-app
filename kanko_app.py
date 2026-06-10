@@ -1237,6 +1237,18 @@ def main():
                 for sp in kagawa_spots:
                     _spot_button(sp, "sp_g")
 
+        # デフォルト値を先に設定（表示設定を開かない場合の安全弁）
+        sim_lat = float(st.session_state.get("preset_lat", 34.8330))
+        sim_lon = float(st.session_state.get("preset_lon", 134.8620))
+        sim_heading = 0
+        tile_name = "標準地図"
+        map_zoom = st.session_state.get("map_zoom", 13)
+        selected_lang = "ja"
+        show_detail = False
+        use_osm = False
+        mode_label = list(MODES.keys())[0]
+        mode_cfg = MODES[mode_label]
+
         # GPS処理はexpander外で常に実行
         st.markdown("---")
         if gps_active:
