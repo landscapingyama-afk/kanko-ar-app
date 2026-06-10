@@ -1239,9 +1239,6 @@ def main():
             if gps_active:
                 st.markdown('<div class="gps-auto-note">🟢 <b>GPS自動取得中です</b><br>現在地・向きはスマホのセンサーから自動で入力されています。</div>',unsafe_allow_html=True)
                 sim_lat=gps_lat; sim_lon=gps_lon; sim_heading=gps_heading
-                # GPS ONになったら常に手動選択をリセット→現在地優先
-                st.session_state.manual_spot_selected = False
-                st.session_state.selected_spot_id = None
             else:
                 st.markdown('<div style="font-size:12px;color:#3a5a8a;background:rgba(200,220,255,0.3);border-radius:8px;padding:6px 10px;margin-bottom:6px;">💻 パソコン・GPS未取得時はスライダーで場所を模擬できます</div>',unsafe_allow_html=True)
                 sim_lat=st.slider("📍 緯度",33.50,35.70,
@@ -1319,15 +1316,16 @@ def main():
         st.markdown(f'<div class="mode-title-bar" style="background:{mode_cfg["bg"]};">{mode_cfg["icon"]} {mode_label}</div>',unsafe_allow_html=True)
         map_data={}; map_ok=False
         try:
-            # スポット選択時はそのスポットを中心に、GPS ON・未選択時は現在地を、GPS OFF・未選択時はデフォルトを使用
+            # マップ中心の決定
             selected_id_for_map = st.session_state.get("selected_spot_id")
+            manual_selected = st.session_state.get("manual_spot_selected", False)
             selected_spot_for_map = next((sp for sp in all_spots if sp.get("id")==selected_id_for_map), None) if selected_id_for_map else None
-            if selected_spot_for_map:
-                # エリアからスポットを選択している場合
+            if selected_spot_for_map and manual_selected:
+                # 手動でスポットを選択している場合
                 map_center_lat = selected_spot_for_map["lat"]
                 map_center_lon = selected_spot_for_map["lon"]
             elif gps_active:
-                # GPS ON・未選択：現在地を中心
+                # GPS ON・手動選択なし：現在地を中心
                 map_center_lat = gps_lat
                 map_center_lon = gps_lon
             else:
