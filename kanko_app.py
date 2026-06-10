@@ -909,7 +909,7 @@ def init_session():
         "osm_spots":[],"osm_loaded":False,
         "night_mode":False,"selected_area":"播磨エリア",
         "omikuji_result": None,
-        "selected_spot_id": None,
+        "selected_spot_id": SPOT_DATA_BUILTIN[0]["id"] if SPOT_DATA_BUILTIN else None,
         "osm_center_lat": None,
         "osm_center_lon": None,
         "map_selected_spot_id": None,
@@ -1152,7 +1152,7 @@ def main():
         with st.expander("⚙️ 表示設定（タップで開く）",expanded=False):
             night_mode=st.toggle("🌙 夜モード",value=st.session_state.night_mode); st.session_state.night_mode=night_mode
             st.markdown("---")
-            selected_area="播磨エリア"  # エリア別アコーディオンに変更
+            selected_area = st.session_state.get("selected_area", "播磨エリア")
             # ★ 登録済みスポット数を表示
             SHISO_CITIES = ("宍粟市一宮町", "宍粟市山崎町", "宍粟市波賀町", "宍粟市千種町")
             harima_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city") not in ("淡路市",) and s.get("city") not in SHISO_CITIES]
@@ -1313,10 +1313,15 @@ def main():
 
     with col_main:
         st.markdown(f'<div class="mode-title-bar" style="background:{mode_cfg["bg"]};">{mode_cfg["icon"]} {mode_label}</div>',unsafe_allow_html=True)
-        map_key=f"kanko_map_{tile_name[:2]}_{map_zoom}_{round(sim_lat,3)}_{round(sim_lon,3)}"
+        map_key=f"kanko_map_{tile_name[:2]}_{map_zoom}_{round(sim_lat,3)}_{round(sim_lon,3)}_{st.session_state.get('selected_spot_id','none')}"
         map_data={}; map_ok=False
         try:
-            fmap=build_map(sim_lat,sim_lon,sim_heading,tile_name,map_zoom,mode_cfg,visible_spots)
+            # スポット選択時はそのスポットをマップ中心にする
+            selected_id_for_map = st.session_state.get("selected_spot_id")
+            selected_spot_for_map = next((sp for sp in all_spots if sp.get("id")==selected_id_for_map), None) if selected_id_for_map else None
+            map_center_lat = selected_spot_for_map["lat"] if selected_spot_for_map else sim_lat
+            map_center_lon = selected_spot_for_map["lon"] if selected_spot_for_map else sim_lon
+            fmap=build_map(map_center_lat,map_center_lon,sim_heading,tile_name,map_zoom,mode_cfg,visible_spots)
             map_data=st_folium(fmap,width="100%",height=380,returned_objects=["last_clicked"],key=map_key); map_ok=True
         except Exception: pass
         # 地図ピンタップでスポット特定
