@@ -824,7 +824,9 @@ function sendToStreamlit(lat,lon,hdg,spd){
   u.searchParams.set("gps_lat",lat.toFixed(6));u.searchParams.set("gps_lon",lon.toFixed(6));
   u.searchParams.set("gps_heading",hdg.toFixed(1));u.searchParams.set("gps_speed",spd.toFixed(1));
   u.searchParams.set("gps_active","1");
-  u.searchParams.set("gps_reset","1");
+  // gps_resetはURLにまだなければ追加（1回だけ送信）
+  if(!u.searchParams.has("gps_reset")){u.searchParams.set("gps_reset","1");}
+  else{u.searchParams.delete("gps_reset");}
   window.parent.history.replaceState(null,"",u.toString());
   document.getElementById("send-status").textContent="✅ "+new Date().toLocaleTimeString()+" 送信済み";}
 function startSensors(){
@@ -1146,10 +1148,8 @@ def main():
         if st.query_params.get("gps_reset") == "1":
             st.session_state.manual_spot_selected = False
             st.session_state.selected_spot_id = None
-            # リセット後はgps_resetをURLから削除
-            params = dict(st.query_params)
-            params.pop("gps_reset", None)
-            st.query_params.update(params)
+            # gps_resetをURLから即削除
+            del st.query_params["gps_reset"]
 
     col_ctrl,col_main=st.columns([1,2],gap="medium")
 
