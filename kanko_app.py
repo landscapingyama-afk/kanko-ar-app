@@ -1141,6 +1141,8 @@ def main():
         gps_heading=smooth_heading(gps_heading,buf); st.session_state.heading_buf=list(buf)
         gps_lat,gps_lon=smooth_gps(gps_lat,gps_lon,st.session_state.prev_lat,st.session_state.prev_lon)
         st.session_state.prev_lat=gps_lat; st.session_state.prev_lon=gps_lon
+        # GPS ONになったら手動選択フラグをリセット（現在地優先）
+        st.session_state.manual_spot_selected = False
 
     col_ctrl,col_main=st.columns([1,2],gap="medium")
 
@@ -1154,8 +1156,7 @@ def main():
             night_mode=st.toggle("🌙 夜モード",value=st.session_state.night_mode); st.session_state.night_mode=night_mode
             st.markdown("---")
             selected_area = st.session_state.get("selected_area", "播磨エリア")
-            # ★ 登録済みスポット数を表示
-            SHISO_CITIES = ("宍粟市一宮町", "宍粟市山崎町", "宍粟市波賀町", "宍粟市千種町")
+            # ★ 登録済みスポット数を表示            SHISO_CITIES = ("宍粟市一宮町", "宍粟市山崎町", "宍粟市波賀町", "宍粟市千種町")
             harima_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city") not in ("淡路市",) and s.get("city") not in SHISO_CITIES]
             shiso_spots  = [s for s in SPOT_DATA_BUILTIN if s.get("city") in SHISO_CITIES]
             kansai_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture") in ("奈良県","京都府","大阪府")]
@@ -1235,21 +1236,23 @@ def main():
             with st.expander("🗾 香川エリア", expanded=False):
                 for sp in kagawa_spots:
                     _spot_button(sp, "sp_g")
-            st.markdown("---")
-            if gps_active:
-                st.markdown('<div class="gps-auto-note">🟢 <b>GPS自動取得中です</b><br>現在地・向きはスマホのセンサーから自動で入力されています。</div>',unsafe_allow_html=True)
-                sim_lat=gps_lat; sim_lon=gps_lon; sim_heading=gps_heading
-            else:
-                st.markdown('<div style="font-size:12px;color:#3a5a8a;background:rgba(200,220,255,0.3);border-radius:8px;padding:6px 10px;margin-bottom:6px;">💻 パソコン・GPS未取得時はスライダーで場所を模擬できます</div>',unsafe_allow_html=True)
-                sim_lat=st.slider("📍 緯度",33.50,35.70,
-                    float(max(33.50,min(35.70,st.session_state.preset_lat))),
-                    0.0005,format="%.4f")
-                sim_lon=st.slider("📍 経度",133.00,136.00,
-                    float(max(133.00,min(136.00,st.session_state.preset_lon))),
-                    0.0005,format="%.4f")
-                sim_heading=st.slider("🧭 向き（方位角）",0,359,45,1)
-            st.markdown("---")
-            st.markdown("**🌐 表示言語**")
+
+        # GPS処理はexpander外で常に実行
+        st.markdown("---")
+        if gps_active:
+            st.markdown('<div class="gps-auto-note">🟢 <b>GPS自動取得中です</b><br>現在地・向きはスマホのセンサーから自動で入力されています。</div>',unsafe_allow_html=True)
+            sim_lat=gps_lat; sim_lon=gps_lon; sim_heading=gps_heading
+        else:
+            st.markdown('<div style="font-size:12px;color:#3a5a8a;background:rgba(200,220,255,0.3);border-radius:8px;padding:6px 10px;margin-bottom:6px;">💻 パソコン・GPS未取得時はスライダーで場所を模擬できます</div>',unsafe_allow_html=True)
+            sim_lat=st.slider("📍 緯度",33.50,35.70,
+                float(max(33.50,min(35.70,st.session_state.preset_lat))),
+                0.0005,format="%.4f")
+            sim_lon=st.slider("📍 経度",133.00,136.00,
+                float(max(133.00,min(136.00,st.session_state.preset_lon))),
+                0.0005,format="%.4f")
+            sim_heading=st.slider("🧭 向き（方位角）",0,359,45,1)
+
+        with st.expander("⚙️ 表示設定（タップで開く）",expanded=False):
             lang_ja = st.toggle("🇺🇸 英語表示", value=False)
             selected_lang = "EN" if lang_ja else "ja"
             st.markdown("---")
@@ -1320,12 +1323,16 @@ def main():
             selected_id_for_map = st.session_state.get("selected_spot_id")
             manual_selected = st.session_state.get("manual_spot_selected", False)
             selected_spot_for_map = next((sp for sp in all_spots if sp.get("id")==selected_id_for_map), None) if selected_id_for_map else None
-            if selected_spot_for_map and manual_selected:
-                # 手動でスポットを選択している場合
+            if gps_active and not manual_selected:
+                # GPS ON・手動選択なし：現在地を中心
+                map_center_lat = gps_lat
+                map_center_lon = gps_lon
+            elif selected_spot_for_map and manual_selected:
+                # 手動でスポットを選択している場合：選択スポットを中心
                 map_center_lat = selected_spot_for_map["lat"]
                 map_center_lon = selected_spot_for_map["lon"]
             elif gps_active:
-                # GPS ON・手動選択なし：現在地を中心
+                # GPS ON・選択スポットなし：現在地を中心
                 map_center_lat = gps_lat
                 map_center_lon = gps_lon
             else:
