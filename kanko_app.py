@@ -1515,30 +1515,15 @@ def main():
             x_url = f"https://twitter.com/intent/tweet?text={encoded}"
             fb_url = f"https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fkanko-ar-harima.streamlit.app&quote={encoded}"
             line_url = f"https://line.me/R/share?text={encoded}"
-            # JavaScriptでwindow.openを使って外部ウィンドウで開く
-            st.markdown(
-                f'''<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
-                <a href="{x_url}" target="_blank" rel="noopener noreferrer"
-                onclick="window.open('{x_url}','_blank','width=600,height=400');return false;"
-                style="display:inline-block;background:#000000;color:#FFF;text-decoration:none;
-                padding:10px 18px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;">
-                𝕏 Xに投稿</a>
-                <a href="{fb_url}" target="_blank" rel="noopener noreferrer"
-                onclick="window.open('{fb_url}','_blank','width=600,height=400');return false;"
-                style="display:inline-block;background:#1877F2;color:#FFF;text-decoration:none;
-                padding:10px 18px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;">
-                📘 Facebookに投稿</a>
-                <a href="{line_url}" target="_blank" rel="noopener noreferrer"
-                onclick="window.open('{line_url}','_blank','width=600,height=400');return false;"
-                style="display:inline-block;background:#06C755;color:#FFF;text-decoration:none;
-                padding:10px 18px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;">
-                💬 LINEで送る</a>
-                </div>
-                <div style="font-size:11px;color:#4a6a9a;margin-top:6px;">
-                ※ ボタンをタップするとSNSアプリが開きます
-                </div>''',
-                unsafe_allow_html=True
-            )
+            # st.link_buttonで確実に外部リンクを開く
+            col_x, col_fb, col_line = st.columns(3)
+            with col_x:
+                st.link_button("𝕏 Xに投稿", x_url, use_container_width=True)
+            with col_fb:
+                st.link_button("📘 Facebook", fb_url, use_container_width=True)
+            with col_line:
+                st.link_button("💬 LINE", line_url, use_container_width=True)
+            st.caption("※ ボタンをタップするとSNSアプリが開きます")
 
         st.markdown("---")
         with st.expander("⚠️ 問題を報告する・写真を提供する"):
@@ -1591,20 +1576,8 @@ def main():
                 f"\n※ 観光スポットナビアプリからの報告"
             )
             mailto = f"mailto:landscaping.yama@gmail.com?subject={subject}&body={body}"
-            st.markdown(
-                f'''<div style="margin-top:8px;">
-                <a href="{mailto}"
-                style="display:inline-block;background:linear-gradient(135deg,#4888e0,#2060c0);
-                color:#FFF;text-decoration:none;padding:12px 24px;border-radius:10px;
-                font-weight:700;font-size:15px;box-shadow:0 2px 8px rgba(70,130,220,0.35);">
-                📧 メールアプリで送信する
-                </a>
-                <div style="font-size:12px;color:#4a6a9a;margin-top:8px;">
-                ※ タップするとメールアプリが開きます。内容を確認して送信してください。
-                </div>
-                </div>''',
-                unsafe_allow_html=True
-            )
+            st.link_button("📧 メールアプリで送信する", mailto, use_container_width=True)
+            st.caption("※ タップするとメールアプリが開きます。内容を確認して送信してください。")
 
     if st.session_state.get("night_mode",False):
         st.markdown("""<style>.stApp{background:linear-gradient(160deg,#050510 0%,#0a0a28 40%,#080818 100%)!important;}.app-header h1{color:#8888FF!important;}.info-panel,.ar-compass,.lookaround-card,.share-card,.report-form{background:rgba(20,20,60,0.65)!important;color:#CCCCFF!important;}.ar-card{color:#EEEEFF!important;}.ar-card-title{color:#FFFFFF!important;}.mode-title-bar{color:#FFFFFF!important;}</style>""",unsafe_allow_html=True)
