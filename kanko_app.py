@@ -3,6 +3,7 @@
 # ============================================================
 import streamlit as st
 import math, json, sqlite3, hashlib, os, time
+import urllib.parse
 import requests
 import folium
 from folium.plugins import MiniMap
@@ -130,7 +131,6 @@ def translate_google(text, target_lang="en"):
     cached = cache_get(0.0, 0.0, f"translate_{cache_key}", target_lang)
     if cached: return cached
     try:
-        import urllib.parse
         encoded = urllib.parse.quote(text)
         url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl=ja&tl={target_lang}&dt=t&q={encoded}"
         r = requests.get(url, timeout=8, headers={"User-Agent": "Mozilla/5.0"})
@@ -143,7 +143,7 @@ def translate_google(text, target_lang="en"):
         return result if result else text
     except Exception: return text
 
-def translate_deepl(text, target_lang="EN"):
+def translate_text(text, target_lang="EN"):
     return translate_google(text, target_lang.lower())
 
 def analyze_cloud_gemini(image_bytes):
@@ -171,12 +171,18 @@ def analyze_cloud_gemini(image_bytes):
         if "{" in text and "}" in text:
             result = json.loads(text[text.index("{"):text.rindex("}")+1])
             result["is_dummy"] = False
-            cloud_usage_increment()
+            try:
+                cloud_usage_increment()
+            except Exception:
+                pass  # カウント失敗しても判定結果は返す
             return result
         dummy["cloud_type"] = "解析完了"
         dummy["description"] = text[:120]
         dummy["is_dummy"] = False
-        cloud_usage_increment()
+        try:
+            cloud_usage_increment()
+        except Exception:
+            pass
         return dummy
     except Exception as e:
         dummy["description"] = f"エラー: {str(e)[:80]}"
@@ -275,7 +281,7 @@ OLD_MAP_IMAGES = {
     },
     # 奈良
     "nara_todaiji_005": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
+        "url": "https://www.digital.archives.go.jp/file/1456490.jpg",
         "title": "天保国絵図 大和国",
         "era": "天保9年（1838年）",
         "source": "国土地理院 古地図コレクション",
@@ -284,7 +290,7 @@ OLD_MAP_IMAGES = {
     },
     # 京都
     "kyoto_kinkakuji_006": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
+        "url": "https://www.digital.archives.go.jp/file/1456498.jpg",
         "title": "天保国絵図 山城国",
         "era": "天保9年（1838年）",
         "source": "国土地理院 古地図コレクション",
@@ -293,7 +299,7 @@ OLD_MAP_IMAGES = {
     },
     # 大阪
     "osaka_castle_007": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
+        "url": "https://www.digital.archives.go.jp/file/1456510.jpg",
         "title": "天保国絵図 摂津国",
         "era": "天保9年（1838年）",
         "source": "国土地理院 古地図コレクション",
@@ -302,7 +308,7 @@ OLD_MAP_IMAGES = {
     },
     # 香川
     "takaya_jinja_009": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
+        "url": "https://www.digital.archives.go.jp/file/1456520.jpg",
         "title": "天保国絵図 讃岐国",
         "era": "天保9年（1838年）",
         "source": "国土地理院 古地図コレクション",
@@ -770,7 +776,7 @@ def get_content(spot, mode_key, lang="ja"):
                 if wiki_text and len(wiki_text)>20:
                     detail=detail+f"\n\n📖 Wikipedia より\n{wiki_text[:160]}…\n（出典: Wikipedia CC BY-SA）"
             if lang!="ja":
-                summary=translate_deepl(summary,lang); detail=translate_deepl(detail,lang)
+                summary=translate_text(summary,lang); detail=translate_text(detail,lang)
             return {"summary":summary,"detail":detail,"is_dummy":not bool(spot.get(sk))}
         return {"summary":DUMMY_DATA.get(mode_key,"データなし"),"detail":DUMMY_DATA.get(f"{mode_key}_detail","詳細なし"),"is_dummy":True}
     except Exception:
@@ -1298,17 +1304,16 @@ def main():
                 dist=haversine_km(sim_lat,sim_lon,selected_spot["lat"],selected_spot["lon"])
                 brg=bearing_deg(sim_lat,sim_lon,selected_spot["lat"],selected_spot["lon"])
                 visible_spots=[(selected_spot,dist,brg)]
-                # 周辺スポットONの場合はそのスポット周辺のOSMスポットを追加
+                # 周辺スポットONの場合はall_spots（OSM含む）から周辺スポットを追加
                 if use_osm and st.session_state.osm_spots:
                     osm_near=filter_spots(st.session_state.osm_spots,selected_spot["lat"],selected_spot["lon"])
-                    visible_spots=visible_spots+osm_near
+                    # OSMスポットのみ追加（selected_spotは既に含まれているので除外）
+                    visible_spots=visible_spots+[s for s in osm_near if s[0].get("id")!=selected_id]
             else:
                 visible_spots=filter_spots(all_spots,sim_lat,sim_lon)
         else:
-            # プリセット未選択：GPS現在地から近い順に表示
+            # プリセット未選択：all_spots（OSM含む）から近い順に表示（重複なし）
             visible_spots=filter_spots(all_spots,sim_lat,sim_lon)
-            if use_osm and st.session_state.osm_spots:
-                visible_spots=visible_spots+filter_spots(st.session_state.osm_spots,sim_lat,sim_lon)
 
         nearest=visible_spots[0] if visible_spots else None
         sensor_badge='<span class="sensor-active-badge">🟢 GPS</span>' if gps_active else '<span class="sensor-manual-badge">🎛 手動</span>'
@@ -1464,7 +1469,7 @@ def main():
                                     user_photo.seek(0)
 
                         if is_safe:
-                            st.image(user_photo, caption=f"📍 {sp['name']}で撮影", use_column_width=True)
+                            st.image(user_photo, caption=f"📍 {sp['name']}で撮影", use_container_width=True)
                             st.success("✅ 写真を表示しました！ページを閉じると写真は消えます。")
                             st.info("📮 この写真を永久保存したい場合は下の「問題を報告する」から「📸 写真を提供する」を選んで送信してください。")
                         else:
@@ -1510,7 +1515,6 @@ def main():
             share_text=make_share_text(sp_share,mode_cfg,d_share)
             st.markdown('<div class="share-card"><b>📤 SNSシェア</b><br><span style="font-size:12px;color:#4a6a9a;">ボタンをタップして投稿できます。投稿前に内容を編集することもできます。</span></div>',unsafe_allow_html=True)
             st.text_area("シェアテキスト",value=share_text,height=180,label_visibility="collapsed")
-            import urllib.parse
             encoded = urllib.parse.quote(share_text)
             x_url = f"https://twitter.com/intent/tweet?text={encoded}"
             fb_url = f"https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fkanko-ar-harima.streamlit.app&quote={encoded}"
@@ -1563,7 +1567,7 @@ def main():
                 )
                 report_photo = st.file_uploader("写真プレビュー（任意）",type=["jpg","jpeg","png"],key="report_photo",label_visibility="collapsed")
                 if report_photo:
-                    st.image(report_photo, caption="プレビュー（メールには自動添付されません）", use_column_width=True)
+                    st.image(report_photo, caption="プレビュー（メールには自動添付されません）", use_container_width=True)
                     st.caption("※ メールアプリで写真を手動添付してください。")
             # メールボタンを常に表示（入力内容をリアルタイムで反映）
             subject = urllib.parse.quote(f"【観光スポットナビ報告】{report_type}")
