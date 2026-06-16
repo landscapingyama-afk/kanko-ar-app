@@ -1419,8 +1419,6 @@ def main():
 
                 # ★ 現地限定写真アップロード（GPS確認済み・半径300m以内のみ）
                 is_osm = sp.get("id","").startswith("osm_")
-                # デバッグ表示（確認後削除）
-                st.caption(f"🔍 DEBUG: gps_active={gps_active}, dist_km={dist_km:.4f}, is_osm={is_osm}")
                 if gps_active and dist_km < 0.3 and not is_osm:
                     st.markdown(
                         f'''<div style="background:rgba(255,240,200,0.60);border-radius:14px;
