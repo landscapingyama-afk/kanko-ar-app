@@ -1417,9 +1417,11 @@ def main():
                 if sp.get("location_limited") and dist_km<0.3:
                     st.markdown(f'<div class="location-limited-card">🌟 <strong style="color:#2a4a8a;">現地限定コンテンツ解放！</strong><br><span style="font-size:16px;color:#2a4060;">{sp["location_limited_content"]}</span></div>',unsafe_allow_html=True)
 
-                # ★ 現地限定写真アップロード（GPS確認済み・半径100m以内のみ）
+                # ★ 現地限定写真アップロード（GPS確認済み・半径300m以内のみ）
                 is_osm = sp.get("id","").startswith("osm_")
-                if gps_active and dist_km < 0.1 and not is_osm:
+                # デバッグ表示（確認後削除）
+                st.caption(f"🔍 DEBUG: gps_active={gps_active}, dist_km={dist_km:.4f}, is_osm={is_osm}")
+                if gps_active and dist_km < 0.3 and not is_osm:
                     st.markdown(
                         f'''<div style="background:rgba(255,240,200,0.60);border-radius:14px;
                         padding:14px 18px;margin:8px 0;
