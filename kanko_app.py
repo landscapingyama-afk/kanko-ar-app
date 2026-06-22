@@ -405,10 +405,10 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 元禄国絵図（1702年）に播磨国として記載。\n🗺 明治以降の地形図と比較すると参拝道の変遷が読み取れます。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "播磨平野を一望できる山頂からの雲の観察に最適な場所です。",
         "cloud_detail": "☁️ 積乱雲：夏の午後に南西から発達。雷雨の前兆。\n🌤 層積雲：朝のうちに漂う雲。晴天のサイン。\n🌫 高層雲：薄いベール状。翌日の雨の予兆。\n\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/画像/takamikura_1.jpg",
-"photo_credit": "提供：ゆう様",
-"photo_url2": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/画像/takamikura_2.jpg",
-"photo_credit2": "提供：ゆう様",
+        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/%E7%94%BB%E5%83%8F/takamikura_1.jpg",
+        "photo_credit": "提供：ゆう様",
+        "photo_url2": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/%E7%94%BB%E5%83%8F/takamikura_2.jpg",
+        "photo_credit2": "提供：ゆう様",
         "trust_score": 1.0, "approved": True,
         "location_limited": True,
         "location_limited_content": "山頂限定：磐座のご神気を感じる特別なパワースポット情報が解放されました。",
@@ -505,9 +505,9 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・宍粟郡に記載された地域に位置します。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」を検索すると閲覧できます。",
         "cloud_info": "宍粟の山中に位置し、山霧や雲の変化が美しいスポットです。",
         "cloud_detail": "山中のため雲の動きが間近に観察できます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/images/sairinji.jpg",
+        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/%E7%94%BB%E5%83%8F/sairinji.jpg",
         "photo_credit": "提供：ゆう様",
-        "photo_url2": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/images/sairinjisiawasehasi.jpg",
+        "photo_url2": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/%E7%94%BB%E5%83%8F/sairinjisiawasehasi.jpg",
         "photo_credit2": "提供：ゆう様（幸せ橋）",
         "trust_score": 0.85,
         "approved": True,
@@ -539,7 +539,7 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・宍粟郡に記載。\n延喜式（927年）に名神大社として記された格式高い神社。地名「一宮町」は当社に由来します。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」を検索すると閲覧できます。",
         "cloud_info": "宍粟の山々に囲まれた境内から見渡す空は澄んでいて、四季折々の雲が楽しめます。",
         "cloud_detail": "山に囲まれた宍粟盆地の清浄な空気の中、雲の動きが美しく観察できます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/images/iwa_jinjya.jpg?v=2",
+        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/%E7%94%BB%E5%83%8F/iwa_jinjya.jpg?v=2",
         "photo_credit": "提供：ゆう様",
         "photo_position": "bottom",
         "trust_score": 1.0,
@@ -572,7 +572,7 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 元禄国絵図（1702年）の播磨国・宍粟郡に記載。\n延喜式（927年）に「與比神社」として記された古社。伊和神社と深い関係を持つ伊和三社の一つ。\n🔍 国立公文書館デジタルアーカイブで「元禄国絵図」を検索すると閲覧できます。",
         "cloud_info": "揖保川沿いの与位周辺から見渡す宍粟の山々と空の眺めが美しいスポットです。",
         "cloud_detail": "揖保川と山々に囲まれた宍粟の清浄な空気の中、四季折々の雲が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/images/yoi_jinjya.jpg",
+        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/%E7%94%BB%E5%83%8F/yoi_jinjya.jpg",
         "photo_credit": "提供：ゆう様",
         "photo_position": "bottom",
         "trust_score": 0.9,
@@ -606,7 +606,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "相生市の丘の上に位置し、播磨灘を見渡せる清々しいスポットです。",
         "cloud_detail": "境内から相生湾と播磨灘が望めます。梅雨の時期の曇り空もアジサイを引き立てます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.9,
-        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/images/wakasanotennmannguu.jpg",
+        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/%E7%94%BB%E5%83%8F/wakasanotennmannguu.jpg",
         "photo_credit": "提供：ゆう様",
         "approved": True,
         "location_limited": True,
@@ -638,7 +638,7 @@ SPOT_DATA_BUILTIN = [
         "old_map_detail": "📜 天保国絵図（1838年）の淡路国に記載。\n延喜式（927年）にも名神大社として記された由緒ある神社。江戸時代には徳島藩主・蜂須賀氏が保護し東・西神門が建立された。\n🔍 国立公文書館デジタルアーカイブで「天保国絵図」を検索すると閲覧できます。",
         "cloud_info": "淡路島の平野部に位置し、周囲の田園風景と空の眺めが美しいスポットです。",
         "cloud_detail": "境内から見渡す淡路の空は澄んでいて、四季折々の雲が楽しめます。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
-        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/images/izanagi_jingu.jpg",
+        "photo_url": "https://raw.githubusercontent.com/landscapingyama-afk/kanko-ar-app/main/%E7%94%BB%E5%83%8F/izanagi_jingu.jpg",
         "photo_credit": "提供：ゆう様",
         "trust_score": 1.0,
         "approved": True,
@@ -1420,9 +1420,9 @@ def main():
                 if sp.get("location_limited") and dist_km<0.3:
                     st.markdown(f'<div class="location-limited-card">🌟 <strong style="color:#2a4a8a;">現地限定コンテンツ解放！</strong><br><span style="font-size:16px;color:#2a4060;">{sp["location_limited_content"]}</span></div>',unsafe_allow_html=True)
 
-                # ★ 現地限定写真アップロード（GPS確認済み・半径300m以内のみ）
+                # ★ 現地限定写真アップロード（GPS確認済み・半径100m以内のみ）
                 is_osm = sp.get("id","").startswith("osm_")
-                if gps_active and dist_km < 0.3 and not is_osm:
+                if gps_active and dist_km < 0.1 and not is_osm:
                     st.markdown(
                         f'''<div style="background:rgba(255,240,200,0.60);border-radius:14px;
                         padding:14px 18px;margin:8px 0;
