@@ -127,7 +127,8 @@ def fetch_overpass_spots(center_lat, center_lon, radius_m=5000):
 def translate_google(text, target_lang="en"):
     """Google翻訳（無料・APIキー不要）"""
     if not text: return text
-    cache_key = hashlib.md5(f"{text[:50]}_{target_lang}".encode()).hexdigest()
+    # 全文でキーを作る（先頭だけだと書き出しが同じ別文章と取り違える）
+    cache_key = hashlib.md5(f"{text}_{target_lang}".encode()).hexdigest()
     cached = cache_get(0.0, 0.0, f"translate_{cache_key}", target_lang)
     if cached: return cached
     try:
@@ -158,11 +159,11 @@ def analyze_cloud_gemini(image_bytes):
         return dummy
     try:
         import base64; img_b64 = base64.b64encode(image_bytes).decode()
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
         payload = {"contents":[{"parts":[{"text":'この画像の雲を分析してください。観光地で空を見上げている人に向けて、少しロマンティックで詩的な表現で説明してください。JSONのみで回答:{"cloud_type":"雲の種類（正式名称）","description":"雲の特徴・形・色・高さを、空を見上げながら読む人の心に響くような詩的な表現で3〜4行で","formation_reason":"この雲が生まれた理由を、自然の神秘や営みを感じさせるロマンティックな表現で2〜3行で","weather_hint":"この雲から読み取れる空の声・天気の傾向を旅人に語りかけるように2〜3行で","observation_tips":"この雲をより深く味わうための観察のヒントを1〜2行で"}'},{"inline_data":{"mime_type":"image/jpeg","data":img_b64}}]}]}
-        r = requests.post(url, json=payload, timeout=20)
+        r = requests.post(url, json=payload, timeout=20, headers={"x-goog-api-key": api_key})
         if r.status_code == 400:
-            dummy["description"] = f"APIキーエラー(400)。キーの値を確認してください。key先頭:{api_key[:12]}"
+            dummy["description"] = "APIキーエラー(400)。キーの値を確認してください。"
             return dummy
         if r.status_code != 200:
             dummy["description"] = f"API通信エラー（HTTP {r.status_code}）"
@@ -822,7 +823,7 @@ SENSOR_JS = """
   <div id="send-status" style="font-size:10px;color:#8a9aaa;margin-top:6px;"></div>
 </div>
 <script>
-let headingBuf=[],prevLat=null,prevLon=null,watchId=null,lastSend=0;
+let headingBuf=[],prevLat=null,prevLon=null,watchId=null,lastSend=0,resetPending=false;
 function toDir(d){return["北","北東","東","南東","南","南西","西","北西"][Math.round(d/45)%8];}
 function avgHdg(buf){
   let s=0,c=0;for(const h of buf){s+=Math.sin(h*Math.PI/180);c+=Math.cos(h*Math.PI/180);}
@@ -833,14 +834,14 @@ function sendToStreamlit(lat,lon,hdg,spd){
   u.searchParams.set("gps_lat",lat.toFixed(6));u.searchParams.set("gps_lon",lon.toFixed(6));
   u.searchParams.set("gps_heading",hdg.toFixed(1));u.searchParams.set("gps_speed",spd.toFixed(1));
   u.searchParams.set("gps_active","1");
-  // gps_resetはURLにまだなければ追加（1回だけ送信）
-  if(!u.searchParams.has("gps_reset")){u.searchParams.set("gps_reset","1");}
-  else{u.searchParams.delete("gps_reset");}
+  // gps_resetはGPS取得開始直後の1回だけ付ける（削除はPython側で受け取った時に行う）
+  if(resetPending){u.searchParams.set("gps_reset","1");resetPending=false;}
   window.parent.history.replaceState(null,"",u.toString());
   document.getElementById("send-status").textContent="✅ "+new Date().toLocaleTimeString()+" 送信済み";}
 function startSensors(){
   if(!navigator.geolocation){document.getElementById("gps-status").textContent="非対応";document.getElementById("gps-icon").textContent="🔴";return;}
   if(watchId!==null)navigator.geolocation.clearWatch(watchId);
+  resetPending=true;
   watchId=navigator.geolocation.watchPosition(function(p){
     let lat=p.coords.latitude,lon=p.coords.longitude;
     const acc=p.coords.accuracy,spd=p.coords.speed?p.coords.speed*3.6:0;
@@ -1447,29 +1448,35 @@ def main():
                         accept_multiple_files=False,
                     )
                     if user_photo:
-                        with st.spinner("写真を確認中..."):
-                            # Geminiで不適切写真チェック
-                            api_key = get_secret("GEMINI_API_KEY")
-                            is_safe = True
-                            check_msg = ""
-                            if api_key:
-                                try:
-                                    import base64
-                                    img_b64 = base64.b64encode(user_photo.read()).decode()
-                                    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
-                                    payload = {"contents":[{"parts":[
-                                        {"text": f'この画像は観光地「{sp["name"]}」で撮影された観光写真として適切ですか？不適切なコンテンツ（暴力・性的・個人情報など）が含まれていますか？「適切」または「不適切：理由」のみで答えてください。'},
-                                        {"inline_data": {"mime_type": "image/jpeg", "data": img_b64}}
-                                    ]}]}
-                                    r = requests.post(url, json=payload, timeout=15)
-                                    if r.status_code == 200:
-                                        result_text = r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
-                                        if "不適切" in result_text:
-                                            is_safe = False
-                                            check_msg = result_text
-                                    user_photo.seek(0)
-                                except Exception:
-                                    user_photo.seek(0)
+                        # 同じ写真は再チェックしない（画面操作のたびにAPIを呼ばない）
+                        photo_bytes = user_photo.getvalue()
+                        check_key = f"photo_check_{sp['id']}_{hashlib.md5(photo_bytes).hexdigest()}"
+                        if check_key in st.session_state:
+                            is_safe, check_msg = st.session_state[check_key]
+                        else:
+                            with st.spinner("写真を確認中..."):
+                                # Geminiで不適切写真チェック
+                                api_key = get_secret("GEMINI_API_KEY")
+                                is_safe = True
+                                check_msg = ""
+                                if api_key:
+                                    try:
+                                        import base64
+                                        img_b64 = base64.b64encode(photo_bytes).decode()
+                                        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+                                        payload = {"contents":[{"parts":[
+                                            {"text": f'この画像は観光地「{sp["name"]}」で撮影された観光写真として適切ですか？不適切なコンテンツ（暴力・性的・個人情報など）が含まれていますか？「適切」または「不適切：理由」のみで答えてください。'},
+                                            {"inline_data": {"mime_type": "image/jpeg", "data": img_b64}}
+                                        ]}]}
+                                        r = requests.post(url, json=payload, timeout=15, headers={"x-goog-api-key": api_key})
+                                        if r.status_code == 200:
+                                            result_text = r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+                                            if "不適切" in result_text:
+                                                is_safe = False
+                                                check_msg = result_text
+                                        st.session_state[check_key] = (is_safe, check_msg)
+                                    except Exception:
+                                        pass
 
                         if is_safe:
                             st.image(user_photo, caption=f"📍 {sp['name']}で撮影", use_container_width=True)
@@ -1496,9 +1503,17 @@ def main():
                 unsafe_allow_html=True
             )
             uploaded=st.file_uploader("☁️ 空の写真をアップロード",type=["jpg","jpeg","png"],label_visibility="collapsed",accept_multiple_files=False)
-            if uploaded and remaining>0:
+            # 解析済みの写真は結果を再利用（画面操作のたびに再解析・回数消費しない）
+            cloud_key=f"cloud_result_{hashlib.md5(uploaded.getvalue()).hexdigest()}" if uploaded else None
+            if uploaded and cloud_key in st.session_state:
+                result=st.session_state[cloud_key]
+            elif uploaded and remaining>0:
                 with st.spinner("雲を分析中..."):
-                    result=analyze_cloud_gemini(uploaded.read())
+                    result=analyze_cloud_gemini(uploaded.getvalue())
+                # 解析できた結果（回数を消費したもの）だけ保存
+                if result.get("cloud_type")!="判定できませんでした":
+                    st.session_state[cloud_key]=result
+            if uploaded and (cloud_key in st.session_state or remaining>0):
                 if result.get("is_dummy"):
                     st.markdown(f'<div class="cloud-result">📡 {result["description"]}</div>',unsafe_allow_html=True)
                 else:
