@@ -2,7 +2,7 @@
 # kanko_app.py  観光観光案内アプリ フェーズ7（古地図表示追加版）
 # ============================================================
 import streamlit as st
-import math, json, sqlite3, hashlib, os, time
+import math, json, sqlite3, hashlib, os, time, logging
 import urllib.parse
 import requests
 import folium
@@ -17,6 +17,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+
+# 画面にはエラーを出さない代わりに、原因はサーバーログ（Streamlit Cloud の Manage app → Logs）に残す
+logger = logging.getLogger("kanko_app")
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "kanko_cache.db")
 
@@ -102,7 +105,8 @@ def fetch_wikipedia(spot_id, title):
         extract=next(iter(pages.values())).get("extract","").strip()
         if extract: wiki_cache_set(spot_id,title,extract)
         return extract
-    except Exception: return ""
+    except Exception as e:
+        logger.warning("Wikipedia取得失敗: %s (%s)", title, e); return ""
 
 PREFECTURES = ["北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県","茨城県","栃木県","群馬県",
     "埼玉県","千葉県","東京都","神奈川県","新潟県","富山県","石川県","福井県","山梨県","長野県",
@@ -120,7 +124,8 @@ def reverse_geocode_prefecture(lat, lon):
         muni=str(r.json().get("results",{}).get("muniCd","")).zfill(5)
         code=int(muni[:2])
         return PREFECTURES[code-1] if 1<=code<=47 else ""
-    except Exception: return ""
+    except Exception as e:
+        logger.warning("逆ジオコーダ失敗: %s,%s (%s)", lat, lon, e); return ""
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def fetch_overpass_spots(center_lat, center_lon, radius_m=5000):
@@ -142,7 +147,8 @@ def fetch_overpass_spots(center_lat, center_lon, radius_m=5000):
                 "main_detail":f"{name}\n出典: © OpenStreetMap contributors",
                 "trust_score":0.7,"approved":True,"location_limited":False,"location_limited_content":""})
         return spots
-    except Exception: return []
+    except Exception as e:
+        logger.warning("Overpass取得失敗 (%s)", e); return []
 
 def translate_google(text, target_lang="en"):
     """Google翻訳（無料・APIキー不要）"""
@@ -162,25 +168,40 @@ def translate_google(text, target_lang="en"):
         if result:
             cache_set(0.0, 0.0, f"translate_{cache_key}", result, target_lang)
         return result if result else text
-    except Exception: return text
+    except Exception as e:
+        logger.warning("翻訳失敗 (%s)", e); return text
 
 def translate_text(text, target_lang="EN"):
     return translate_google(text, target_lang.lower())
 
-def analyze_cloud_gemini(image_bytes):
+CLOUD_LIMIT_PER_USER = 3     # 1人あたり1日の雲判定回数
+CLOUD_LIMIT_GLOBAL = 200     # アプリ全体の1日の上限（API利用料の安全弁）
+
+def cloud_user_count_today():
+    """この利用者（セッション）の本日の雲判定回数"""
+    today = date.today().isoformat()
+    if st.session_state.get("cloud_user_date") != today:
+        st.session_state.cloud_user_date = today
+        st.session_state.cloud_user_count = 0
+    return st.session_state.cloud_user_count
+
+def cloud_user_increment():
+    cloud_user_count_today()
+    st.session_state.cloud_user_count += 1
+
+def analyze_cloud_gemini(image_bytes, mime_type="image/jpeg"):
     api_key = get_secret("GEMINI_API_KEY")
     dummy = {"cloud_type":"判定できませんでした","description":"APIキーを設定するか画像を再アップロードしてください。","weather_hint":"天気の予報は気象庁等でご確認ください。","is_dummy":True}
     if not api_key:
         dummy["description"] = f"APIキー未取得（長さ0）"
         return dummy
-    if cloud_usage_today() >= 3:
-        dummy["description"] = "本日の雲判定上限（3回）に達しました。明日またお試しください。"
-        dummy["is_dummy"] = False
+    if cloud_usage_today() >= CLOUD_LIMIT_GLOBAL:
+        dummy["description"] = "本日はアプリ全体の雲判定上限に達しました。明日またお試しください。"
         return dummy
     try:
         import base64; img_b64 = base64.b64encode(image_bytes).decode()
         url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
-        payload = {"contents":[{"parts":[{"text":'この画像の雲を分析してください。観光地で空を見上げている人に向けて、少しロマンティックで詩的な表現で説明してください。JSONのみで回答:{"cloud_type":"雲の種類（正式名称）","description":"雲の特徴・形・色・高さを、空を見上げながら読む人の心に響くような詩的な表現で3〜4行で","formation_reason":"この雲が生まれた理由を、自然の神秘や営みを感じさせるロマンティックな表現で2〜3行で","weather_hint":"この雲から読み取れる空の声・天気の傾向を旅人に語りかけるように2〜3行で","observation_tips":"この雲をより深く味わうための観察のヒントを1〜2行で"}'},{"inline_data":{"mime_type":"image/jpeg","data":img_b64}}]}]}
+        payload = {"contents":[{"parts":[{"text":'この画像の雲を分析してください。観光地で空を見上げている人に向けて、少しロマンティックで詩的な表現で説明してください。JSONのみで回答:{"cloud_type":"雲の種類（正式名称）","description":"雲の特徴・形・色・高さを、空を見上げながら読む人の心に響くような詩的な表現で3〜4行で","formation_reason":"この雲が生まれた理由を、自然の神秘や営みを感じさせるロマンティックな表現で2〜3行で","weather_hint":"この雲から読み取れる空の声・天気の傾向を旅人に語りかけるように2〜3行で","observation_tips":"この雲をより深く味わうための観察のヒントを1〜2行で"}'},{"inline_data":{"mime_type":mime_type,"data":img_b64}}]}]}
         r = requests.post(url, json=payload, timeout=20, headers={"x-goog-api-key": api_key})
         if r.status_code == 400:
             dummy["description"] = "APIキーエラー(400)。キーの値を確認してください。"
@@ -206,6 +227,7 @@ def analyze_cloud_gemini(image_bytes):
             pass
         return dummy
     except Exception as e:
+        logger.warning("雲判定失敗 (%s)", e)
         dummy["description"] = f"エラー: {str(e)[:80]}"
         return dummy
 
@@ -1019,7 +1041,7 @@ def render_omikuji(spot_name):
     st.markdown(f'<div style="background:rgba(200,140,160,0.30);border-radius:16px;padding:20px;margin:10px 0;border:1px solid rgba(200,140,160,0.50);text-align:center;backdrop-filter:blur(8px);"><div style="font-family:\'Kaisei Decol\',serif;font-size:22px;color:#3a1a2a;font-weight:700;margin-bottom:6px;">🎴 おみくじ</div><div style="font-size:15px;color:#5a2a3a;margin-bottom:14px;">{spot_name}でおみくじを引いてみましょう！</div></div>',unsafe_allow_html=True)
     col1,col2,col3=st.columns([1,2,1])
     with col2:
-        shake=st.button("🎋 おみくじ筒を振る！",type="primary",use_container_width=True,key="omikuji_btn")
+        shake=st.button("🎋 おみくじ筒を振る！",type="primary",width="stretch",key="omikuji_btn")
     if shake or st.session_state.get("omikuji_result"):
         if shake:
             result=draw_omikuji(); st.session_state.omikuji_result=result
@@ -1029,7 +1051,7 @@ def render_omikuji(spot_name):
         st.markdown(f'<div style="background:{data["bg"]};border:2px solid {data["border"]};border-radius:20px;padding:24px 20px;margin:12px 0;text-align:center;backdrop-filter:blur(10px);animation:fadeInUp 0.6s ease both;"><div style="font-family:\'Kaisei Decol\',serif;font-size:52px;color:{data["color"]};font-weight:700;text-shadow:0 0 20px {data["color"]};margin-bottom:10px;letter-spacing:0.1em;">{result}</div><div style="font-size:18px;color:#3a1a2a;font-weight:700;margin-bottom:18px;">{msg}</div><div style="border-top:1px dashed rgba(100,60,80,0.3);margin:16px 0;padding-top:16px;"><div style="font-size:17px;font-family:\'Kaisei Decol\',serif;color:#2a1a2a;line-height:1.8;margin-bottom:8px;">「{koto}」</div><div style="font-size:13px;color:rgba(80,40,60,0.75);">— {source}</div></div></div>',unsafe_allow_html=True)
         col4,col5,col6=st.columns([1,2,1])
         with col5:
-            if st.button("🔄 もう一度引く",use_container_width=True,key="omikuji_retry"):
+            if st.button("🔄 もう一度引く",width="stretch",key="omikuji_retry"):
                 st.session_state.omikuji_result=None; st.rerun()
         st.markdown('<div style="font-size:11px;color:rgba(100,60,80,0.65);text-align:center;margin-top:8px;">※ おみくじはエンターテイメントです。参考程度にお楽しみください。</div>',unsafe_allow_html=True)
 
@@ -1100,7 +1122,7 @@ def main():
 
     if not st.session_state.safety_shown:
         st.markdown('<div class="safety-warning"><p>⚠️ 歩きながらの使用は危険です。<br>必ず立ち止まってご使用ください。</p></div>',unsafe_allow_html=True)
-        if st.button("✅ 確認しました",type="primary",use_container_width=True):
+        if st.button("✅ 確認しました",type="primary",width="stretch"):
             st.session_state.safety_shown=True; st.rerun()
         st.stop()
 
@@ -1121,7 +1143,7 @@ def main():
     col_ctrl,col_main=st.columns([1,2],gap="medium")
 
     with col_ctrl:
-        st.components.v1.html(SENSOR_JS,height=320,scrolling=False)
+        st.iframe(SENSOR_JS,height=320)
         if gps_active: st.markdown('<div class="sensor-active-badge">🟢 GPS・コンパス取得中</div>',unsafe_allow_html=True)
         else: st.markdown('<div class="sensor-manual-badge">🎛 手動シミュレータ</div>',unsafe_allow_html=True)
         st.markdown("---")
@@ -1174,7 +1196,7 @@ def main():
 
         # 現在地ボタン（GPS ONの時のみ表示）
         if gps_active:
-            if st.button("📍 現在地を表示", use_container_width=True, key="btn_current_location"):
+            if st.button("📍 現在地を表示", width="stretch", key="btn_current_location"):
                 st.session_state.manual_spot_selected = False
                 st.session_state.selected_spot_id = None
                 st.rerun()
@@ -1206,7 +1228,7 @@ def main():
         for sp in area_spots:
             is_selected = st.session_state.get("selected_spot_id") == sp["id"]
             btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
-            if st.button(btn_label, use_container_width=True, key=f"spot_{sp['id']}"):
+            if st.button(btn_label, width="stretch", key=f"spot_{sp['id']}"):
                 st.session_state.preset_lat = sp["lat"]
                 st.session_state.preset_lon = sp["lon"]
                 st.session_state.selected_spot_id = sp["id"]
@@ -1307,7 +1329,8 @@ def main():
             map_key=f"kanko_map_{tile_name[:2]}_{map_zoom}_{round(map_center_lat,3)}_{round(map_center_lon,3)}_{st.session_state.get('selected_spot_id','none')}_{round(gps_lat,3) if gps_active else 'nogps'}"
             fmap=build_map(map_center_lat,map_center_lon,sim_heading,tile_name,map_zoom,mode_cfg,visible_spots)
             map_data=st_folium(fmap,width="100%",height=380,returned_objects=["last_clicked"],key=map_key); map_ok=True
-        except Exception: pass
+        except Exception:
+            logger.exception("地図の描画に失敗")
         # 地図ピンタップでスポット特定
         if map_data and map_data.get("last_clicked"):
             c = map_data["last_clicked"]
@@ -1422,7 +1445,7 @@ def main():
                                         url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
                                         payload = {"contents":[{"parts":[
                                             {"text": f'この画像は観光地「{sp["name"]}」で撮影された観光写真として適切ですか？不適切なコンテンツ（暴力・性的・個人情報など）が含まれていますか？「適切」または「不適切：理由」のみで答えてください。'},
-                                            {"inline_data": {"mime_type": "image/jpeg", "data": img_b64}}
+                                            {"inline_data": {"mime_type": user_photo.type or "image/jpeg", "data": img_b64}}
                                         ]}]}
                                         r = requests.post(url, json=payload, timeout=15, headers={"x-goog-api-key": api_key})
                                         if r.status_code == 200:
@@ -1431,11 +1454,11 @@ def main():
                                                 is_safe = False
                                                 check_msg = result_text
                                         st.session_state[check_key] = (is_safe, check_msg)
-                                    except Exception:
-                                        pass
+                                    except Exception as e:
+                                        logger.warning("写真チェック失敗 (%s)", e)
 
                         if is_safe:
-                            st.image(user_photo, caption=f"📍 {sp['name']}で撮影", use_container_width=True)
+                            st.image(user_photo, caption=f"📍 {sp['name']}で撮影", width="stretch")
                             st.success("✅ 写真を表示しました！ページを閉じると写真は消えます。")
                             st.info("📮 この写真を永久保存したい場合は下の「問題を報告する」から「📸 写真を提供する」を選んで送信してください。")
                         else:
@@ -1452,8 +1475,8 @@ def main():
 
         if mode_cfg["key"]=="cloud":
             st.markdown("---")
-            today_count=cloud_usage_today(); remaining=3-today_count
-            st.markdown(f'<div class="cloud-result">☁️ <b>雲判定モード</b>　本日残り：{remaining}/3回<br><span style="font-size:14px;">空の写真をアップロードすると雲の種類を判定します。</span><br><span style="font-size:12px;opacity:0.8;">⚠️ 雲の分析はAIによるものです。正確な天気予報は気象庁等でご確認ください。</span></div>',unsafe_allow_html=True)
+            remaining=max(0,min(CLOUD_LIMIT_PER_USER-cloud_user_count_today(),CLOUD_LIMIT_GLOBAL-cloud_usage_today()))
+            st.markdown(f'<div class="cloud-result">☁️ <b>雲判定モード</b>　本日残り：{remaining}/{CLOUD_LIMIT_PER_USER}回<br><span style="font-size:14px;">空の写真をアップロードすると雲の種類を判定します。</span><br><span style="font-size:12px;opacity:0.8;">⚠️ 雲の分析はAIによるものです。正確な天気予報は気象庁等でご確認ください。</span></div>',unsafe_allow_html=True)
             st.markdown(
                 '<div style="font-size:12px;color:#5a3a00;background:rgba(255,240,200,0.6);border-radius:8px;padding:6px 10px;margin-bottom:6px;">📱 事前にスマホのカメラで空を撮影し、カメラロールに保存してからファイルを選択してください</div>',
                 unsafe_allow_html=True
@@ -1465,17 +1488,18 @@ def main():
                 result=st.session_state[cloud_key]
             elif uploaded and remaining>0:
                 with st.spinner("雲を分析中..."):
-                    result=analyze_cloud_gemini(uploaded.getvalue())
+                    result=analyze_cloud_gemini(uploaded.getvalue(), uploaded.type or "image/jpeg")
                 # 解析できた結果（回数を消費したもの）だけ保存
                 if result.get("cloud_type")!="判定できませんでした":
                     st.session_state[cloud_key]=result
+                    cloud_user_increment()
             if uploaded and (cloud_key in st.session_state or remaining>0):
                 if result.get("is_dummy"):
                     st.markdown(f'<div class="cloud-result">📡 {result["description"]}</div>',unsafe_allow_html=True)
                 else:
                     st.markdown(f'<div class="cloud-result">☁️ <b>{result.get("cloud_type","不明")}</b><br><br>{result.get("description","")}<br><br>🌱 <b>この雲が生まれた理由</b><br>{result.get("formation_reason","")}<br><br>🌤 <b>空からのメッセージ</b><br>{result.get("weather_hint","")}<br><br>🔭 <b>空を味わうヒント</b><br>{result.get("observation_tips","")}<br><br><span style="font-size:12px;opacity:0.8;">⚠️ 雲の分析はAIによるものです。正確な天気予報は気象庁等でご確認ください。</span></div>',unsafe_allow_html=True)
             elif uploaded and remaining<=0:
-                st.warning("本日の雲判定上限（3回）に達しました。明日またお試しください。")
+                st.warning(f"本日の雲判定上限（{CLOUD_LIMIT_PER_USER}回）に達しました。明日またお試しください。")
 
         if visible_spots:
             st.markdown("---")
@@ -1496,11 +1520,11 @@ def main():
             # st.link_buttonで確実に外部リンクを開く
             col_x, col_fb, col_line = st.columns(3)
             with col_x:
-                st.link_button("𝕏 Xに投稿", x_url, use_container_width=True)
+                st.link_button("𝕏 Xに投稿", x_url, width="stretch")
             with col_fb:
-                st.link_button("📘 Facebook", fb_url, use_container_width=True)
+                st.link_button("📘 Facebook", fb_url, width="stretch")
             with col_line:
-                st.link_button("💬 LINE", line_url, use_container_width=True)
+                st.link_button("💬 LINE", line_url, width="stretch")
             st.caption("※ ボタンをタップするとSNSアプリが開きます")
 
         st.markdown("---")
@@ -1541,7 +1565,7 @@ def main():
                 )
                 report_photo = st.file_uploader("写真プレビュー（任意）",type=["jpg","jpeg","png"],key="report_photo",label_visibility="collapsed")
                 if report_photo:
-                    st.image(report_photo, caption="プレビュー（メールには自動添付されません）", use_container_width=True)
+                    st.image(report_photo, caption="プレビュー（メールには自動添付されません）", width="stretch")
                     st.caption("※ メールアプリで写真を手動添付してください。")
             # メールボタンを常に表示（入力内容をリアルタイムで反映）
             subject = urllib.parse.quote(f"【観光スポットナビ報告】{report_type}")
@@ -1554,7 +1578,7 @@ def main():
                 f"\n※ 観光スポットナビアプリからの報告"
             )
             mailto = f"mailto:landscaping.yama@gmail.com?subject={subject}&body={body}"
-            st.link_button("📧 メールアプリで送信する", mailto, use_container_width=True)
+            st.link_button("📧 メールアプリで送信する", mailto, width="stretch")
             st.caption("※ タップするとメールアプリが開きます。内容を確認して送信してください。")
 
     if st.session_state.get("night_mode",False):
