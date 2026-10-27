@@ -2,7 +2,7 @@
 # kanko_app.py  観光観光案内アプリ フェーズ7（古地図表示追加版）
 # ============================================================
 import streamlit as st
-import math, json, sqlite3, hashlib, os, time
+import math, json, sqlite3, hashlib, os, time, logging
 import urllib.parse
 import requests
 import folium
@@ -12,11 +12,14 @@ from datetime import datetime, date
 from collections import deque
 
 st.set_page_config(
-    page_title="観光スポットナビ | 播磨・関西・香川",
+    page_title="観光スポットナビ | 播磨・淡路・香川",
     page_icon="⛩",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+
+# 画面にはエラーを出さない代わりに、原因はサーバーログ（Streamlit Cloud の Manage app → Logs）に残す
+logger = logging.getLogger("kanko_app")
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "kanko_cache.db")
 
@@ -102,7 +105,27 @@ def fetch_wikipedia(spot_id, title):
         extract=next(iter(pages.values())).get("extract","").strip()
         if extract: wiki_cache_set(spot_id,title,extract)
         return extract
-    except Exception: return ""
+    except Exception as e:
+        logger.warning("Wikipedia取得失敗: %s (%s)", title, e); return ""
+
+PREFECTURES = ["北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県","茨城県","栃木県","群馬県",
+    "埼玉県","千葉県","東京都","神奈川県","新潟県","富山県","石川県","福井県","山梨県","長野県",
+    "岐阜県","静岡県","愛知県","三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県",
+    "鳥取県","島根県","岡山県","広島県","山口県","徳島県","香川県","愛媛県","高知県","福岡県",
+    "佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"]
+
+@st.cache_data(ttl=86400, show_spinner=False)
+def reverse_geocode_prefecture(lat, lon):
+    """国土地理院の逆ジオコーダで緯度経度から都道府県名を取得（失敗時は空文字）"""
+    try:
+        r=requests.get("https://mreversegeocoder.gsi.go.jp/reverse-geocoder/LonLatToAddress",
+            params={"lat":lat,"lon":lon},timeout=8,headers={"User-Agent":"kanko-ar-app/4.0"})
+        if r.status_code!=200: return ""
+        muni=str(r.json().get("results",{}).get("muniCd","")).zfill(5)
+        code=int(muni[:2])
+        return PREFECTURES[code-1] if 1<=code<=47 else ""
+    except Exception as e:
+        logger.warning("逆ジオコーダ失敗: %s,%s (%s)", lat, lon, e); return ""
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def fetch_overpass_spots(center_lat, center_lon, radius_m=5000):
@@ -111,23 +134,27 @@ def fetch_overpass_spots(center_lat, center_lon, radius_m=5000):
         r=requests.post("https://overpass-api.de/api/interpreter",data={"data":query},timeout=15,headers={"User-Agent":"kanko-ar-app/4.0"})
         if r.status_code!=200: return []
         spots=[]
+        # 取得範囲は半径数km程度なので、中心地点の都道府県を全スポットに使う
+        center_pref=reverse_geocode_prefecture(center_lat, center_lon)
         for el in r.json().get("elements",[]):
             tags=el.get("tags",{}); name=tags.get("name:ja") or tags.get("name","")
             if not name: continue
             spots.append({"id":f"osm_{el['id']}","name":name,"name_kana":tags.get("name:ja-Hira",""),
                 "category":("shrine" if tags.get("religion")=="shinto" else "castle" if tags.get("historic")=="castle" else "default"),
                 "priority":3,"lat":el.get("lat",0),"lon":el.get("lon",0),"altitude":0,
-                "prefecture":"兵庫県","city":tags.get("addr:city","播磨エリア"),
+                "prefecture":tags.get("addr:province") or center_pref,"city":tags.get("addr:city",""),
                 "description":f"{name}（OpenStreetMapデータ）",
                 "main_detail":f"{name}\n出典: © OpenStreetMap contributors",
                 "trust_score":0.7,"approved":True,"location_limited":False,"location_limited_content":""})
         return spots
-    except Exception: return []
+    except Exception as e:
+        logger.warning("Overpass取得失敗 (%s)", e); return []
 
 def translate_google(text, target_lang="en"):
     """Google翻訳（無料・APIキー不要）"""
     if not text: return text
-    cache_key = hashlib.md5(f"{text[:50]}_{target_lang}".encode()).hexdigest()
+    # 全文でキーを作る（先頭だけだと書き出しが同じ別文章と取り違える）
+    cache_key = hashlib.md5(f"{text}_{target_lang}".encode()).hexdigest()
     cached = cache_get(0.0, 0.0, f"translate_{cache_key}", target_lang)
     if cached: return cached
     try:
@@ -141,28 +168,43 @@ def translate_google(text, target_lang="en"):
         if result:
             cache_set(0.0, 0.0, f"translate_{cache_key}", result, target_lang)
         return result if result else text
-    except Exception: return text
+    except Exception as e:
+        logger.warning("翻訳失敗 (%s)", e); return text
 
 def translate_text(text, target_lang="EN"):
     return translate_google(text, target_lang.lower())
 
-def analyze_cloud_gemini(image_bytes):
+CLOUD_LIMIT_PER_USER = 3     # 1人あたり1日の雲判定回数
+CLOUD_LIMIT_GLOBAL = 200     # アプリ全体の1日の上限（API利用料の安全弁）
+
+def cloud_user_count_today():
+    """この利用者（セッション）の本日の雲判定回数"""
+    today = date.today().isoformat()
+    if st.session_state.get("cloud_user_date") != today:
+        st.session_state.cloud_user_date = today
+        st.session_state.cloud_user_count = 0
+    return st.session_state.cloud_user_count
+
+def cloud_user_increment():
+    cloud_user_count_today()
+    st.session_state.cloud_user_count += 1
+
+def analyze_cloud_gemini(image_bytes, mime_type="image/jpeg"):
     api_key = get_secret("GEMINI_API_KEY")
     dummy = {"cloud_type":"判定できませんでした","description":"APIキーを設定するか画像を再アップロードしてください。","weather_hint":"天気の予報は気象庁等でご確認ください。","is_dummy":True}
     if not api_key:
         dummy["description"] = f"APIキー未取得（長さ0）"
         return dummy
-    if cloud_usage_today() >= 3:
-        dummy["description"] = "本日の雲判定上限（3回）に達しました。明日またお試しください。"
-        dummy["is_dummy"] = False
+    if cloud_usage_today() >= CLOUD_LIMIT_GLOBAL:
+        dummy["description"] = "本日はアプリ全体の雲判定上限に達しました。明日またお試しください。"
         return dummy
     try:
         import base64; img_b64 = base64.b64encode(image_bytes).decode()
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
-        payload = {"contents":[{"parts":[{"text":'この画像の雲を分析してください。観光地で空を見上げている人に向けて、少しロマンティックで詩的な表現で説明してください。JSONのみで回答:{"cloud_type":"雲の種類（正式名称）","description":"雲の特徴・形・色・高さを、空を見上げながら読む人の心に響くような詩的な表現で3〜4行で","formation_reason":"この雲が生まれた理由を、自然の神秘や営みを感じさせるロマンティックな表現で2〜3行で","weather_hint":"この雲から読み取れる空の声・天気の傾向を旅人に語りかけるように2〜3行で","observation_tips":"この雲をより深く味わうための観察のヒントを1〜2行で"}'},{"inline_data":{"mime_type":"image/jpeg","data":img_b64}}]}]}
-        r = requests.post(url, json=payload, timeout=20)
+        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+        payload = {"contents":[{"parts":[{"text":'この画像の雲を分析してください。観光地で空を見上げている人に向けて、少しロマンティックで詩的な表現で説明してください。JSONのみで回答:{"cloud_type":"雲の種類（正式名称）","description":"雲の特徴・形・色・高さを、空を見上げながら読む人の心に響くような詩的な表現で3〜4行で","formation_reason":"この雲が生まれた理由を、自然の神秘や営みを感じさせるロマンティックな表現で2〜3行で","weather_hint":"この雲から読み取れる空の声・天気の傾向を旅人に語りかけるように2〜3行で","observation_tips":"この雲をより深く味わうための観察のヒントを1〜2行で"}'},{"inline_data":{"mime_type":mime_type,"data":img_b64}}]}]}
+        r = requests.post(url, json=payload, timeout=20, headers={"x-goog-api-key": api_key})
         if r.status_code == 400:
-            dummy["description"] = f"APIキーエラー(400)。キーの値を確認してください。key先頭:{api_key[:12]}"
+            dummy["description"] = "APIキーエラー(400)。キーの値を確認してください。"
             return dummy
         if r.status_code != 200:
             dummy["description"] = f"API通信エラー（HTTP {r.status_code}）"
@@ -185,6 +227,7 @@ def analyze_cloud_gemini(image_bytes):
             pass
         return dummy
     except Exception as e:
+        logger.warning("雲判定失敗 (%s)", e)
         dummy["description"] = f"エラー: {str(e)[:80]}"
         return dummy
 
@@ -213,7 +256,8 @@ def make_share_text(spot, mode_cfg, dist_km):
         f"\n"
         f"▶ https://kanko-ar-harima.streamlit.app\n"
         f"\n"
-        f"#観光スポットナビ #観光アプリ #{spot['name'].replace(' ','')} #{spot['city'].replace(' ','')}"
+        f"#観光スポットナビ #観光アプリ #{spot['name'].replace(' ','')}"
+        + (f" #{spot['city'].replace(' ','')}" if spot.get("city") else "")
     )
 
 # ============================================================
@@ -221,100 +265,36 @@ def make_share_text(spot, mode_cfg, dist_km):
 #   出典: 国立公文書館デジタルアーカイブ
 #   パブリックドメイン（著作権保護期間満了）
 # ============================================================
+OLD_MAP_SOURCE = "国立公文書館デジタルアーカイブ"
+OLD_MAP_SOURCE_URL = "https://www.digital.archives.go.jp/"
+GENROKU_HARIMA = {"title": "元禄国絵図 播磨国", "era": "元禄15年（1702年）"}
+TENPO_SANUKI = {"title": "天保国絵図 讃岐国", "era": "天保9年（1838年）"}
+TENPO_AWAJI = {"title": "天保国絵図 淡路国", "era": "天保9年（1838年）"}
+
 OLD_MAP_IMAGES = {
     # 播磨国スポット → 元禄国絵図「播磨国」
-    "takamikura_001": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
-        "title": "元禄国絵図 播磨国",
-        "era": "元禄15年（1702年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "江戸幕府が作成した播磨国の公式絵図。1里＝6寸の縮尺で村名・石高が記されています。",
-    },
-    "kasagatayama_002": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
-        "title": "元禄国絵図 播磨国",
-        "era": "元禄15年（1702年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "笠形山は播磨の名山として古地図にも記されています。",
-    },
-    "himeji_castle_003": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
-        "title": "元禄国絵図 播磨国",
-        "era": "元禄15年（1702年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "江戸時代の絵図には「姫路」として城下町が白四角で記されています。",
-    },
-    "kakurinji_004": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
-        "title": "元禄国絵図 播磨国",
-        "era": "元禄15年（1702年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "加古川周辺の村々が色分けされた楕円形の枠内に記されています。",
-    },
-    "ikarugatera_008": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
-        "title": "元禄国絵図 播磨国",
-        "era": "元禄15年（1702年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "太子町周辺は揖保郡として記載されています。",
-    },
-    "kamo_jinja_010": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
-        "title": "元禄国絵図 播磨国",
-        "era": "元禄15年（1702年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "龍野（たつの）は龍野藩の城下町として絵図に記されています。",
-    },
-    "iwatsuhime_011": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
-        "title": "元禄国絵図 播磨国",
-        "era": "元禄15年（1702年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "赤穂は赤穂藩の城下町として記載。播磨灘沿岸の地形がわかります。",
-    },
-    # 奈良
-    "nara_todaiji_005": {
-        "url": "https://www.digital.archives.go.jp/file/1456490.jpg",
-        "title": "天保国絵図 大和国",
-        "era": "天保9年（1838年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "奈良は大和国として記載。東大寺・興福寺などの寺院が描かれています。",
-    },
-    # 京都
-    "kyoto_kinkakuji_006": {
-        "url": "https://www.digital.archives.go.jp/file/1456498.jpg",
-        "title": "天保国絵図 山城国",
-        "era": "天保9年（1838年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "京都は山城国として記載。金閣寺周辺の地形が江戸時代の視点でわかります。",
-    },
-    # 大阪
-    "osaka_castle_007": {
-        "url": "https://www.digital.archives.go.jp/file/1456510.jpg",
-        "title": "天保国絵図 摂津国",
-        "era": "天保9年（1838年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "大阪城は摂津国の城下として記載。江戸時代の大坂の街並みがわかります。",
-    },
+    "takamikura_001": {**GENROKU_HARIMA,
+        "note": "江戸幕府が作成した播磨国の公式絵図。1里＝6寸の縮尺で村名・石高が記されています。"},
+    "ikarugatera_008": {**GENROKU_HARIMA,
+        "note": "太子町周辺は揖保郡として記載されています。"},
+    "kamo_jinja_010": {**GENROKU_HARIMA,
+        "note": "龍野（たつの）は龍野藩の城下町として絵図に記されています。"},
+    "iwatsuhime_011": {**GENROKU_HARIMA,
+        "note": "赤穂は赤穂藩の城下町として記載。播磨灘沿岸の地形がわかります。"},
+    "wakasano_tenman_012": {**GENROKU_HARIMA,
+        "note": "相生周辺は赤穂郡として記載。若狭野の村々が絵図に記されています。"},
+    "kokuzo_do_016": {**GENROKU_HARIMA,
+        "note": "宍粟郡の山あいの村々が記されています。揖保川上流域の地形がわかります。"},
+    "iwa_jinja_017": {**GENROKU_HARIMA,
+        "note": "宍粟郡に鎮座する播磨国一宮。一宮町の地名は当社に由来します。"},
+    "yoi_jinja_018": {**GENROKU_HARIMA,
+        "note": "宍粟郡・揖保川沿いの与位村周辺が記されています。"},
+    # 淡路
+    "izanagi_jingu_013": {**TENPO_AWAJI,
+        "note": "淡路国の絵図。国生み神話の地・多賀村周辺の地形が江戸時代の視点でわかります。"},
     # 香川
-    "takaya_jinja_009": {
-        "url": "https://www.digital.archives.go.jp/file/1456520.jpg",
-        "title": "天保国絵図 讃岐国",
-        "era": "天保9年（1838年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "讃岐国（香川県）の絵図。高屋神社がある稲積山周辺の地形が確認できます。",
-    },
+    "takaya_jinja_009": {**TENPO_SANUKI,
+        "note": "讃岐国（香川県）の絵図。高屋神社がある稲積山周辺の地形が確認できます。"},
 }
 
 def show_old_map_image(spot):
@@ -350,14 +330,14 @@ def show_old_map_image(spot):
         🔍 <b>江戸時代の絵図を見るには</b><br>
         国立公文書館デジタルアーカイブ（digital.archives.go.jp）で<br>
         「元禄国絵図」または「天保国絵図」と検索してください。<br>
-        播磨・大和・山城・摂津・讃岐国の絵図が無料で閲覧できます。
+        播磨・淡路・讃岐国の絵図が無料で閲覧できます。
         </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    st.caption("📖 出典：国立公文書館デジタルアーカイブ ／ パブリックドメイン（著作権保護期間満了）")
+    st.caption(f"📖 出典：[{OLD_MAP_SOURCE}]({OLD_MAP_SOURCE_URL}) ／ パブリックドメイン（著作権保護期間満了）")
 
 # ============================================================
 # ■ スポットデータ
@@ -664,7 +644,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "瀬戸内海に面した境内から望む空と海の眺めは格別。播磨灘の雲の変化が楽しめます。",
         "cloud_detail": "☁️ 海霧（春〜初夏）：朝に瀬戸内海から霧が流れ込む幻想的な光景。\n🌤 入道雲（夏）：播磨灘に発達する入道雲は壮観。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.9, "photo_url": "", "photo_credit": "",
-        "approved": True, "location_limited": True, "location_limited_content": "現地限定⛩ 伊和都比売神社へようこそ！相生湾を見守る女神の社です。海からの清らかな風と波音を感じながら参拝してください。",
+        "approved": True, "location_limited": True, "location_limited_content": "現地限定⛩ 伊和都比売神社へようこそ！播磨灘を見守る女神の社です。海からの清らかな風と波音を感じながら参拝してください。",
     },
     # ★ 追加スポット（播磨・たつの市エリア）
 ]
@@ -822,7 +802,7 @@ SENSOR_JS = """
   <div id="send-status" style="font-size:10px;color:#8a9aaa;margin-top:6px;"></div>
 </div>
 <script>
-let headingBuf=[],prevLat=null,prevLon=null,watchId=null,lastSend=0;
+let headingBuf=[],prevLat=null,prevLon=null,watchId=null,lastSend=0,resetPending=false;
 function toDir(d){return["北","北東","東","南東","南","南西","西","北西"][Math.round(d/45)%8];}
 function avgHdg(buf){
   let s=0,c=0;for(const h of buf){s+=Math.sin(h*Math.PI/180);c+=Math.cos(h*Math.PI/180);}
@@ -833,14 +813,14 @@ function sendToStreamlit(lat,lon,hdg,spd){
   u.searchParams.set("gps_lat",lat.toFixed(6));u.searchParams.set("gps_lon",lon.toFixed(6));
   u.searchParams.set("gps_heading",hdg.toFixed(1));u.searchParams.set("gps_speed",spd.toFixed(1));
   u.searchParams.set("gps_active","1");
-  // gps_resetはURLにまだなければ追加（1回だけ送信）
-  if(!u.searchParams.has("gps_reset")){u.searchParams.set("gps_reset","1");}
-  else{u.searchParams.delete("gps_reset");}
+  // gps_resetはGPS取得開始直後の1回だけ付ける（削除はPython側で受け取った時に行う）
+  if(resetPending){u.searchParams.set("gps_reset","1");resetPending=false;}
   window.parent.history.replaceState(null,"",u.toString());
   document.getElementById("send-status").textContent="✅ "+new Date().toLocaleTimeString()+" 送信済み";}
 function startSensors(){
   if(!navigator.geolocation){document.getElementById("gps-status").textContent="非対応";document.getElementById("gps-icon").textContent="🔴";return;}
   if(watchId!==null)navigator.geolocation.clearWatch(watchId);
+  resetPending=true;
   watchId=navigator.geolocation.watchPosition(function(p){
     let lat=p.coords.latitude,lon=p.coords.longitude;
     const acc=p.coords.accuracy,spd=p.coords.speed?p.coords.speed*3.6:0;
@@ -1061,7 +1041,7 @@ def render_omikuji(spot_name):
     st.markdown(f'<div style="background:rgba(200,140,160,0.30);border-radius:16px;padding:20px;margin:10px 0;border:1px solid rgba(200,140,160,0.50);text-align:center;backdrop-filter:blur(8px);"><div style="font-family:\'Kaisei Decol\',serif;font-size:22px;color:#3a1a2a;font-weight:700;margin-bottom:6px;">🎴 おみくじ</div><div style="font-size:15px;color:#5a2a3a;margin-bottom:14px;">{spot_name}でおみくじを引いてみましょう！</div></div>',unsafe_allow_html=True)
     col1,col2,col3=st.columns([1,2,1])
     with col2:
-        shake=st.button("🎋 おみくじ筒を振る！",type="primary",use_container_width=True,key="omikuji_btn")
+        shake=st.button("🎋 おみくじ筒を振る！",type="primary",width="stretch",key="omikuji_btn")
     if shake or st.session_state.get("omikuji_result"):
         if shake:
             result=draw_omikuji(); st.session_state.omikuji_result=result
@@ -1071,7 +1051,7 @@ def render_omikuji(spot_name):
         st.markdown(f'<div style="background:{data["bg"]};border:2px solid {data["border"]};border-radius:20px;padding:24px 20px;margin:12px 0;text-align:center;backdrop-filter:blur(10px);animation:fadeInUp 0.6s ease both;"><div style="font-family:\'Kaisei Decol\',serif;font-size:52px;color:{data["color"]};font-weight:700;text-shadow:0 0 20px {data["color"]};margin-bottom:10px;letter-spacing:0.1em;">{result}</div><div style="font-size:18px;color:#3a1a2a;font-weight:700;margin-bottom:18px;">{msg}</div><div style="border-top:1px dashed rgba(100,60,80,0.3);margin:16px 0;padding-top:16px;"><div style="font-size:17px;font-family:\'Kaisei Decol\',serif;color:#2a1a2a;line-height:1.8;margin-bottom:8px;">「{koto}」</div><div style="font-size:13px;color:rgba(80,40,60,0.75);">— {source}</div></div></div>',unsafe_allow_html=True)
         col4,col5,col6=st.columns([1,2,1])
         with col5:
-            if st.button("🔄 もう一度引く",use_container_width=True,key="omikuji_retry"):
+            if st.button("🔄 もう一度引く",width="stretch",key="omikuji_retry"):
                 st.session_state.omikuji_result=None; st.rerun()
         st.markdown('<div style="font-size:11px;color:rgba(100,60,80,0.65);text-align:center;margin-top:8px;">※ おみくじはエンターテイメントです。参考程度にお楽しみください。</div>',unsafe_allow_html=True)
 
@@ -1137,12 +1117,12 @@ def main():
         ✦ 観光スポットナビ ✦</h1>
         <p style="font-family:'Kosugi Maru',sans-serif;font-size:13px;color:#4a6a9a;
         letter-spacing:0.05em;">
-        GPS連動・都市伝説・おみくじ・雲判定…<br>旅をもっと楽しくする10の機能</p>
+        GPS連動・都市伝説・おみくじ・雲判定…<br>旅をもっと楽しくする9つのモード</p>
         </div>''', unsafe_allow_html=True)
 
     if not st.session_state.safety_shown:
         st.markdown('<div class="safety-warning"><p>⚠️ 歩きながらの使用は危険です。<br>必ず立ち止まってご使用ください。</p></div>',unsafe_allow_html=True)
-        if st.button("✅ 確認しました",type="primary",use_container_width=True):
+        if st.button("✅ 確認しました",type="primary",width="stretch"):
             st.session_state.safety_shown=True; st.rerun()
         st.stop()
 
@@ -1163,7 +1143,7 @@ def main():
     col_ctrl,col_main=st.columns([1,2],gap="medium")
 
     with col_ctrl:
-        st.components.v1.html(SENSOR_JS,height=320,scrolling=False)
+        st.iframe(SENSOR_JS,height=320)
         if gps_active: st.markdown('<div class="sensor-active-badge">🟢 GPS・コンパス取得中</div>',unsafe_allow_html=True)
         else: st.markdown('<div class="sensor-manual-badge">🎛 手動シミュレータ</div>',unsafe_allow_html=True)
         st.markdown("---")
@@ -1200,7 +1180,6 @@ def main():
         SHISO_CITIES = ("宍粟市一宮町", "宍粟市山崎町", "宍粟市波賀町", "宍粟市千種町")
         harima_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city") not in ("淡路市",) and s.get("city") not in SHISO_CITIES]
         shiso_spots  = [s for s in SPOT_DATA_BUILTIN if s.get("city") in SHISO_CITIES]
-        kansai_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture") in ("奈良県","京都府","大阪府")]
         kagawa_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="香川県"]
         awaji_spots  = [s for s in SPOT_DATA_BUILTIN if s.get("city")=="淡路市"]
         total = len(SPOT_DATA_BUILTIN)
@@ -1217,7 +1196,7 @@ def main():
 
         # 現在地ボタン（GPS ONの時のみ表示）
         if gps_active:
-            if st.button("📍 現在地を表示", use_container_width=True, key="btn_current_location"):
+            if st.button("📍 現在地を表示", width="stretch", key="btn_current_location"):
                 st.session_state.manual_spot_selected = False
                 st.session_state.selected_spot_id = None
                 st.rerun()
@@ -1249,7 +1228,7 @@ def main():
         for sp in area_spots:
             is_selected = st.session_state.get("selected_spot_id") == sp["id"]
             btn_label = f"✅ {sp['name']}" if is_selected else sp["name"]
-            if st.button(btn_label, use_container_width=True, key=f"spot_{sp['id']}"):
+            if st.button(btn_label, width="stretch", key=f"spot_{sp['id']}"):
                 st.session_state.preset_lat = sp["lat"]
                 st.session_state.preset_lon = sp["lon"]
                 st.session_state.selected_spot_id = sp["id"]
@@ -1350,7 +1329,8 @@ def main():
             map_key=f"kanko_map_{tile_name[:2]}_{map_zoom}_{round(map_center_lat,3)}_{round(map_center_lon,3)}_{st.session_state.get('selected_spot_id','none')}_{round(gps_lat,3) if gps_active else 'nogps'}"
             fmap=build_map(map_center_lat,map_center_lon,sim_heading,tile_name,map_zoom,mode_cfg,visible_spots)
             map_data=st_folium(fmap,width="100%",height=380,returned_objects=["last_clicked"],key=map_key); map_ok=True
-        except Exception: pass
+        except Exception:
+            logger.exception("地図の描画に失敗")
         # 地図ピンタップでスポット特定
         if map_data and map_data.get("last_clicked"):
             c = map_data["last_clicked"]
@@ -1447,32 +1427,38 @@ def main():
                         accept_multiple_files=False,
                     )
                     if user_photo:
-                        with st.spinner("写真を確認中..."):
-                            # Geminiで不適切写真チェック
-                            api_key = get_secret("GEMINI_API_KEY")
-                            is_safe = True
-                            check_msg = ""
-                            if api_key:
-                                try:
-                                    import base64
-                                    img_b64 = base64.b64encode(user_photo.read()).decode()
-                                    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
-                                    payload = {"contents":[{"parts":[
-                                        {"text": f'この画像は観光地「{sp["name"]}」で撮影された観光写真として適切ですか？不適切なコンテンツ（暴力・性的・個人情報など）が含まれていますか？「適切」または「不適切：理由」のみで答えてください。'},
-                                        {"inline_data": {"mime_type": "image/jpeg", "data": img_b64}}
-                                    ]}]}
-                                    r = requests.post(url, json=payload, timeout=15)
-                                    if r.status_code == 200:
-                                        result_text = r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
-                                        if "不適切" in result_text:
-                                            is_safe = False
-                                            check_msg = result_text
-                                    user_photo.seek(0)
-                                except Exception:
-                                    user_photo.seek(0)
+                        # 同じ写真は再チェックしない（画面操作のたびにAPIを呼ばない）
+                        photo_bytes = user_photo.getvalue()
+                        check_key = f"photo_check_{sp['id']}_{hashlib.md5(photo_bytes).hexdigest()}"
+                        if check_key in st.session_state:
+                            is_safe, check_msg = st.session_state[check_key]
+                        else:
+                            with st.spinner("写真を確認中..."):
+                                # Geminiで不適切写真チェック
+                                api_key = get_secret("GEMINI_API_KEY")
+                                is_safe = True
+                                check_msg = ""
+                                if api_key:
+                                    try:
+                                        import base64
+                                        img_b64 = base64.b64encode(photo_bytes).decode()
+                                        url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+                                        payload = {"contents":[{"parts":[
+                                            {"text": f'この画像は観光地「{sp["name"]}」で撮影された観光写真として適切ですか？不適切なコンテンツ（暴力・性的・個人情報など）が含まれていますか？「適切」または「不適切：理由」のみで答えてください。'},
+                                            {"inline_data": {"mime_type": user_photo.type or "image/jpeg", "data": img_b64}}
+                                        ]}]}
+                                        r = requests.post(url, json=payload, timeout=15, headers={"x-goog-api-key": api_key})
+                                        if r.status_code == 200:
+                                            result_text = r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+                                            if "不適切" in result_text:
+                                                is_safe = False
+                                                check_msg = result_text
+                                        st.session_state[check_key] = (is_safe, check_msg)
+                                    except Exception as e:
+                                        logger.warning("写真チェック失敗 (%s)", e)
 
                         if is_safe:
-                            st.image(user_photo, caption=f"📍 {sp['name']}で撮影", use_container_width=True)
+                            st.image(user_photo, caption=f"📍 {sp['name']}で撮影", width="stretch")
                             st.success("✅ 写真を表示しました！ページを閉じると写真は消えます。")
                             st.info("📮 この写真を永久保存したい場合は下の「問題を報告する」から「📸 写真を提供する」を選んで送信してください。")
                         else:
@@ -1489,22 +1475,31 @@ def main():
 
         if mode_cfg["key"]=="cloud":
             st.markdown("---")
-            today_count=cloud_usage_today(); remaining=3-today_count
-            st.markdown(f'<div class="cloud-result">☁️ <b>雲判定モード</b>　本日残り：{remaining}/3回<br><span style="font-size:14px;">空の写真をアップロードすると雲の種類を判定します。</span><br><span style="font-size:12px;opacity:0.8;">⚠️ 雲の分析はAIによるものです。正確な天気予報は気象庁等でご確認ください。</span></div>',unsafe_allow_html=True)
+            remaining=max(0,min(CLOUD_LIMIT_PER_USER-cloud_user_count_today(),CLOUD_LIMIT_GLOBAL-cloud_usage_today()))
+            st.markdown(f'<div class="cloud-result">☁️ <b>雲判定モード</b>　本日残り：{remaining}/{CLOUD_LIMIT_PER_USER}回<br><span style="font-size:14px;">空の写真をアップロードすると雲の種類を判定します。</span><br><span style="font-size:12px;opacity:0.8;">⚠️ 雲の分析はAIによるものです。正確な天気予報は気象庁等でご確認ください。</span></div>',unsafe_allow_html=True)
             st.markdown(
                 '<div style="font-size:12px;color:#5a3a00;background:rgba(255,240,200,0.6);border-radius:8px;padding:6px 10px;margin-bottom:6px;">📱 事前にスマホのカメラで空を撮影し、カメラロールに保存してからファイルを選択してください</div>',
                 unsafe_allow_html=True
             )
             uploaded=st.file_uploader("☁️ 空の写真をアップロード",type=["jpg","jpeg","png"],label_visibility="collapsed",accept_multiple_files=False)
-            if uploaded and remaining>0:
+            # 解析済みの写真は結果を再利用（画面操作のたびに再解析・回数消費しない）
+            cloud_key=f"cloud_result_{hashlib.md5(uploaded.getvalue()).hexdigest()}" if uploaded else None
+            if uploaded and cloud_key in st.session_state:
+                result=st.session_state[cloud_key]
+            elif uploaded and remaining>0:
                 with st.spinner("雲を分析中..."):
-                    result=analyze_cloud_gemini(uploaded.read())
+                    result=analyze_cloud_gemini(uploaded.getvalue(), uploaded.type or "image/jpeg")
+                # 解析できた結果（回数を消費したもの）だけ保存
+                if result.get("cloud_type")!="判定できませんでした":
+                    st.session_state[cloud_key]=result
+                    cloud_user_increment()
+            if uploaded and (cloud_key in st.session_state or remaining>0):
                 if result.get("is_dummy"):
                     st.markdown(f'<div class="cloud-result">📡 {result["description"]}</div>',unsafe_allow_html=True)
                 else:
                     st.markdown(f'<div class="cloud-result">☁️ <b>{result.get("cloud_type","不明")}</b><br><br>{result.get("description","")}<br><br>🌱 <b>この雲が生まれた理由</b><br>{result.get("formation_reason","")}<br><br>🌤 <b>空からのメッセージ</b><br>{result.get("weather_hint","")}<br><br>🔭 <b>空を味わうヒント</b><br>{result.get("observation_tips","")}<br><br><span style="font-size:12px;opacity:0.8;">⚠️ 雲の分析はAIによるものです。正確な天気予報は気象庁等でご確認ください。</span></div>',unsafe_allow_html=True)
             elif uploaded and remaining<=0:
-                st.warning("本日の雲判定上限（3回）に達しました。明日またお試しください。")
+                st.warning(f"本日の雲判定上限（{CLOUD_LIMIT_PER_USER}回）に達しました。明日またお試しください。")
 
         if visible_spots:
             st.markdown("---")
@@ -1525,11 +1520,11 @@ def main():
             # st.link_buttonで確実に外部リンクを開く
             col_x, col_fb, col_line = st.columns(3)
             with col_x:
-                st.link_button("𝕏 Xに投稿", x_url, use_container_width=True)
+                st.link_button("𝕏 Xに投稿", x_url, width="stretch")
             with col_fb:
-                st.link_button("📘 Facebook", fb_url, use_container_width=True)
+                st.link_button("📘 Facebook", fb_url, width="stretch")
             with col_line:
-                st.link_button("💬 LINE", line_url, use_container_width=True)
+                st.link_button("💬 LINE", line_url, width="stretch")
             st.caption("※ ボタンをタップするとSNSアプリが開きます")
 
         st.markdown("---")
@@ -1570,7 +1565,7 @@ def main():
                 )
                 report_photo = st.file_uploader("写真プレビュー（任意）",type=["jpg","jpeg","png"],key="report_photo",label_visibility="collapsed")
                 if report_photo:
-                    st.image(report_photo, caption="プレビュー（メールには自動添付されません）", use_container_width=True)
+                    st.image(report_photo, caption="プレビュー（メールには自動添付されません）", width="stretch")
                     st.caption("※ メールアプリで写真を手動添付してください。")
             # メールボタンを常に表示（入力内容をリアルタイムで反映）
             subject = urllib.parse.quote(f"【観光スポットナビ報告】{report_type}")
@@ -1583,14 +1578,14 @@ def main():
                 f"\n※ 観光スポットナビアプリからの報告"
             )
             mailto = f"mailto:landscaping.yama@gmail.com?subject={subject}&body={body}"
-            st.link_button("📧 メールアプリで送信する", mailto, use_container_width=True)
+            st.link_button("📧 メールアプリで送信する", mailto, width="stretch")
             st.caption("※ タップするとメールアプリが開きます。内容を確認して送信してください。")
 
     if st.session_state.get("night_mode",False):
         st.markdown("""<style>.stApp{background:linear-gradient(160deg,#050510 0%,#0a0a28 40%,#080818 100%)!important;}.app-header h1{color:#8888FF!important;}.info-panel,.ar-compass,.lookaround-card,.share-card,.report-form{background:rgba(20,20,60,0.65)!important;color:#CCCCFF!important;}.ar-card{color:#EEEEFF!important;}.ar-card-title{color:#FFFFFF!important;}.mode-title-bar{color:#FFFFFF!important;}</style>""",unsafe_allow_html=True)
 
     now=datetime.now().strftime("%Y年%m月%d日 %H:%M")
-    st.markdown(f'<div class="app-footer">観光スポットナビ ／ 播磨・関西・香川エリア<br>Wikipedia API：CC BY-SA ／ 地図：国土地理院・OpenStreetMap contributors<br>最終更新：{now}</div>',unsafe_allow_html=True)
+    st.markdown(f'<div class="app-footer">観光スポットナビ ／ 播磨・淡路・香川エリア<br>Wikipedia API：CC BY-SA ／ 地図：国土地理院・OpenStreetMap contributors<br>最終更新：{now}</div>',unsafe_allow_html=True)
 
 if __name__=="__main__":
     main()
