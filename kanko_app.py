@@ -12,7 +12,7 @@ from datetime import datetime, date
 from collections import deque
 
 st.set_page_config(
-    page_title="観光スポットナビ | 播磨・関西・香川",
+    page_title="観光スポットナビ | 播磨・淡路・香川",
     page_icon="⛩",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -104,6 +104,24 @@ def fetch_wikipedia(spot_id, title):
         return extract
     except Exception: return ""
 
+PREFECTURES = ["北海道","青森県","岩手県","宮城県","秋田県","山形県","福島県","茨城県","栃木県","群馬県",
+    "埼玉県","千葉県","東京都","神奈川県","新潟県","富山県","石川県","福井県","山梨県","長野県",
+    "岐阜県","静岡県","愛知県","三重県","滋賀県","京都府","大阪府","兵庫県","奈良県","和歌山県",
+    "鳥取県","島根県","岡山県","広島県","山口県","徳島県","香川県","愛媛県","高知県","福岡県",
+    "佐賀県","長崎県","熊本県","大分県","宮崎県","鹿児島県","沖縄県"]
+
+@st.cache_data(ttl=86400, show_spinner=False)
+def reverse_geocode_prefecture(lat, lon):
+    """国土地理院の逆ジオコーダで緯度経度から都道府県名を取得（失敗時は空文字）"""
+    try:
+        r=requests.get("https://mreversegeocoder.gsi.go.jp/reverse-geocoder/LonLatToAddress",
+            params={"lat":lat,"lon":lon},timeout=8,headers={"User-Agent":"kanko-ar-app/4.0"})
+        if r.status_code!=200: return ""
+        muni=str(r.json().get("results",{}).get("muniCd","")).zfill(5)
+        code=int(muni[:2])
+        return PREFECTURES[code-1] if 1<=code<=47 else ""
+    except Exception: return ""
+
 @st.cache_data(ttl=3600, show_spinner=False)
 def fetch_overpass_spots(center_lat, center_lon, radius_m=5000):
     try:
@@ -111,13 +129,15 @@ def fetch_overpass_spots(center_lat, center_lon, radius_m=5000):
         r=requests.post("https://overpass-api.de/api/interpreter",data={"data":query},timeout=15,headers={"User-Agent":"kanko-ar-app/4.0"})
         if r.status_code!=200: return []
         spots=[]
+        # 取得範囲は半径数km程度なので、中心地点の都道府県を全スポットに使う
+        center_pref=reverse_geocode_prefecture(center_lat, center_lon)
         for el in r.json().get("elements",[]):
             tags=el.get("tags",{}); name=tags.get("name:ja") or tags.get("name","")
             if not name: continue
             spots.append({"id":f"osm_{el['id']}","name":name,"name_kana":tags.get("name:ja-Hira",""),
                 "category":("shrine" if tags.get("religion")=="shinto" else "castle" if tags.get("historic")=="castle" else "default"),
                 "priority":3,"lat":el.get("lat",0),"lon":el.get("lon",0),"altitude":0,
-                "prefecture":"兵庫県","city":tags.get("addr:city","播磨エリア"),
+                "prefecture":tags.get("addr:province") or center_pref,"city":tags.get("addr:city",""),
                 "description":f"{name}（OpenStreetMapデータ）",
                 "main_detail":f"{name}\n出典: © OpenStreetMap contributors",
                 "trust_score":0.7,"approved":True,"location_limited":False,"location_limited_content":""})
@@ -214,7 +234,8 @@ def make_share_text(spot, mode_cfg, dist_km):
         f"\n"
         f"▶ https://kanko-ar-harima.streamlit.app\n"
         f"\n"
-        f"#観光スポットナビ #観光アプリ #{spot['name'].replace(' ','')} #{spot['city'].replace(' ','')}"
+        f"#観光スポットナビ #観光アプリ #{spot['name'].replace(' ','')}"
+        + (f" #{spot['city'].replace(' ','')}" if spot.get("city") else "")
     )
 
 # ============================================================
@@ -222,100 +243,36 @@ def make_share_text(spot, mode_cfg, dist_km):
 #   出典: 国立公文書館デジタルアーカイブ
 #   パブリックドメイン（著作権保護期間満了）
 # ============================================================
+OLD_MAP_SOURCE = "国立公文書館デジタルアーカイブ"
+OLD_MAP_SOURCE_URL = "https://www.digital.archives.go.jp/"
+GENROKU_HARIMA = {"title": "元禄国絵図 播磨国", "era": "元禄15年（1702年）"}
+TENPO_SANUKI = {"title": "天保国絵図 讃岐国", "era": "天保9年（1838年）"}
+TENPO_AWAJI = {"title": "天保国絵図 淡路国", "era": "天保9年（1838年）"}
+
 OLD_MAP_IMAGES = {
     # 播磨国スポット → 元禄国絵図「播磨国」
-    "takamikura_001": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
-        "title": "元禄国絵図 播磨国",
-        "era": "元禄15年（1702年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "江戸幕府が作成した播磨国の公式絵図。1里＝6寸の縮尺で村名・石高が記されています。",
-    },
-    "kasagatayama_002": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
-        "title": "元禄国絵図 播磨国",
-        "era": "元禄15年（1702年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "笠形山は播磨の名山として古地図にも記されています。",
-    },
-    "himeji_castle_003": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
-        "title": "元禄国絵図 播磨国",
-        "era": "元禄15年（1702年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "江戸時代の絵図には「姫路」として城下町が白四角で記されています。",
-    },
-    "kakurinji_004": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
-        "title": "元禄国絵図 播磨国",
-        "era": "元禄15年（1702年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "加古川周辺の村々が色分けされた楕円形の枠内に記されています。",
-    },
-    "ikarugatera_008": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
-        "title": "元禄国絵図 播磨国",
-        "era": "元禄15年（1702年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "太子町周辺は揖保郡として記載されています。",
-    },
-    "kamo_jinja_010": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
-        "title": "元禄国絵図 播磨国",
-        "era": "元禄15年（1702年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "龍野（たつの）は龍野藩の城下町として絵図に記されています。",
-    },
-    "iwatsuhime_011": {
-        "url": "https://www.digital.archives.go.jp/file/1406104.jpg",
-        "title": "元禄国絵図 播磨国",
-        "era": "元禄15年（1702年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "赤穂は赤穂藩の城下町として記載。播磨灘沿岸の地形がわかります。",
-    },
-    # 奈良
-    "nara_todaiji_005": {
-        "url": "https://www.digital.archives.go.jp/file/1456490.jpg",
-        "title": "天保国絵図 大和国",
-        "era": "天保9年（1838年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "奈良は大和国として記載。東大寺・興福寺などの寺院が描かれています。",
-    },
-    # 京都
-    "kyoto_kinkakuji_006": {
-        "url": "https://www.digital.archives.go.jp/file/1456498.jpg",
-        "title": "天保国絵図 山城国",
-        "era": "天保9年（1838年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "京都は山城国として記載。金閣寺周辺の地形が江戸時代の視点でわかります。",
-    },
-    # 大阪
-    "osaka_castle_007": {
-        "url": "https://www.digital.archives.go.jp/file/1456510.jpg",
-        "title": "天保国絵図 摂津国",
-        "era": "天保9年（1838年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "大阪城は摂津国の城下として記載。江戸時代の大坂の街並みがわかります。",
-    },
+    "takamikura_001": {**GENROKU_HARIMA,
+        "note": "江戸幕府が作成した播磨国の公式絵図。1里＝6寸の縮尺で村名・石高が記されています。"},
+    "ikarugatera_008": {**GENROKU_HARIMA,
+        "note": "太子町周辺は揖保郡として記載されています。"},
+    "kamo_jinja_010": {**GENROKU_HARIMA,
+        "note": "龍野（たつの）は龍野藩の城下町として絵図に記されています。"},
+    "iwatsuhime_011": {**GENROKU_HARIMA,
+        "note": "赤穂は赤穂藩の城下町として記載。播磨灘沿岸の地形がわかります。"},
+    "wakasano_tenman_012": {**GENROKU_HARIMA,
+        "note": "相生周辺は赤穂郡として記載。若狭野の村々が絵図に記されています。"},
+    "kokuzo_do_016": {**GENROKU_HARIMA,
+        "note": "宍粟郡の山あいの村々が記されています。揖保川上流域の地形がわかります。"},
+    "iwa_jinja_017": {**GENROKU_HARIMA,
+        "note": "宍粟郡に鎮座する播磨国一宮。一宮町の地名は当社に由来します。"},
+    "yoi_jinja_018": {**GENROKU_HARIMA,
+        "note": "宍粟郡・揖保川沿いの与位村周辺が記されています。"},
+    # 淡路
+    "izanagi_jingu_013": {**TENPO_AWAJI,
+        "note": "淡路国の絵図。国生み神話の地・多賀村周辺の地形が江戸時代の視点でわかります。"},
     # 香川
-    "takaya_jinja_009": {
-        "url": "https://www.digital.archives.go.jp/file/1456520.jpg",
-        "title": "天保国絵図 讃岐国",
-        "era": "天保9年（1838年）",
-        "source": "国土地理院 古地図コレクション",
-        "source_url": "https://kochizu.gsi.go.jp/items/8",
-        "note": "讃岐国（香川県）の絵図。高屋神社がある稲積山周辺の地形が確認できます。",
-    },
+    "takaya_jinja_009": {**TENPO_SANUKI,
+        "note": "讃岐国（香川県）の絵図。高屋神社がある稲積山周辺の地形が確認できます。"},
 }
 
 def show_old_map_image(spot):
@@ -351,14 +308,14 @@ def show_old_map_image(spot):
         🔍 <b>江戸時代の絵図を見るには</b><br>
         国立公文書館デジタルアーカイブ（digital.archives.go.jp）で<br>
         「元禄国絵図」または「天保国絵図」と検索してください。<br>
-        播磨・大和・山城・摂津・讃岐国の絵図が無料で閲覧できます。
+        播磨・淡路・讃岐国の絵図が無料で閲覧できます。
         </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    st.caption("📖 出典：国立公文書館デジタルアーカイブ ／ パブリックドメイン（著作権保護期間満了）")
+    st.caption(f"📖 出典：[{OLD_MAP_SOURCE}]({OLD_MAP_SOURCE_URL}) ／ パブリックドメイン（著作権保護期間満了）")
 
 # ============================================================
 # ■ スポットデータ
@@ -665,7 +622,7 @@ SPOT_DATA_BUILTIN = [
         "cloud_info": "瀬戸内海に面した境内から望む空と海の眺めは格別。播磨灘の雲の変化が楽しめます。",
         "cloud_detail": "☁️ 海霧（春〜初夏）：朝に瀬戸内海から霧が流れ込む幻想的な光景。\n🌤 入道雲（夏）：播磨灘に発達する入道雲は壮観。\n⚠️ 正確な天気予報は気象庁等でご確認ください。",
         "trust_score": 0.9, "photo_url": "", "photo_credit": "",
-        "approved": True, "location_limited": True, "location_limited_content": "現地限定⛩ 伊和都比売神社へようこそ！相生湾を見守る女神の社です。海からの清らかな風と波音を感じながら参拝してください。",
+        "approved": True, "location_limited": True, "location_limited_content": "現地限定⛩ 伊和都比売神社へようこそ！播磨灘を見守る女神の社です。海からの清らかな風と波音を感じながら参拝してください。",
     },
     # ★ 追加スポット（播磨・たつの市エリア）
 ]
@@ -1138,7 +1095,7 @@ def main():
         ✦ 観光スポットナビ ✦</h1>
         <p style="font-family:'Kosugi Maru',sans-serif;font-size:13px;color:#4a6a9a;
         letter-spacing:0.05em;">
-        GPS連動・都市伝説・おみくじ・雲判定…<br>旅をもっと楽しくする10の機能</p>
+        GPS連動・都市伝説・おみくじ・雲判定…<br>旅をもっと楽しくする9つのモード</p>
         </div>''', unsafe_allow_html=True)
 
     if not st.session_state.safety_shown:
@@ -1201,7 +1158,6 @@ def main():
         SHISO_CITIES = ("宍粟市一宮町", "宍粟市山崎町", "宍粟市波賀町", "宍粟市千種町")
         harima_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="兵庫県" and s.get("city") not in ("淡路市",) and s.get("city") not in SHISO_CITIES]
         shiso_spots  = [s for s in SPOT_DATA_BUILTIN if s.get("city") in SHISO_CITIES]
-        kansai_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture") in ("奈良県","京都府","大阪府")]
         kagawa_spots = [s for s in SPOT_DATA_BUILTIN if s.get("prefecture")=="香川県"]
         awaji_spots  = [s for s in SPOT_DATA_BUILTIN if s.get("city")=="淡路市"]
         total = len(SPOT_DATA_BUILTIN)
@@ -1605,7 +1561,7 @@ def main():
         st.markdown("""<style>.stApp{background:linear-gradient(160deg,#050510 0%,#0a0a28 40%,#080818 100%)!important;}.app-header h1{color:#8888FF!important;}.info-panel,.ar-compass,.lookaround-card,.share-card,.report-form{background:rgba(20,20,60,0.65)!important;color:#CCCCFF!important;}.ar-card{color:#EEEEFF!important;}.ar-card-title{color:#FFFFFF!important;}.mode-title-bar{color:#FFFFFF!important;}</style>""",unsafe_allow_html=True)
 
     now=datetime.now().strftime("%Y年%m月%d日 %H:%M")
-    st.markdown(f'<div class="app-footer">観光スポットナビ ／ 播磨・関西・香川エリア<br>Wikipedia API：CC BY-SA ／ 地図：国土地理院・OpenStreetMap contributors<br>最終更新：{now}</div>',unsafe_allow_html=True)
+    st.markdown(f'<div class="app-footer">観光スポットナビ ／ 播磨・淡路・香川エリア<br>Wikipedia API：CC BY-SA ／ 地図：国土地理院・OpenStreetMap contributors<br>最終更新：{now}</div>',unsafe_allow_html=True)
 
 if __name__=="__main__":
     main()
